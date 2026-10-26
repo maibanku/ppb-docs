@@ -1,0 +1,3303 @@
+{
+  "version": "2.21",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none"
+    },
+    {
+      "type": "frame",
+      "id": "zZY2M",
+      "x": 900,
+      "y": 0,
+      "name": "1. 穿搭首页",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "#F6F5F1",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Ukit1",
+          "name": "Status Bar",
+          "width": "fill_container",
+          "padding": [
+            12,
+            24,
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "oR5b7",
+              "name": "Time",
+              "fill": "#171717",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "yW3dt",
+              "name": "Status Icons",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "DwJTK",
+                  "name": "Signal",
+                  "width": 15,
+                  "height": 15,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "#171717"
+                },
+                {
+                  "type": "icon",
+                  "id": "yKUnm",
+                  "name": "Wifi",
+                  "width": 15,
+                  "height": 15,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "#171717"
+                },
+                {
+                  "type": "icon",
+                  "id": "qkyuK",
+                  "name": "Battery",
+                  "width": 22,
+                  "height": 15,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "#171717"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "D5XB6E",
+          "name": "Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            14,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "T9CYIP",
+              "name": "Date Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Y8Mlge",
+                  "name": "Date",
+                  "fill": "#7A786F",
+                  "content": "10月26日 周一",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "frame",
+                  "id": "VMf5l",
+                  "name": "Weather Chip",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 999,
+                  "gap": 5,
+                  "padding": [
+                    6,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "Vh96m",
+                      "name": "Sun",
+                      "width": 13,
+                      "height": 13,
+                      "icon": "sun",
+                      "library": "lucide",
+                      "fill": "#E8A33D"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Oh4a2",
+                      "name": "Weather",
+                      "fill": "#5B5951",
+                      "content": "18° 晴 · 上海",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "uSGBB",
+              "name": "Title",
+              "fill": "#171717",
+              "content": "今天穿什么",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 27,
+              "fontWeight": "700",
+              "letterSpacing": -0.3
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "JStBT",
+          "name": "Hero",
+          "width": "fill_container",
+          "height": "fill_container",
+          "padding": [
+            8,
+            24
+          ],
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "nPIB6",
+              "name": "Model Photo",
+              "clip": true,
+              "width": 280,
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "%E8%A1%A3%E6%9F%9C-assets/generated-1793001239285.png",
+                "mode": "cover"
+              },
+              "cornerRadius": 26,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#3A362E1F",
+                "offset": {
+                  "x": 0,
+                  "y": 18
+                },
+                "blur": 36
+              },
+              "layout": "vertical",
+              "padding": 12,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "oy3PA",
+                  "name": "AI Tag",
+                  "fill": "#FFFFFFD9",
+                  "cornerRadius": 999,
+                  "gap": 5,
+                  "padding": [
+                    6,
+                    11
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "sv8IL",
+                      "name": "Sparkle",
+                      "width": 12,
+                      "height": 12,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "#2B5CE6"
+                    },
+                    {
+                      "type": "text",
+                      "id": "p9RIaF",
+                      "name": "AI Tag Label",
+                      "fill": "#3F3D37",
+                      "content": "AI 试穿图",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "z6Udu9",
+          "name": "Outfit Info",
+          "width": "fill_container",
+          "padding": [
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "QPcGW",
+              "name": "Outfit Meta",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "a2OAY",
+                  "name": "Scene",
+                  "fill": "#7A786F",
+                  "content": "通勤 · 简约基础",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.5
+                },
+                {
+                  "type": "text",
+                  "id": "lDMDn",
+                  "name": "Outfit Name",
+                  "fill": "#171717",
+                  "content": "燕麦针织衫 × 墨绿直筒裤",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ushLE",
+              "name": "Save Button",
+              "width": 40,
+              "height": 40,
+              "fill": "#FFFFFF",
+              "cornerRadius": 20,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "Q1MWj",
+                  "name": "Bookmark",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "bookmark",
+                  "library": "lucide",
+                  "fill": "#6B6960"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Jz3tY",
+          "name": "Items Section",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "padding": [
+            12,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "FBeKW",
+              "name": "Items Header",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "yHUjn",
+                  "name": "Items Title",
+                  "fill": "#5B5951",
+                  "content": "搭配单品",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "letterSpacing": 1
+                },
+                {
+                  "type": "text",
+                  "id": "fE6N0",
+                  "name": "Items Hint",
+                  "fill": "#8F8D84",
+                  "content": "点击替换",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "O7XLr8",
+              "name": "Item Row",
+              "width": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "mdUBp",
+                  "name": "Item 上衣",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "TN1pB",
+                      "name": "Item Img 上衣",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "khkar",
+                        "link": "https://unsplash.com/@khkar",
+                        "author": "Khaled Ali"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1737509551350-8b88a3e910ef?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDEyMzN8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Olbs1",
+                      "name": "Item Label Wrap 上衣",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "n5XPu",
+                          "name": "Item Label 上衣",
+                          "fill": "#5B5951",
+                          "content": "上衣",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "TbxFP",
+                  "name": "Item 裤子",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Fljnd",
+                      "name": "Item Img 裤子",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "lauraaoliveira",
+                        "link": "https://unsplash.com/@lauraaoliveira",
+                        "author": "Laura Oliveira"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1687825505929-af340bd0f6a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDEyMzV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "V8msu",
+                      "name": "Item Label Wrap 裤子",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "N1onez",
+                          "name": "Item Label 裤子",
+                          "fill": "#5B5951",
+                          "content": "裤子",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "jr237",
+                  "name": "Item 鞋",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "M7CNyt",
+                      "name": "Item Img 鞋",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "raulspotty",
+                        "link": "https://unsplash.com/@raulspotty",
+                        "author": "Rahul Bajracharya"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1721797996562-e5d585516869?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDEyMzZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "PEjJn",
+                      "name": "Item Label Wrap 鞋",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "i1ciZ",
+                          "name": "Item Label 鞋",
+                          "fill": "#5B5951",
+                          "content": "鞋",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "iL2tB",
+                  "name": "Item 包",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "E5rjr0",
+                      "name": "Item Img 包",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "zetamp",
+                        "link": "https://unsplash.com/@zetamp",
+                        "author": "Zeta Mponatsou"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1623919268210-99a34497afde?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDEyMzl8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "sTqd7",
+                      "name": "Item Label Wrap 包",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "xrdLn",
+                          "name": "Item Label 包",
+                          "fill": "#5B5951",
+                          "content": "包",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "b70tGt",
+          "name": "Actions",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            14,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "IaD6d",
+              "name": "Wear Button",
+              "width": "fill_container",
+              "height": 52,
+              "fill": "#171717",
+              "cornerRadius": 26,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#17171740",
+                "offset": {
+                  "x": 0,
+                  "y": 10
+                },
+                "blur": 24
+              },
+              "gap": 8,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "lUrPB",
+                  "name": "Check",
+                  "width": 17,
+                  "height": 17,
+                  "icon": "check",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "text",
+                  "id": "oKNUk",
+                  "name": "Wear Label",
+                  "fill": "#FFFFFF",
+                  "content": "就穿这套",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "letterSpacing": 2
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "mYerb",
+              "name": "Shuffle Row",
+              "width": "fill_container",
+              "gap": 6,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "nmpGn",
+                  "name": "Refresh",
+                  "width": 13,
+                  "height": 13,
+                  "icon": "refresh-cw",
+                  "library": "lucide",
+                  "fill": "#6B6960"
+                },
+                {
+                  "type": "text",
+                  "id": "k6sUe",
+                  "name": "Shuffle Label",
+                  "fill": "#6B6960",
+                  "content": "换一套",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Hn40x",
+          "name": "Tab Bar",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            10,
+            0,
+            6,
+            0
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "Mp0pJ",
+              "name": "Tabs",
+              "width": "fill_container",
+              "gap": 72,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "dNnCG",
+                  "name": "Tab Outfits",
+                  "width": 72,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "p7OYiI",
+                      "name": "Tab Outfits Icon",
+                      "width": 22,
+                      "height": 22,
+                      "icon": "shirt",
+                      "library": "lucide",
+                      "fill": "#2B5CE6"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Wd76W",
+                      "name": "Tab Outfits Label",
+                      "fill": "#2B5CE6",
+                      "content": "穿搭",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "zaDYp",
+                  "name": "Tab Wardrobe",
+                  "width": 72,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "fpzJa",
+                      "name": "Tab Wardrobe Icon",
+                      "width": 22,
+                      "height": 22,
+                      "icon": "layout-grid",
+                      "library": "lucide",
+                      "fill": "#9B998F"
+                    },
+                    {
+                      "type": "text",
+                      "id": "H6l5x3",
+                      "name": "Tab Wardrobe Label",
+                      "fill": "#9B998F",
+                      "content": "衣橱",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "TlISv",
+              "name": "Indicator Wrap",
+              "width": "fill_container",
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ePXEw",
+                  "name": "Home Indicator",
+                  "width": 134,
+                  "height": 5,
+                  "fill": "#171717",
+                  "cornerRadius": 3
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cJmUy",
+      "x": 1350,
+      "y": 0,
+      "name": "2. 穿搭首页",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "#F6F5F1",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "UJ0OJ",
+          "name": "Status Bar",
+          "width": "fill_container",
+          "padding": [
+            12,
+            24,
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "e57lNU",
+              "name": "Time",
+              "fill": "#171717",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "nZeOu",
+              "name": "Status Icons",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "qTVPy",
+                  "name": "Signal",
+                  "width": 15,
+                  "height": 15,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "#171717"
+                },
+                {
+                  "type": "icon",
+                  "id": "b8qKlf",
+                  "name": "Wifi",
+                  "width": 15,
+                  "height": 15,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "#171717"
+                },
+                {
+                  "type": "icon",
+                  "id": "YJTJe",
+                  "name": "Battery",
+                  "width": 22,
+                  "height": 15,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "#171717"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "I2Mvs",
+          "name": "Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            14,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "tSEHa",
+              "name": "Date Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "d6sI5X",
+                  "name": "Date",
+                  "fill": "#7A786F",
+                  "content": "10月26日 周一",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "frame",
+                  "id": "THqbv",
+                  "name": "Weather Chip",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 999,
+                  "gap": 5,
+                  "padding": [
+                    6,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "w3UJEw",
+                      "name": "Sun",
+                      "width": 13,
+                      "height": 13,
+                      "icon": "sun",
+                      "library": "lucide",
+                      "fill": "#E8A33D"
+                    },
+                    {
+                      "type": "text",
+                      "id": "E5WqJ",
+                      "name": "Weather",
+                      "fill": "#5B5951",
+                      "content": "18° 晴 · 上海",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "OsS5x",
+              "name": "Title",
+              "fill": "#171717",
+              "content": "今天穿什么",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 27,
+              "fontWeight": "700",
+              "letterSpacing": -0.3
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "e9xqDJ",
+          "name": "Hero",
+          "width": "fill_container",
+          "height": "fill_container",
+          "padding": [
+            8,
+            24
+          ],
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "BYnvG",
+              "name": "Model Photo",
+              "clip": true,
+              "width": 280,
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "%E8%A1%A3%E6%9F%9C-assets/generated.png",
+                "mode": "cover"
+              },
+              "cornerRadius": 26,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#3A362E1F",
+                "offset": {
+                  "x": 0,
+                  "y": 18
+                },
+                "blur": 36
+              },
+              "layout": "vertical",
+              "padding": 12,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "y20Rao",
+                  "name": "AI Tag",
+                  "fill": "#FFFFFFD9",
+                  "cornerRadius": 999,
+                  "gap": 5,
+                  "padding": [
+                    6,
+                    11
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "mUf6s",
+                      "name": "Sparkle",
+                      "width": 12,
+                      "height": 12,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "#2B5CE6"
+                    },
+                    {
+                      "type": "text",
+                      "id": "L6gEP",
+                      "name": "AI Tag Label",
+                      "fill": "#3F3D37",
+                      "content": "AI 试穿图",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "UldDr",
+          "name": "Outfit Info",
+          "width": "fill_container",
+          "padding": [
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "K90Yqn",
+              "name": "Outfit Meta",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "dCwyp",
+                  "name": "Scene",
+                  "fill": "#7A786F",
+                  "content": "休闲 · 周末漫步",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.5
+                },
+                {
+                  "type": "text",
+                  "id": "KnffH",
+                  "name": "Outfit Name",
+                  "fill": "#171717",
+                  "content": "米白卫衣 × 直筒牛仔裤",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "IXAGD",
+              "name": "Save Button",
+              "width": 40,
+              "height": 40,
+              "fill": "#FFFFFF",
+              "cornerRadius": 20,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "Y6PiFn",
+                  "name": "Bookmark",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "bookmark",
+                  "library": "lucide",
+                  "fill": "#6B6960"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Yb43Y",
+          "name": "Items Section",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "padding": [
+            12,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "pRPBN",
+              "name": "Items Header",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "OoMeA",
+                  "name": "Items Title",
+                  "fill": "#5B5951",
+                  "content": "搭配单品",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "letterSpacing": 1
+                },
+                {
+                  "type": "text",
+                  "id": "g7lUA",
+                  "name": "Items Hint",
+                  "fill": "#8F8D84",
+                  "content": "点击替换",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "kxLx8",
+              "name": "Item Row",
+              "width": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "v7rj7",
+                  "name": "Item 上衣",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "Q2n3Cs",
+                      "name": "Item Img 上衣",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "kevinkaiwei",
+                        "link": "https://unsplash.com/@kevinkaiwei",
+                        "author": "Kevin Liang"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1615405971592-f4aec007a9dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDIxMzl8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "idMSq",
+                      "name": "Item Label Wrap 上衣",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "G09of",
+                          "name": "Item Label 上衣",
+                          "fill": "#5B5951",
+                          "content": "上衣",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "wSiol",
+                  "name": "Item 裤子",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "DqmBj",
+                      "name": "Item Img 裤子",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "pshoan",
+                        "link": "https://unsplash.com/@pshoan",
+                        "author": "alex pshenianykov"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1609831190577-04538764f438?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDIxMzl8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Kyb3b",
+                      "name": "Item Label Wrap 裤子",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "H3iaIk",
+                          "name": "Item Label 裤子",
+                          "fill": "#5B5951",
+                          "content": "裤子",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "rHarF",
+                  "name": "Item 鞋",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ryLop",
+                      "name": "Item Img 鞋",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "becca_winter_photography",
+                        "link": "https://unsplash.com/@becca_winter_photography",
+                        "author": "Rebecca Winter"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1784493060515-953e0327f382?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDIxMzl8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Kw5TV",
+                      "name": "Item Label Wrap 鞋",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "NsVuC",
+                          "name": "Item Label 鞋",
+                          "fill": "#5B5951",
+                          "content": "鞋",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "fd87y",
+                  "name": "Item 包",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "d6KLBo",
+                      "name": "Item Img 包",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "urbanminimals",
+                        "link": "https://unsplash.com/@urbanminimals",
+                        "author": "Urban Minimals"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1721111259873-5a13f7fcd67b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDIxMzl8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "IPdsj",
+                      "name": "Item Label Wrap 包",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ZA6TR",
+                          "name": "Item Label 包",
+                          "fill": "#5B5951",
+                          "content": "包",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "E8ofGk",
+          "name": "Actions",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            14,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "CzcFb",
+              "name": "Wear Button",
+              "width": "fill_container",
+              "height": 52,
+              "fill": "#171717",
+              "cornerRadius": 26,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#17171740",
+                "offset": {
+                  "x": 0,
+                  "y": 10
+                },
+                "blur": 24
+              },
+              "gap": 8,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "Gv4jH",
+                  "name": "Check",
+                  "width": 17,
+                  "height": 17,
+                  "icon": "check",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "text",
+                  "id": "GnEmd",
+                  "name": "Wear Label",
+                  "fill": "#FFFFFF",
+                  "content": "就穿这套",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "letterSpacing": 2
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "PYAv0",
+              "name": "Shuffle Row",
+              "width": "fill_container",
+              "gap": 6,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "vIFbc",
+                  "name": "Refresh",
+                  "width": 13,
+                  "height": 13,
+                  "icon": "refresh-cw",
+                  "library": "lucide",
+                  "fill": "#6B6960"
+                },
+                {
+                  "type": "text",
+                  "id": "RnBOI",
+                  "name": "Shuffle Label",
+                  "fill": "#6B6960",
+                  "content": "换一套",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "pW3DM",
+          "name": "Tab Bar",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            10,
+            0,
+            6,
+            0
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "CG4O7",
+              "name": "Tabs",
+              "width": "fill_container",
+              "gap": 72,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "XPugC",
+                  "name": "Tab Outfits",
+                  "width": 72,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "D7j2z",
+                      "name": "Tab Outfits Icon",
+                      "width": 22,
+                      "height": 22,
+                      "icon": "shirt",
+                      "library": "lucide",
+                      "fill": "#2B5CE6"
+                    },
+                    {
+                      "type": "text",
+                      "id": "MeIz9",
+                      "name": "Tab Outfits Label",
+                      "fill": "#2B5CE6",
+                      "content": "穿搭",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "hqaAB",
+                  "name": "Tab Wardrobe",
+                  "width": 72,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "m7vb4H",
+                      "name": "Tab Wardrobe Icon",
+                      "width": 22,
+                      "height": 22,
+                      "icon": "layout-grid",
+                      "library": "lucide",
+                      "fill": "#9B998F"
+                    },
+                    {
+                      "type": "text",
+                      "id": "mdoGq",
+                      "name": "Tab Wardrobe Label",
+                      "fill": "#9B998F",
+                      "content": "衣橱",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "mEdrO",
+              "name": "Indicator Wrap",
+              "width": "fill_container",
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "S2GdE",
+                  "name": "Home Indicator",
+                  "width": 134,
+                  "height": 5,
+                  "fill": "#171717",
+                  "cornerRadius": 3
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "yfmFR",
+      "x": 1800,
+      "y": 0,
+      "name": "3. 穿搭首页",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "#F6F5F1",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "IsQAJ",
+          "name": "Status Bar",
+          "width": "fill_container",
+          "padding": [
+            12,
+            24,
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "cO1Z9",
+              "name": "Time",
+              "fill": "#171717",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "JB4r9",
+              "name": "Status Icons",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "i47rT",
+                  "name": "Signal",
+                  "width": 15,
+                  "height": 15,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "#171717"
+                },
+                {
+                  "type": "icon",
+                  "id": "Zz0kU",
+                  "name": "Wifi",
+                  "width": 15,
+                  "height": 15,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "#171717"
+                },
+                {
+                  "type": "icon",
+                  "id": "p38F7a",
+                  "name": "Battery",
+                  "width": 22,
+                  "height": 15,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "#171717"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Pzc8K",
+          "name": "Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            14,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "m18G3",
+              "name": "Date Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "eRCm0",
+                  "name": "Date",
+                  "fill": "#7A786F",
+                  "content": "10月26日 周一",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "frame",
+                  "id": "To4wI",
+                  "name": "Weather Chip",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 999,
+                  "gap": 5,
+                  "padding": [
+                    6,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "TNWk5",
+                      "name": "Sun",
+                      "width": 13,
+                      "height": 13,
+                      "icon": "sun",
+                      "library": "lucide",
+                      "fill": "#E8A33D"
+                    },
+                    {
+                      "type": "text",
+                      "id": "IFWY9",
+                      "name": "Weather",
+                      "fill": "#5B5951",
+                      "content": "18° 晴 · 上海",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 12,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "v8FPi",
+              "name": "Title",
+              "fill": "#171717",
+              "content": "今天穿什么",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 27,
+              "fontWeight": "700",
+              "letterSpacing": -0.3
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "zblmx",
+          "name": "Hero",
+          "width": "fill_container",
+          "height": "fill_container",
+          "padding": [
+            8,
+            24
+          ],
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Hdsln",
+              "name": "Model Photo",
+              "clip": true,
+              "width": 280,
+              "height": "fill_container",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "%E8%A1%A3%E6%9F%9C-assets/generated-1.png",
+                "mode": "cover"
+              },
+              "cornerRadius": 26,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#3A362E1F",
+                "offset": {
+                  "x": 0,
+                  "y": 18
+                },
+                "blur": 36
+              },
+              "layout": "vertical",
+              "padding": 12,
+              "justifyContent": "end",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "J2sdM",
+                  "name": "AI Tag",
+                  "fill": "#FFFFFFD9",
+                  "cornerRadius": 999,
+                  "gap": 5,
+                  "padding": [
+                    6,
+                    11
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "YsCOH",
+                      "name": "Sparkle",
+                      "width": 12,
+                      "height": 12,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "#2B5CE6"
+                    },
+                    {
+                      "type": "text",
+                      "id": "p0Z9Eo",
+                      "name": "AI Tag Label",
+                      "fill": "#3F3D37",
+                      "content": "AI 试穿图",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "WR44W",
+          "name": "Outfit Info",
+          "width": "fill_container",
+          "padding": [
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "SyMav",
+              "name": "Outfit Meta",
+              "layout": "vertical",
+              "gap": 4,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "JEikj",
+                  "name": "Scene",
+                  "fill": "#7A786F",
+                  "content": "约会 · 温柔气质",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.5
+                },
+                {
+                  "type": "text",
+                  "id": "nMNrL",
+                  "name": "Outfit Name",
+                  "fill": "#171717",
+                  "content": "奶杏针织裙 × 珍白乐福鞋",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jan0U",
+              "name": "Save Button",
+              "width": 40,
+              "height": 40,
+              "fill": "#FFFFFF",
+              "cornerRadius": 20,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "ZBeFc",
+                  "name": "Bookmark",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "bookmark",
+                  "library": "lucide",
+                  "fill": "#6B6960"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HphZ0",
+          "name": "Items Section",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "padding": [
+            12,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "s7Asb0",
+              "name": "Items Header",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "XXI2I",
+                  "name": "Items Title",
+                  "fill": "#5B5951",
+                  "content": "搭配单品",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600",
+                  "letterSpacing": 1
+                },
+                {
+                  "type": "text",
+                  "id": "o21UQ",
+                  "name": "Items Hint",
+                  "fill": "#8F8D84",
+                  "content": "点击替换",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 11,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "cNEzu",
+              "name": "Item Row",
+              "width": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "o9LMM",
+                  "name": "Item 上衣",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "J9n1im",
+                      "name": "Item Img 上衣",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "jabarib",
+                        "link": "https://unsplash.com/@jabarib",
+                        "author": "Jabari Timothy"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1642349920892-02d9b6aaf48f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDIxNDB8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "liPx7",
+                      "name": "Item Label Wrap 上衣",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "giMzA",
+                          "name": "Item Label 上衣",
+                          "fill": "#5B5951",
+                          "content": "连衣裙",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "B1b5uQ",
+                  "name": "Item 裤子",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "tjTXJ",
+                      "name": "Item Img 裤子",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "houcinencibphotography",
+                        "link": "https://unsplash.com/@houcinencibphotography",
+                        "author": "Houcine Ncib"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1555620366-c4c9d9cbb8e8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDIxNDB8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "kdB76",
+                      "name": "Item Label Wrap 裤子",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "xQd1M",
+                          "name": "Item Label 裤子",
+                          "fill": "#5B5951",
+                          "content": "外套",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Cr3h6",
+                  "name": "Item 鞋",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "gy6T3",
+                      "name": "Item Img 鞋",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "orozco",
+                        "link": "https://unsplash.com/@orozco",
+                        "author": "Alejandro Orozco"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1588718862567-37662529f6d5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDIxNDB8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "m3z7oZ",
+                      "name": "Item Label Wrap 鞋",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "UF7EH",
+                          "name": "Item Label 鞋",
+                          "fill": "#5B5951",
+                          "content": "鞋",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cYU0b",
+                  "name": "Item 包",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": 84,
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 16,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "uzbTP",
+                      "name": "Item Img 包",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "supaslim",
+                        "link": "https://unsplash.com/@supaslim",
+                        "author": "Oyemike Princewill"
+                      },
+                      "width": "fill_container",
+                      "height": 54,
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1634316656469-03591fb7ef0d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDIxNDB8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "a6pVmb",
+                      "name": "Item Label Wrap 包",
+                      "width": "fill_container",
+                      "height": 30,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "F4ICn",
+                          "name": "Item Label 包",
+                          "fill": "#5B5951",
+                          "content": "包",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "a6MwGm",
+          "name": "Actions",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            14,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "onUKq",
+              "name": "Wear Button",
+              "width": "fill_container",
+              "height": 52,
+              "fill": "#171717",
+              "cornerRadius": 26,
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#17171740",
+                "offset": {
+                  "x": 0,
+                  "y": 10
+                },
+                "blur": 24
+              },
+              "gap": 8,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "nGb4h",
+                  "name": "Check",
+                  "width": 17,
+                  "height": 17,
+                  "icon": "check",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "text",
+                  "id": "ebpEy",
+                  "name": "Wear Label",
+                  "fill": "#FFFFFF",
+                  "content": "就穿这套",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 16,
+                  "fontWeight": "600",
+                  "letterSpacing": 2
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "C6oXS",
+              "name": "Shuffle Row",
+              "width": "fill_container",
+              "gap": 6,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "f14w9k",
+                  "name": "Refresh",
+                  "width": 13,
+                  "height": 13,
+                  "icon": "refresh-cw",
+                  "library": "lucide",
+                  "fill": "#6B6960"
+                },
+                {
+                  "type": "text",
+                  "id": "aYjde",
+                  "name": "Shuffle Label",
+                  "fill": "#6B6960",
+                  "content": "换一套",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "u3cYcC",
+          "name": "Tab Bar",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            10,
+            0,
+            6,
+            0
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "YDsFE",
+              "name": "Tabs",
+              "width": "fill_container",
+              "gap": 72,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Onwgm",
+                  "name": "Tab Outfits",
+                  "width": 72,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "S1qFRl",
+                      "name": "Tab Outfits Icon",
+                      "width": 22,
+                      "height": 22,
+                      "icon": "shirt",
+                      "library": "lucide",
+                      "fill": "#2B5CE6"
+                    },
+                    {
+                      "type": "text",
+                      "id": "b3Txj4",
+                      "name": "Tab Outfits Label",
+                      "fill": "#2B5CE6",
+                      "content": "穿搭",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "MxofR",
+                  "name": "Tab Wardrobe",
+                  "width": 72,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "W0Nxxz",
+                      "name": "Tab Wardrobe Icon",
+                      "width": 22,
+                      "height": 22,
+                      "icon": "layout-grid",
+                      "library": "lucide",
+                      "fill": "#9B998F"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ppsFl",
+                      "name": "Tab Wardrobe Label",
+                      "fill": "#9B998F",
+                      "content": "衣橱",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "I13Tz",
+              "name": "Indicator Wrap",
+              "width": "fill_container",
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "t9YsaK",
+                  "name": "Home Indicator",
+                  "width": 134,
+                  "height": 5,
+                  "fill": "#171717",
+                  "cornerRadius": 3
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "eXPvx",
+      "x": 2250,
+      "y": 0,
+      "name": "4. 衣橱",
+      "clip": true,
+      "width": 390,
+      "height": 844,
+      "fill": "#F6F5F1",
+      "layout": "vertical",
+      "children": [
+        {
+          "type": "frame",
+          "id": "x1vmc",
+          "name": "Status Bar",
+          "width": "fill_container",
+          "padding": [
+            12,
+            24,
+            0,
+            24
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "TWt1d",
+              "name": "Time",
+              "fill": "#171717",
+              "content": "9:41",
+              "fontFamily": "Inter",
+              "fontSize": 15,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "y13Kj3",
+              "name": "Status Icons",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "JjFcZ",
+                  "name": "Signal",
+                  "width": 15,
+                  "height": 15,
+                  "icon": "signal",
+                  "library": "lucide",
+                  "fill": "#171717"
+                },
+                {
+                  "type": "icon",
+                  "id": "sTlB3",
+                  "name": "Wifi",
+                  "width": 15,
+                  "height": 15,
+                  "icon": "wifi",
+                  "library": "lucide",
+                  "fill": "#171717"
+                },
+                {
+                  "type": "icon",
+                  "id": "QM65t",
+                  "name": "Battery",
+                  "width": 22,
+                  "height": 15,
+                  "icon": "battery-full",
+                  "library": "lucide",
+                  "fill": "#171717"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YgLoL",
+          "name": "Header",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "padding": [
+            14,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "u2KXr",
+              "name": "Title Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "WBRKL",
+                  "name": "Title",
+                  "fill": "#171717",
+                  "content": "我的衣橱",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 27,
+                  "fontWeight": "700",
+                  "letterSpacing": -0.3
+                },
+                {
+                  "type": "frame",
+                  "id": "xJ7jq",
+                  "name": "Add Button",
+                  "width": 36,
+                  "height": 36,
+                  "fill": "#171717",
+                  "cornerRadius": 18,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "D2TW0",
+                      "name": "Plus",
+                      "width": 17,
+                      "height": 17,
+                      "icon": "plus",
+                      "library": "lucide",
+                      "fill": "#FFFFFF"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "c5o4EB",
+              "name": "Stats",
+              "fill": "#7A786F",
+              "content": "42 件单品 · 6 个分类",
+              "fontFamily": "Noto Sans SC",
+              "fontSize": 13,
+              "fontWeight": "500"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "xUayO",
+          "name": "Chips",
+          "width": "fill_container",
+          "gap": 8,
+          "padding": [
+            14,
+            24,
+            0,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "sA0qn",
+              "name": "Chip 全部",
+              "fill": "#171717",
+              "cornerRadius": 999,
+              "padding": [
+                7,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Buzin",
+                  "name": "Chip Label 全部",
+                  "fill": "#FFFFFF",
+                  "content": "全部",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nuCDh",
+              "name": "Chip 上衣",
+              "fill": "#FFFFFF",
+              "cornerRadius": 999,
+              "padding": [
+                7,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "P8xdQL",
+                  "name": "Chip Label 上衣",
+                  "fill": "#5B5951",
+                  "content": "上衣",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "O07WD5",
+              "name": "Chip 裤子",
+              "fill": "#FFFFFF",
+              "cornerRadius": 999,
+              "padding": [
+                7,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "nkUi9",
+                  "name": "Chip Label 裤子",
+                  "fill": "#5B5951",
+                  "content": "裤子",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "vQTu5",
+              "name": "Chip 裙装",
+              "fill": "#FFFFFF",
+              "cornerRadius": 999,
+              "padding": [
+                7,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "BRH58",
+                  "name": "Chip Label 裙装",
+                  "fill": "#5B5951",
+                  "content": "裙装",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "c6N5z",
+              "name": "Chip 鞋履",
+              "fill": "#FFFFFF",
+              "cornerRadius": 999,
+              "padding": [
+                7,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "AKJxk",
+                  "name": "Chip Label 鞋履",
+                  "fill": "#5B5951",
+                  "content": "鞋履",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "s2lBUt",
+              "name": "Chip 包袋",
+              "fill": "#FFFFFF",
+              "cornerRadius": 999,
+              "padding": [
+                7,
+                14
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "WcYEn",
+                  "name": "Chip Label 包袋",
+                  "fill": "#5B5951",
+                  "content": "包袋",
+                  "fontFamily": "Noto Sans SC",
+                  "fontSize": 12,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Fmpqc",
+          "name": "Grid",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            14,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "bDvvY",
+              "name": "Row 1",
+              "width": "fill_container",
+              "height": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "L8uBq",
+                  "name": "Item 白衬衫",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "AFiog",
+                      "name": "Img 白衬衫",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "djazz356",
+                        "link": "https://unsplash.com/@djazz356",
+                        "author": "akhmad jazuli"
+                      },
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1705738482886-65135d623624?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDMwMDZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "DwUO1",
+                      "name": "Label Wrap 白衬衫",
+                      "width": "fill_container",
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "sVpeJ",
+                          "name": "Label 白衬衫",
+                          "fill": "#5B5951",
+                          "content": "白衬衫",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "C1Alr",
+                  "name": "Item 针织开衫",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "TLEmx",
+                      "name": "Img 针织开衫",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "valentinlacoste",
+                        "link": "https://unsplash.com/@valentinlacoste",
+                        "author": "Valentin Lacoste"
+                      },
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1568125789396-c17c53160be5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDMwMDZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Cj9Ts",
+                      "name": "Label Wrap 针织开衫",
+                      "width": "fill_container",
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ME0h2",
+                          "name": "Label 针织开衫",
+                          "fill": "#5B5951",
+                          "content": "针织开衫",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "H4jjY",
+                  "name": "Item 牛仔外套",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "m7KOo",
+                      "name": "Img 牛仔外套",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "helenalopesph",
+                        "link": "https://unsplash.com/@helenalopesph",
+                        "author": "Helena Lopes"
+                      },
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1786905015080-eeeaf6e14e7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDMwMDV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Z2edq",
+                      "name": "Label Wrap 牛仔外套",
+                      "width": "fill_container",
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ERIj7",
+                          "name": "Label 牛仔外套",
+                          "fill": "#5B5951",
+                          "content": "牛仔外套",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "TRdTC",
+              "name": "Row 2",
+              "width": "fill_container",
+              "height": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ZHiEh",
+                  "name": "Item 西装裤",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "TJHo5",
+                      "name": "Img 西装裤",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "guille_velard",
+                        "link": "https://unsplash.com/@guille_velard",
+                        "author": "Guillermo Velarde"
+                      },
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1725292651388-fdb801331acb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDMwMDZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Z6IqE",
+                      "name": "Label Wrap 西装裤",
+                      "width": "fill_container",
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ZBR8Y",
+                          "name": "Label 西装裤",
+                          "fill": "#5B5951",
+                          "content": "西装裤",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cvibq",
+                  "name": "Item 牛仔裤",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "LRyLN",
+                      "name": "Img 牛仔裤",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "blueeyeaa",
+                        "link": "https://unsplash.com/@blueeyeaa",
+                        "author": "TuanAnh Blue"
+                      },
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1714143136361-386dae5672e2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDMwMDZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "l9xFzJ",
+                      "name": "Label Wrap 牛仔裤",
+                      "width": "fill_container",
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "p9EaQ",
+                          "name": "Label 牛仔裤",
+                          "fill": "#5B5951",
+                          "content": "牛仔裤",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "bENB5",
+                  "name": "Item 针织连衣裙",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "QnHQg",
+                      "name": "Img 针织连衣裙",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "byharryle",
+                        "link": "https://unsplash.com/@byharryle",
+                        "author": "Harry Le"
+                      },
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1777888511107-7e06dd1808dd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDMwMDV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "txPIN",
+                      "name": "Label Wrap 针织连衣裙",
+                      "width": "fill_container",
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "DRQz2",
+                          "name": "Label 针织连衣裙",
+                          "fill": "#5B5951",
+                          "content": "针织连衣裙",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "znrew",
+              "name": "Row 3",
+              "width": "fill_container",
+              "height": "fill_container",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "gNVzE",
+                  "name": "Item 小白鞋",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "iHCmF",
+                      "name": "Img 小白鞋",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "bearwashere",
+                        "link": "https://unsplash.com/@bearwashere",
+                        "author": "Bear Bear"
+                      },
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1612905468542-585ca599afbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDMwMDZ8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "JBfBE",
+                      "name": "Label Wrap 小白鞋",
+                      "width": "fill_container",
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "tmiB6",
+                          "name": "Label 小白鞋",
+                          "fill": "#5B5951",
+                          "content": "小白鞋",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "RVN7r",
+                  "name": "Item 乐福鞋",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "jcSwr",
+                      "name": "Img 乐福鞋",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "hieptltb97",
+                        "link": "https://unsplash.com/@hieptltb97",
+                        "author": "Nguyễn Hiệp"
+                      },
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1670333637547-b919d8d8c9b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDMwMDV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "w0PYPn",
+                      "name": "Label Wrap 乐福鞋",
+                      "width": "fill_container",
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "CoL42",
+                          "name": "Label 乐福鞋",
+                          "fill": "#5B5951",
+                          "content": "乐福鞋",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "LGuoR",
+                  "name": "Item 托特包",
+                  "clip": true,
+                  "width": "fill_container",
+                  "height": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 14,
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "XfcDI",
+                      "name": "Img 托特包",
+                      "metadata": {
+                        "type": "unsplash",
+                        "username": "pramodtiwari",
+                        "link": "https://unsplash.com/@pramodtiwari",
+                        "author": "Pramod Tiwari"
+                      },
+                      "width": "fill_container",
+                      "height": "fill_container",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1730039340143-f4246d26f10e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTMwMDMwMDV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      }
+                    },
+                    {
+                      "type": "frame",
+                      "id": "E9zFZB",
+                      "name": "Label Wrap 托特包",
+                      "width": "fill_container",
+                      "padding": [
+                        6,
+                        8
+                      ],
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "iykWi",
+                          "name": "Label 托特包",
+                          "fill": "#5B5951",
+                          "content": "托特包",
+                          "fontFamily": "Noto Sans SC",
+                          "fontSize": 11,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Zz4Ji",
+          "name": "Tab Bar",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            10,
+            0,
+            6,
+            0
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "tlM0F",
+              "name": "Tabs",
+              "width": "fill_container",
+              "gap": 72,
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Rg7AF",
+                  "name": "Tab Outfits",
+                  "width": 72,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "Zd5j0",
+                      "name": "Tab Outfits Icon",
+                      "width": 22,
+                      "height": 22,
+                      "icon": "shirt",
+                      "library": "lucide",
+                      "fill": "#9B998F"
+                    },
+                    {
+                      "type": "text",
+                      "id": "h1tyNn",
+                      "name": "Tab Outfits Label",
+                      "fill": "#9B998F",
+                      "content": "穿搭",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "ZruWX",
+                  "name": "Tab Wardrobe",
+                  "width": 72,
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "qE8II",
+                      "name": "Tab Wardrobe Icon",
+                      "width": 22,
+                      "height": 22,
+                      "icon": "layout-grid",
+                      "library": "lucide",
+                      "fill": "#2B5CE6"
+                    },
+                    {
+                      "type": "text",
+                      "id": "r9nTyw",
+                      "name": "Tab Wardrobe Label",
+                      "fill": "#2B5CE6",
+                      "content": "衣橱",
+                      "fontFamily": "Noto Sans SC",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "kFWEz",
+              "name": "Indicator Wrap",
+              "width": "fill_container",
+              "justifyContent": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "xxIRo",
+                  "name": "Home Indicator",
+                  "width": 134,
+                  "height": 5,
+                  "fill": "#171717",
+                  "cornerRadius": 3
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "fileToken": "a20c011a-1145-46dc-be4a-2c55aedd52b4"
+}
