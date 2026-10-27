@@ -4,7 +4,7 @@
 
 ## 当前状态（2026-10-27，随每阶段刷新）
 
-**执行到**：阶段2 核心闭环（2026-10-28 凌晨 SDD 双流）——OIDC Provider 全链落地（op.Storage GORM 适配/授权码+PKCE S256/Discovery/JWKS/刷新轮换+重放撤族/撤销端点）+ IAM Cookie 会话四端点 + iam-web 独立门户（登录/注册/callback，与 9117 真实端口 E2E 三态回环实证）+ 阶段2 十三表模型迁移（实库 20 表）。ADR-005 落锁门槛通过（go-jose v4.1.4 主线）。剩：MFA/找回/第三方登录/iam-manage-web/邮件域真投递；生产前置两项见跟进。
+**执行到**：本会话全部队列完成（2026-10-28）——阶段2 全收尾（MFA TOTP+恢复码+换因子确认才撤旧/找回改密换绑/SMTP 投递/两段登录）+ 阶段3（platform_* 八表权威+管理 API+首超管 CLI+iam-manage-web 真数据接线+生产前置 CORS/令牌态复检，真机治理面联调全通）+ 阶段4（server-im chat_* 十五表+ChatOrgService、chat-desktop OIDC 双通道、iOS AccountKit OIDC+PKCE、跨仓 file: 矩阵 6/6 绿）+ 阶段5 材料（drill 只读演练工具 dev 旧库实跑、retirement-assessment C1-C23 证据矩阵）。MFA 并发 bug 发现并修复（84032f2）。剩余=用户拍板项（ADR-008 四项/推送/生产动作）与如实登记的未实测面（真机 E2E/App 层接线/发布打包）。
 
 | 阶段 | 状态 | 产出/证据 |
 |---|---|---|
