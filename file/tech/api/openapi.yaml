@@ -1,0 +1,4603 @@
+openapi: 3.0.3
+info:
+  title: PPB File Platform API
+  version: 0.1.0-design
+  description: 拟实施v2控制面契约；不是已上线API。包含个人BFF、服务间和管理面，部署须分离暴露范围。大文件字节通过后端生成的对象存储URL传输。媒体接口P0.1，HLS包管理API留待P1完整定义。所有修改请求带Idempotency-Key；Cookie修改请求另需CSRF。
+servers:
+- url: https://file.example.invalid
+  description: 仅示例；internal路径不得暴露公网
+paths:
+  /api/v2/file/files:
+    get:
+      operationId: fileV2001
+      summary: 列个人文件（file_console）
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/FilePage'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/uploads:
+    post:
+      operationId: fileV2002
+      summary: 申请上传，BFF派生应用/主体/额度
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitUpload'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Upload'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+    get:
+      operationId: fileV2UploadList
+      summary: 列个人上传队列与历史会话
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - request_id
+                - data
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/UploadPage'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/uploads/{upload_biz_key}:
+    get:
+      operationId: fileV2003
+      summary: 上传会话状态
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Upload'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/uploads/{upload_biz_key}/part-urls:
+    post:
+      operationId: fileV2004
+      summary: 按需签发/续签分片URL
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignParts'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/SignedParts'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/uploads/{upload_biz_key}/parts:
+    get:
+      operationId: fileV2005
+      summary: 查询后端已上传分片
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/PartPage'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/uploads/{upload_biz_key}/complete:
+    post:
+      operationId: fileV2006
+      summary: 完成上传，幂等返回同资源
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Complete'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Upload'
+                required:
+                - code
+                - request_id
+                - data
+        '202':
+          description: 处理中，轮询上传会话
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Upload'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/uploads/{upload_biz_key}/cancel:
+    post:
+      operationId: fileV2007
+      summary: 取消并异步Abort/清理
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Empty'
+      responses:
+        '202':
+          description: 已受理，按状态接口查询
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Accepted'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/files/{file_biz_key}:
+    get:
+      operationId: fileV2008
+      summary: 个人文件元数据
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: file_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/File'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+    patch:
+      operationId: fileV2009
+      summary: 重命名，内容不变
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: file_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Rename'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/File'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/files/{file_biz_key}/access-grants:
+    post:
+      operationId: fileV2010
+      summary: 个人BFF鉴权后签发访问
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: file_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Access'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/AccessGrant'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/files/{file_biz_key}/recycle:
+    post:
+      operationId: fileV2011
+      summary: 回收个人文件，仍保护/计费
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: file_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reason'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/File'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/recycle-bin:
+    get:
+      operationId: fileV2012
+      summary: 个人回收站
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/FilePage'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/files/{file_biz_key}/restore:
+    post:
+      operationId: fileV2013
+      summary: 恢复个人文件
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: file_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reason'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/File'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/files/{file_biz_key}/purge:
+    post:
+      operationId: fileV2014
+      summary: 彻底清除申请，保护引用冲突则409
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: file_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reason'
+      responses:
+        '202':
+          description: 已受理，按状态接口查询
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Accepted'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/quota:
+    get:
+      operationId: fileV2015
+      summary: 个人容量与预留
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Quota'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/uploads:
+    post:
+      operationId: fileV2016
+      summary: 业务BFF可信创建上传
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InternalInitUpload'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Upload'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/uploads/{upload_biz_key}:
+    get:
+      operationId: fileV2017
+      summary: 业务上传会话状态
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Upload'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/uploads/{upload_biz_key}/part-urls:
+    post:
+      operationId: fileV2018
+      summary: 业务上传分片签名
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignParts'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/SignedParts'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/uploads/{upload_biz_key}/parts:
+    get:
+      operationId: fileV2019
+      summary: 业务上传断点恢复
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/PartPage'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/uploads/{upload_biz_key}/complete:
+    post:
+      operationId: fileV2020
+      summary: 业务上传完成
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Complete'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Upload'
+                required:
+                - code
+                - request_id
+                - data
+        '202':
+          description: 处理中，轮询上传会话
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Upload'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/uploads/{upload_biz_key}/cancel:
+    post:
+      operationId: fileV2021
+      summary: 业务取消上传
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Empty'
+      responses:
+        '202':
+          description: 已受理，按状态接口查询
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Accepted'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/files/batch-metadata:
+    post:
+      operationId: fileV2022
+      summary: 业务范围内批量元数据
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchMeta'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/BatchResult'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/references/prepare:
+    post:
+      operationId: fileV2023
+      summary: 准备引用，锁定保护
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrepareRef'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Reference'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/references/{reference_key}:
+    put:
+      operationId: fileV2024
+      summary: 提交、回收保护、恢复或终态释放
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: reference_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReferenceMutation'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Reference'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+    get:
+      operationId: fileV2025
+      summary: 引用状态查询，应用作用域限定
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: reference_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: application_biz_key
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Reference'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/access-grants:
+    post:
+      operationId: fileV2026
+      summary: 业务ACL通过后申请短期访问
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InternalAccess'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/AccessGrant'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/tasks/{task_biz_key}:
+    get:
+      operationId: fileV2027
+      summary: 查询异步操作任务
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: task_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Task'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/overview:
+    get:
+      operationId: fileV2028
+      summary: 应用范围存储总览
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: application_biz_key
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Overview'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/applications:
+    get:
+      operationId: fileV2029
+      summary: 列准入应用
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/AppPage'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/applications/{application_biz_key}:
+    put:
+      operationId: fileV2030
+      summary: 配置已在IAM注册的应用政策
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: application_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Application'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Application'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/storage-backends:
+    get:
+      operationId: fileV2031
+      summary: 存储实例列表
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/BackendPage'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+    post:
+      operationId: fileV2032
+      summary: 添加存储实例（密钥引用）
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackendWrite'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Backend'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/storage-backends/{storage_backend_biz_key}:
+    patch:
+      operationId: fileV2033
+      summary: 更新存储实例
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: storage_backend_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackendWrite'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Backend'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/storage-backends/{storage_backend_biz_key}/test:
+    post:
+      operationId: fileV2034
+      summary: 存储连通与能力探测任务
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: storage_backend_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reason'
+      responses:
+        '202':
+          description: 已受理，按状态接口查询
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Accepted'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/files:
+    get:
+      operationId: fileV2035
+      summary: 按应用查询文件元数据
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: application_biz_key
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/FilePage'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/files/{file_biz_key}/restriction:
+    patch:
+      operationId: fileV2036
+      summary: 全局下架或解除，原因与版本必填
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: file_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Restrict'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/File'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/quotas/{quota_biz_key}:
+    patch:
+      operationId: fileV2QuotaPatch
+      summary: 调整技术容量，NULL默认/零禁止
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: quota_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetQuota'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - request_id
+                - data
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Quota'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+    get:
+      operationId: fileV2QuotaRead
+      summary: 读取容量账户及并发版本
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: quota_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - request_id
+                - data
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Quota'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/tasks:
+    get:
+      operationId: fileV2038
+      summary: 治理任务列表
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: application_biz_key
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/TaskPage'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/tasks/{task_biz_key}:
+    get:
+      operationId: fileV2039
+      summary: 治理任务状态
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: task_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Task'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/tasks/{task_biz_key}/retry:
+    post:
+      operationId: fileV2040
+      summary: 重试可恢复失败任务
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: task_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reason'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Task'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/reconciliation-jobs:
+    post:
+      operationId: fileV2041
+      summary: 发起应用内引用/容量/对象核对
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationScope'
+      responses:
+        '202':
+          description: 已受理，按状态接口查询
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/Accepted'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/manage/file/audit-logs:
+    get:
+      operationId: fileV2042
+      summary: 应用范围审计
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 平台治理
+      security:
+      - adminSession: []
+      parameters:
+      - name: cursor
+        in: query
+        schema:
+          type: string
+      - name: limit
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      - name: application_biz_key
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/AuditPage'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/media/v1/jobs:
+    post:
+      operationId: fileV2043
+      summary: 提交媒体处理（P0.1）
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaCreate'
+      responses:
+        '202':
+          description: 已受理，按状态接口查询
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/MediaJob'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/media/v1/jobs/{media_job_biz_key}:
+    get:
+      operationId: fileV2044
+      summary: 查询媒体处理及产物
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: media_job_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/MediaJob'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/media/v1/jobs/{media_job_biz_key}/cancel:
+    post:
+      operationId: fileV2045
+      summary: 请求取消媒体作业
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: media_job_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reason'
+      responses:
+        '202':
+          description: 已受理，按状态接口查询
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                    description: 追踪ID
+                  data:
+                    $ref: '#/components/schemas/MediaJob'
+                required:
+                - code
+                - request_id
+                - data
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /api/v2/file/uploads/{upload_biz_key}/direct-url:
+    post:
+      operationId: fileV2RenewDirect
+      summary: 续签未完成单次直传URL，重验会话与政策
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 个人工作台
+      security:
+      - consoleSession: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: X-CSRF-Token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Empty'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - request_id
+                - data
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Upload'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+  /internal/file/v2/uploads/{upload_biz_key}/direct-url:
+    post:
+      operationId: fileV2InternalRenewDirect
+      summary: 可信服务续签单次直传URL
+      description: 授权、幂等与生命周期语义见接口契约.md。
+      tags:
+      - 服务间
+      security:
+      - serviceToken: []
+      parameters:
+      - name: upload_biz_key
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      - name: Idempotency-Key
+        in: header
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 128
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Empty'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - code
+                - request_id
+                - data
+                properties:
+                  code:
+                    type: string
+                    enum:
+                    - FILE-0000
+                  request_id:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/Upload'
+        '400':
+          $ref: '#/components/responses/Error400'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          $ref: '#/components/responses/Error409'
+        '410':
+          $ref: '#/components/responses/Error410'
+        '413':
+          $ref: '#/components/responses/Error413'
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+        '503':
+          $ref: '#/components/responses/Error503'
+components:
+  securitySchemes:
+    consoleSession:
+      type: apiKey
+      in: cookie
+      name: file_console_session
+      description: 个人BFF会话，file_console专用
+    adminSession:
+      type: apiKey
+      in: cookie
+      name: file_admin_session
+      description: 平台管理会话与数据范围鉴权
+    serviceToken:
+      type: http
+      scheme: bearer
+      bearerFormat: service access token
+      description: 限定audience/client/application/scope；可叠加mTLS
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          description: FILE错误码
+        message:
+          type: string
+          description: 可显示的错误
+        request_id:
+          type: string
+          description: 追踪ID
+      required:
+      - code
+      - message
+      - request_id
+    Empty:
+      type: object
+      additionalProperties: false
+      properties: {}
+    File:
+      type: object
+      additionalProperties: false
+      properties:
+        file_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        original_name:
+          type: string
+          description: 名称
+        size_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 实际字节
+        detected_mime:
+          type: string
+          description: 真实类型
+        file_status:
+          type: string
+          description: 状态
+          enum:
+          - verifying
+          - ready
+          - recycled
+          - purge_pending
+          - purged
+          - failed
+        restriction_status:
+          type: string
+          description: 平台限制
+          enum:
+          - normal
+          - blocked
+        create_time:
+          type: string
+          description: RFC3339
+          format: date-time
+        update_time:
+          type: string
+          description: RFC3339
+          format: date-time
+        revision_number:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 重命名与状态更新CAS版本
+      required:
+      - file_biz_key
+      - original_name
+      - size_bytes
+      - file_status
+      - restriction_status
+      - revision_number
+    FilePage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        next_cursor:
+          type: string
+          description: 不透明游标，空表示结束
+      required:
+      - items
+      - next_cursor
+    Quota:
+      type: object
+      additionalProperties: false
+      properties:
+        used_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 包含回收站
+        reserved_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 预留
+        recycled_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: used子集
+        quota_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 生效上限，零禁止
+        quota_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        revision_number:
+          type: integer
+          minimum: 1
+      required:
+      - used_bytes
+      - reserved_bytes
+      - recycled_bytes
+      - quota_bytes
+      - quota_biz_key
+      - revision_number
+    InitUpload:
+      type: object
+      additionalProperties: false
+      properties:
+        original_name:
+          type: string
+          description: 文件名
+          minLength: 1
+          maxLength: 256
+        declared_bytes:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 声明大小，完成再验
+        declared_mime:
+          type: string
+          description: 参考类型
+          maxLength: 128
+        upload_mode:
+          type: string
+          description: auto由政策决定
+          enum:
+          - auto
+          - direct_put
+          - multipart
+      required:
+      - original_name
+      - declared_bytes
+      - upload_mode
+    InternalInitUpload:
+      type: object
+      additionalProperties: false
+      properties:
+        original_name:
+          type: string
+          description: 文件名
+          minLength: 1
+          maxLength: 256
+        declared_bytes:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 声明大小，完成再验
+        declared_mime:
+          type: string
+          description: 参考类型
+          maxLength: 128
+        upload_mode:
+          type: string
+          description: auto由政策决定
+          enum:
+          - auto
+          - direct_put
+          - multipart
+        application_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        uploader_user_id:
+          type: string
+          description: 雪花ID十进制字符串
+          pattern: ^[0-9]+$
+        quota_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        workspace_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+      required:
+      - original_name
+      - declared_bytes
+      - upload_mode
+      - application_biz_key
+      - quota_biz_key
+    SignedPart:
+      type: object
+      additionalProperties: false
+      properties:
+        part_number:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 从1开始
+        upload_url:
+          type: string
+          description: 短期敏感URL，不持久化
+          format: uri
+        required_headers:
+          type: object
+          additionalProperties:
+            type: string
+        expire_time:
+          type: string
+          description: URL截止
+          format: date-time
+      required:
+      - part_number
+      - upload_url
+      - required_headers
+      - expire_time
+    Upload:
+      type: object
+      additionalProperties: false
+      properties:
+        upload_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        upload_mode:
+          type: string
+          description: 模式
+          enum:
+          - direct_put
+          - multipart
+        upload_status:
+          type: string
+          description: 会话状态
+          enum:
+          - ongoing
+          - completing
+          - done
+          - aborting
+          - aborted
+          - expired
+          - failed
+        part_size:
+          type: integer
+          format: int64
+          minimum: 0
+          description: direct为0
+        part_count:
+          type: integer
+          format: int64
+          minimum: 0
+          description: direct为0
+        expire_time:
+          type: string
+          description: 会话截止
+          format: date-time
+        file_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        direct_upload_url:
+          type: string
+          description: direct模式短期PUT URL，其他模式省略
+          format: uri
+        required_headers:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+      - upload_biz_key
+      - upload_mode
+      - upload_status
+      - part_size
+      - part_count
+      - expire_time
+    SignParts:
+      type: object
+      additionalProperties: false
+      properties:
+        part_numbers:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: integer
+            minimum: 1
+      required:
+      - part_numbers
+    SignedParts:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SignedPart'
+      required:
+      - items
+    Part:
+      type: object
+      additionalProperties: false
+      properties:
+        part_number:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 分片号
+        size_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 后端实测
+        provider_etag:
+          type: string
+          description: 原样ETag
+        checksum_value:
+          type: string
+          description: 后端确认校验值
+      required:
+      - part_number
+      - size_bytes
+      - provider_etag
+    PartPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Part'
+        next_cursor:
+          type: string
+          description: 下页游标
+      required:
+      - items
+      - next_cursor
+    Complete:
+      type: object
+      additionalProperties: false
+      properties:
+        parts:
+          type: array
+          maxItems: 10000
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              part_number:
+                type: integer
+                format: int64
+                minimum: 1
+                description: 分片号
+              provider_etag:
+                type: string
+                description: 原样ETag
+            required:
+            - part_number
+            - provider_etag
+        checksum_algorithm:
+          type: string
+          description: 可选后端支持算法
+        checksum_type:
+          type: string
+          description: 校验类型
+          enum:
+          - full_object
+          - composite
+        checksum_value:
+          type: string
+          description: 可选校验值
+    Accepted:
+      type: object
+      additionalProperties: false
+      properties:
+        task_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        resource_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        operation_status:
+          type: string
+          description: 异步状态
+          enum:
+          - queued
+          - running
+          - done
+      required:
+      - task_biz_key
+      - operation_status
+    Rename:
+      type: object
+      additionalProperties: false
+      properties:
+        original_name:
+          type: string
+          description: 新名称
+          minLength: 1
+          maxLength: 256
+        revision_number:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 已读版本
+      required:
+      - original_name
+      - revision_number
+    Access:
+      type: object
+      additionalProperties: false
+      properties:
+        action_code:
+          type: string
+          description: 访问动作
+          enum:
+          - download
+          - preview
+          - play
+        variant_code:
+          type: string
+          description: 受支持输出规格
+        ttl_seconds:
+          type: integer
+          minimum: 1
+          maximum: 300
+          description: 不能超过应用政策
+      required:
+      - action_code
+    InternalAccess:
+      type: object
+      additionalProperties: false
+      properties:
+        action_code:
+          type: string
+          description: 访问动作
+          enum:
+          - download
+          - preview
+          - play
+        variant_code:
+          type: string
+          description: 受支持输出规格
+        ttl_seconds:
+          type: integer
+          minimum: 1
+          maximum: 300
+          description: 不能超过应用政策
+        application_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        file_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        reference_key:
+          type: string
+          description: active引用键
+          maxLength: 128
+        actor_subject:
+          type: string
+          description: 业务校验后的审计主体
+      required:
+      - application_biz_key
+      - file_biz_key
+      - reference_key
+      - actor_subject
+      - action_code
+    AccessGrant:
+      type: object
+      additionalProperties: false
+      properties:
+        access_url:
+          type: string
+          description: 敏感短期URL
+          format: uri
+        expire_time:
+          type: string
+          description: RFC3339
+          format: date-time
+        required_headers:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+      - access_url
+      - expire_time
+    Reference:
+      type: object
+      additionalProperties: false
+      properties:
+        application_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        reference_key:
+          type: string
+          description: 同应用稳定引用键，不重用
+          maxLength: 128
+        file_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        reference_type:
+          type: string
+          description: client白名单业务类型
+          maxLength: 64
+        reference_version:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 业务版本
+        reference_status:
+          type: string
+          description: 保护状态
+          enum:
+          - prepared
+          - active
+          - recycle
+          - processing
+          - released
+        reference_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+      required:
+      - application_biz_key
+      - reference_key
+      - file_biz_key
+      - reference_type
+      - reference_version
+      - reference_status
+      - reference_biz_key
+    PrepareRef:
+      type: object
+      additionalProperties: false
+      properties:
+        application_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        reference_key:
+          type: string
+          description: 永久映射同一file
+          maxLength: 128
+        file_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        reference_type:
+          type: string
+          description: 白名单引用类别
+          maxLength: 64
+        reference_version:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 递增版本
+      required:
+      - application_biz_key
+      - reference_key
+      - file_biz_key
+      - reference_type
+      - reference_version
+    ReferenceMutation:
+      type: object
+      additionalProperties: false
+      properties:
+        application_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        reference_key:
+          type: string
+          description: 永久映射同一file
+          maxLength: 128
+        file_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        reference_type:
+          type: string
+          description: 白名单引用类别
+          maxLength: 64
+        reference_version:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 递增版本
+        target_status:
+          type: string
+          description: prepared可commit active；active/recycle互转；released终态
+          enum:
+          - active
+          - recycle
+          - released
+      required:
+      - application_biz_key
+      - reference_key
+      - file_biz_key
+      - reference_type
+      - reference_version
+      - target_status
+    BatchMeta:
+      type: object
+      additionalProperties: false
+      properties:
+        application_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        file_biz_keys:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: string
+            description: 不透明稳定业务键，兼容存量格式
+            minLength: 1
+            maxLength: 64
+      required:
+      - application_biz_key
+      - file_biz_keys
+    BatchResult:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        unavailable_keys:
+          type: array
+          items:
+            type: string
+            description: 不透明稳定业务键，兼容存量格式
+            minLength: 1
+            maxLength: 64
+      required:
+      - items
+      - unavailable_keys
+    Application:
+      type: object
+      additionalProperties: false
+      properties:
+        application_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        application_status:
+          type: string
+          description: 准入状态
+          enum:
+          - enabled
+          - disabled
+        max_file_bytes:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 单文件最大
+        allowed_mime_types:
+          type: array
+          items:
+            type: string
+            description: MIME白名单
+        default_quota_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 零禁止新增
+        max_active_uploads:
+          type: integer
+          minimum: 1
+        default_backend_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        policy_version:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 政策版本
+      required:
+      - application_biz_key
+      - application_status
+      - max_file_bytes
+      - allowed_mime_types
+      - default_quota_bytes
+      - max_active_uploads
+      - default_backend_biz_key
+      - policy_version
+    AppPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Application'
+        next_cursor:
+          type: string
+          description: 游标
+      required:
+      - items
+      - next_cursor
+    BackendWrite:
+      type: object
+      additionalProperties: false
+      properties:
+        backend_code:
+          type: string
+          description: 唯一实例编码
+        provider_type:
+          type: string
+          description: 后端
+          enum:
+          - local
+          - minio
+          - oss
+          - s3
+        endpoint_uri:
+          type: string
+          description: 受控endpoint
+          format: uri
+        bucket_name:
+          type: string
+          description: 桶
+        credential_ref:
+          type: string
+          description: 密钥引用
+        backend_status:
+          type: string
+          description: 状态
+          enum:
+          - read_write
+          - read_only
+          - disabled
+      required:
+      - backend_code
+      - provider_type
+      - endpoint_uri
+      - bucket_name
+      - credential_ref
+      - backend_status
+    Backend:
+      type: object
+      additionalProperties: false
+      properties:
+        storage_backend_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        backend_code:
+          type: string
+          description: 实例编码
+        provider_type:
+          type: string
+          description: 类型
+        endpoint_uri:
+          type: string
+          description: 受控endpoint
+        bucket_name:
+          type: string
+          description: 桶
+        backend_status:
+          type: string
+          description: 状态
+        credential_configured:
+          type: boolean
+          description: 不返回密钥引用详情或secret
+      required:
+      - storage_backend_biz_key
+      - backend_code
+      - provider_type
+      - bucket_name
+      - backend_status
+      - credential_configured
+    BackendPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Backend'
+        next_cursor:
+          type: string
+          description: 游标
+      required:
+      - items
+      - next_cursor
+    Reason:
+      type: object
+      additionalProperties: false
+      properties:
+        reason_text:
+          type: string
+          description: 操作原因
+          minLength: 1
+          maxLength: 512
+      required:
+      - reason_text
+    Restrict:
+      type: object
+      additionalProperties: false
+      properties:
+        reason_text:
+          type: string
+          description: 操作原因
+          minLength: 1
+          maxLength: 512
+        restriction_status:
+          type: string
+          description: 平台全局限制
+          enum:
+          - normal
+          - blocked
+        revision_number:
+          type: integer
+          format: int64
+          minimum: 1
+          description: 并发版本
+      required:
+      - reason_text
+      - restriction_status
+      - revision_number
+    SetQuota:
+      type: object
+      additionalProperties: false
+      properties:
+        quota_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          nullable: true
+          description: NULL恢复应用默认，0禁止新增
+        revision_number:
+          type: integer
+          format: int64
+          minimum: 1
+          description: CAS版本
+        reason_text:
+          type: string
+          description: 原因
+          minLength: 1
+          maxLength: 512
+      required:
+      - quota_bytes
+      - revision_number
+      - reason_text
+    Overview:
+      type: object
+      additionalProperties: false
+      properties:
+        logical_used_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 逻辑计费
+        physical_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 实际对象字节
+        reserved_bytes:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 预留
+        pending_tasks:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 待处理任务数
+        missing_objects:
+          type: integer
+          format: int64
+          minimum: 0
+          description: 缺失告警数
+      required:
+      - logical_used_bytes
+      - physical_bytes
+      - reserved_bytes
+      - pending_tasks
+      - missing_objects
+    Task:
+      type: object
+      additionalProperties: false
+      properties:
+        task_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        task_type:
+          type: string
+          description: 任务类别
+        task_status:
+          type: string
+          description: 状态
+          enum:
+          - queued
+          - running
+          - succeeded
+          - retry
+          - dead
+        error_code:
+          type: string
+          description: 脱敏错误
+      required:
+      - task_biz_key
+      - task_type
+      - task_status
+    TaskPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        next_cursor:
+          type: string
+          description: 游标
+      required:
+      - items
+      - next_cursor
+    Audit:
+      type: object
+      additionalProperties: false
+      properties:
+        audit_log_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        actor_subject:
+          type: string
+          description: 主体
+        action_code:
+          type: string
+          description: 动作
+        target_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        reason_text:
+          type: string
+          description: 原因
+        result_code:
+          type: string
+          description: 结果
+        occur_time:
+          type: string
+          description: 时间
+          format: date-time
+      required:
+      - audit_log_biz_key
+      - actor_subject
+      - action_code
+      - target_biz_key
+      - result_code
+      - occur_time
+    AuditPage:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Audit'
+        next_cursor:
+          type: string
+          description: 游标
+      required:
+      - items
+      - next_cursor
+    MediaCreate:
+      type: object
+      additionalProperties: false
+      properties:
+        application_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        input_file_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        input_reference_key:
+          type: string
+          description: 源业务有效引用
+        profile_code:
+          type: string
+          description: 白名单处理方案
+        profile_version:
+          type: integer
+          minimum: 1
+      required:
+      - application_biz_key
+      - input_file_biz_key
+      - input_reference_key
+      - profile_code
+      - profile_version
+    MediaJob:
+      type: object
+      additionalProperties: false
+      properties:
+        media_job_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        job_status:
+          type: string
+          description: 状态
+          enum:
+          - queued
+          - running
+          - ready
+          - failed
+          - cancelled
+        outputs:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              output_role:
+                type: string
+                description: 产物用途
+              file_biz_key:
+                type: string
+                description: 不透明稳定业务键，兼容存量格式
+                minLength: 1
+                maxLength: 64
+              media_package_biz_key:
+                type: string
+                description: 不透明稳定业务键，兼容存量格式
+                minLength: 1
+                maxLength: 64
+            required:
+            - output_role
+        error_code:
+          type: string
+          description: 脱敏错误
+      required:
+      - media_job_biz_key
+      - job_status
+      - outputs
+    ApplicationScope:
+      type: object
+      additionalProperties: false
+      properties:
+        application_biz_key:
+          type: string
+          description: 不透明稳定业务键，兼容存量格式
+          minLength: 1
+          maxLength: 64
+        reason_text:
+          type: string
+          description: 原因
+          minLength: 1
+          maxLength: 512
+      required:
+      - application_biz_key
+      - reason_text
+    UploadPage:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Upload'
+        next_cursor:
+          type: string
+  responses:
+    Error400:
+      description: 参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error401:
+      description: 未认证
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error403:
+      description: 无权
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error404:
+      description: 资源不可用，不泄露存在性
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error409:
+      description: 幂等payload/状态/版本冲突
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error410:
+      description: 已清除或会话过期
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error413:
+      description: 超过大小限制
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error422:
+      description: 内容或校验不合规
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error429:
+      description: 速率/会话限制
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Error503:
+      description: 依赖暂不可用
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
