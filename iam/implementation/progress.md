@@ -56,16 +56,13 @@
 
 ## 5. 阶段记录
 
-### 阶段0（基线与检查点）——进行中
+### 阶段0（基线与检查点）——✅ 完成
 - 四仓基线：✅（§1）；与 implementation/执行状态.md:24 记录的代码仓起点 SHA 完全吻合（bootstrap.py 已完成四仓建分支职责，此前无 IAM 代码提交）
 - 工程测绘：✅（§2）；设计文档摘要：✅（§3）
-- 本文件创建；**检查点提交待用户代跑**（本会话无 shell）：
-  ```
-  git -C D:/code/ppb-docs add iam/implementation/progress.md
-  git -C D:/code/ppb-docs commit -m "chore(iam): establish implementation baseline and migration checklist"
-  ```
+- **检查点提交：`24e3d89`（chore(iam): establish implementation baseline and migration checklist，ppb-docs，2 文件 +235）**
 
-### 阶段1（server-iam 骨架 → 账户/凭证/注册登录）——进行中
+### 阶段1（server-iam 骨架 → 账户/凭证/注册登录）——代码面✅ 已提交，验证待编译
+- **代码提交：`6a2251e`（feat(iam): add account models, registration and credential verification，ppb-base，20 文件 +1918，含 go.work/deploy 登记与部署模板）**；文档提交：`39d9ace`（ADR-008）。提交前经只读对账：改动清单与预期完全一致、无外来内容，ppb-chat/camera 工作区干净、stash 未动。
 - 第1步 骨架 ✅：ppb-base 新增 `server-iam\{go.mod, internal/domain/base.go(雪花7号), internal/service/iam_config.go, internal/repo/iam_db_connect.go, internal/handler/health_ping_handler.go, cmd/server/main.go, cmd/migrate/main.go, config.yaml}`；go.work 已登记（server-gateway 与 server-im 之间）。
   - 有意偏差：Migrate/VerifySchema 并入 iam_db_connect.go（camera 拆独立文件）；拦截链 internalauth（对齐 server-im）；新增 internal_token 配置注入 env；开发门禁 `PPB_ALLOW_DEV_INTERNAL_TOKEN`；main 增优雅退出。
   - 风险/待办：**go.sum 未生成**（无 shell，需 `go mod tidy`）；server-pkg/health 包文件名未定位（用法逐字同 camera，签名可信）；写入时两处 CJK 乱码已修复并复核。
@@ -95,7 +92,7 @@
   - **待编译确认（诚实清单）**：gofmt 对齐、go.sum、GORM 运行时行为——无编译器无法验证。
 
 ### 遗留与下一步
-- [ ] 用户代跑阶段0提交；顺带 `git status` 核对四仓工作区
+- [x] 阶段0检查点提交（24e3d89）与阶段1代码提交（6a2251e/39d9ace）——均仅在本地 feat/iam-v0.4，未推送
 - [ ] 工具链版本待实测（换有 shell 的会话或用户 `!` 代跑 `go version` 等）
 - [ ] go.sum 生成 + gofmt + build/vet + `go test ./server-iam/internal/service/`——**全部代码未经编译器检验**，编译报错优先修
 - [ ] ADR-008 四项待拍板：#3 邮件域落点 / #4 公告去向 / #5 部门负责人列 / #6 工号身份类型（拍板后同步 schema/字典再进对应阶段）
