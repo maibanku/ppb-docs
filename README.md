@@ -7,7 +7,7 @@
 | 项目 | 导航 | 代码仓库 | 状态 |
 |---|---|---|---|
 | AI 相机（camera） | [camera/README](camera/README.md) | ppb-chat（同级目录 `../ppb-chat`：camera-ios-app / server-camera / server-gateway / camera-manager-web） | 设计基线 V2.3，尚无通过工程验证的实现 |
-| 统一认证中心（IAM） | [iam/README](iam/README.md) | ppb-base：server-iam / iam-web / iam-manage-web（规划） | 自研 Go 认证中心设计基线 v0.1，待实施 |
+| 统一认证中心（IAM） | [iam/README](iam/README.md) | ppb-base：server-iam / iam-web / iam-manage-web（规划） | 统一账号认证与平台授权设计 v0.4，58表SQL，待实施 |
 | AI 衣柜（wardrobe） | [wardrobe/README](wardrobe/README.md) | 待建 | 需求基线 v1.1（PRD v1.0 + 37 条需求/用例） |
 
 ## 统一目录结构
@@ -35,6 +35,8 @@
 
 | 版本 | 日期 | 变更 |
 |---|---|---|
+| v0.4 | 2026-10-27 | IAM统一用户/认证/平台授权，加入双单词字段规范及58表SQL |
 | v0.3 | 2026-10-27 | 新增 IAM 设计基线：同仓独立认证服务、前端拆分、迁移与验收 |
 | v0.2 | 2026-10-26 | camera 自 ppb-chat/docs 迁入；确立统一目录结构（README/PRD/pr/ac/tech/adr/eval） |
 | v0.1 | 2026-10-26 | 建仓，wardrobe 需求基线 v1.1 入驻 |
+
