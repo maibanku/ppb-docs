@@ -16,6 +16,8 @@
 6. [注册与登录流程](tech/注册与登录流程.md)、[迁移计划](tech/迁移计划.md)。
 7. [验收入口](ac/README.md)、[架构决策](adr/架构决策.md)、[设计验证记录](eval/SQL设计验证记录.md)。
 
+8. [本地Claude Code实施入口](implementation/README.md)、[执行提示词](implementation/CLAUDE_CODE_PROMPT.md)：同级下载四仓、独立分支、边写边提交与阶段推送；[当前准备状态](implementation/执行状态.md)。
+
 ## 工程和依据
 
 代码目标仓库：[maibanku/ppb-base](https://github.com/maibanku/ppb-base)。拟建 server-iam、iam-web、iam-manage-web、idl/iam；已有 server-user 逐步迁移退役，不再作为通用资料独立服务。
