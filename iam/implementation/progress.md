@@ -2,6 +2,28 @@
 
 > 依据：`iam/implementation/CLAUDE_CODE_PROMPT.md`。本文件每阶段更新：需求编号、改动文件、各仓分支/提交 SHA、实际命令与结果、迁移状态、遗留与下一步。
 
+## 当前状态（2026-10-27，随每阶段刷新）
+
+**执行到**：阶段1 代码面完成（含编译前审查轮，修复 3 缺陷），已提交并推送远端；**编译/测试验证未做**（会话无 shell）；阶段2 未启动。
+
+| 阶段 | 状态 | 产出/证据 |
+|---|---|---|
+| 阶段0 基线与检查点 | ✅ 完成·已推送 | 四仓起点 SHA 对账吻合 bootstrap 记录；progress/migration-checklist/ADR-008；ppb-docs 至 `aee037f` |
+| 阶段1 server-iam 账户/注册登录 | ✅ 代码面完成·已推送 ⚠️未编译 | ppb-base `6a2251e`（20 文件 +1918）：骨架/7表模型+`0001_init.sql`/repo 单事务/注册登录服务/mock 单测（详见 §5） |
+| 阶段2 OIDC/门户/后台 | ⬜ 未启动 | 前置：ADR-005 协议库选型（P0）、idl/iam.proto 定稿 |
+| 阶段3 平台角色菜单权威替换 | ⬜ 未启动 | platform_* 七表链路（§3.F） |
+| 阶段4 chat/camera 接入 | ⬜ 未启动 | 两 chat 客户端 + iOS；跨仓 file 依赖构建 |
+| 阶段5 迁移演练与退役判定 | ⬜ 未启动 | switch_check（migration-checklist §3）；server-user 退役条件（迁移计划 P4） |
+
+**后续需要做（按序）**：
+
+1. **编译+测试验证（当前唯一硬尾巴）**：`cd D:/code/ppb-base/server-iam && go mod tidy && cd .. && gofmt -l -w server-iam && go build ./server-iam/... && go vet ./server-iam/... && go test ./server-iam/internal/service/` —— 报错修复后阶段1 才算闭环；工具链版本（go/node/git）同时补记 §0
+2. **ADR-008 四项拍板**（架构决策.md）：#3 邮件域落点 / #4 公告去向 / #5 部门负责人列 / **#6 工号身份类型（最急，影响 user_identities 三列唯一键设计）**；拍板后同步 schema.sql/字段字典/验收
+3. **编译通过后补三处登记**：gateway upstream（`proxy/grpc_clients.go` + `config/gateway_config.go` + `deploy/config/gateway.yaml`）、`deploy/scripts/start-all.sh`、`tools/ci.sh`
+4. **阶段2**：idl/iam.proto 定稿（buf 生成，不手改桩）→ handler/网关接线（main.go TODO 位）→ OIDC 授权码+PKCE S256/Discovery/JWKS/刷新轮换 → iam-web / iam-manage-web → DeliverySender 接邮件域
+5. **阶段3–5**：platform_* 权威替换与缓存失效重设计（ADR-008 #12）→ chat 组织数据迁 server-im + 两客户端/camera iOS 接入 → 迁移演练、对比报告、server-user 退役判定
+6. **环境债**：本实施会话无 shell（git 经有界脚本通道执行，subagent 工具面不稳定）；ppb-docs stash `rollback-before-pull-20261027` 仍在（与分支内容疑似重叠，处置前先对账，勿直接 pop）
+
 ## 0. 会话与环境约束（2026-10-27 记录）
 
 - **本会话无 shell**：主会话与 subagent 均无 Bash。commit / push / go build / go test 由用户 `!` 前缀代跑或换有 shell 的会话执行。git 基线经直读 `.git/`（config / refs / logs）重构，非 `git` 命令输出。
