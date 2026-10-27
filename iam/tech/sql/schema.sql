@@ -161,6 +161,7 @@ CREATE TABLE `mfa_factors` (
   `public_configuration` TEXT NULL COMMENT 'WebAuthn公钥、credentialId和计数等；服务层校验唯一性',
   `verified_at` DATETIME NULL COMMENT '确认启用时间',
   `revoked_at` DATETIME NULL COMMENT '撤销时间',
+  `last_used_step` BIGINT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'TOTP重放保护水位（最近一次已消费步进）；实现增列',
   `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间，UTC',
   `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间，UTC',
   `deleted_flag` TINYINT NOT NULL DEFAULT 0 COMMENT '软删除标记：0正常 1删除；安全校验必须过滤',
