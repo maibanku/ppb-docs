@@ -4,13 +4,13 @@
 
 ## 当前状态（2026-10-27，随每阶段刷新）
 
-**执行到**：阶段1 全闭环+本机运行验证——build/vet/test 全绿（§5 验证轮）+ SQLite 联库迁移修复与七进程 start-all 跑通（§5 运行轮，2026-10-27 macOS 会话）；阶段2 未启动。
+**执行到**：阶段2 已启动——gRPC 面落地（idl/iam.proto 定稿 + buf 桩 + handler 接线 + gateway upstream + 回环集成测试，2026-10-27 晚 SDD 会话）；ADR-005 协议库已定（zitadel/oidc v3.42.0，附落锁门槛）；五处登记全部完成。OIDC 协议端点实现待启动。
 
 | 阶段 | 状态 | 产出/证据 |
 |---|---|---|
 | 阶段0 基线与检查点 | ✅ 完成·已推送 | 四仓起点 SHA 对账吻合 bootstrap 记录；progress/migration-checklist/ADR-008；ppb-docs 至 `aee037f` |
 | 阶段1 server-iam 账户/注册登录 | ✅ 完成·已验证 | ppb-base `6a2251e`（20 文件 +1918）+ 修复 `1389270`：骨架/7表模型+`0001_init.sql`/repo 单事务/注册登录服务/mock 单测；build/vet/test 全绿（§5 验证轮） |
-| 阶段2 OIDC/门户/后台 | ⬜ 未启动 | 前置：ADR-005 协议库选型（P0）、idl/iam.proto 定稿 |
+| 阶段2 OIDC/门户/后台 | 🔶 启动中 | 前置已清：ADR-005 已定 zitadel/oidc v3.42.0（落锁门槛见 ADR）；`idl/iam.proto` 定稿接线（`9b79d60`/`fee7860`/`438dfcf`/`672d27d`，gRPC 面三 RPC + 回环测试）；剩 OIDC 端点（op.Storage GORM adapter）/iam-web/MFA |
 | 阶段3 平台角色菜单权威替换 | ⬜ 未启动 | platform_* 七表链路（§3.F） |
 | 阶段4 chat/camera 接入 | ⬜ 未启动 | 两 chat 客户端 + iOS；跨仓 file 依赖构建 |
 | 阶段5 迁移演练与退役判定 | ⬜ 未启动 | switch_check（migration-checklist §3）；server-user 退役条件（迁移计划 P4） |
@@ -20,7 +20,7 @@
 1. ~~编译+测试验证~~ ✅ 已闭环（2026-10-27 macOS 会话，见 §5 验证轮；修复提交 ppb-base `1389270`）；go.sum 结论见 §0
 2. **ADR-008 四项拍板**（架构决策.md）：#3 邮件域落点 / #4 公告去向 / #5 部门负责人列 / **#6 工号身份类型（最急，影响 user_identities 三列唯一键设计）**；拍板后同步 schema.sql/字段字典/验收
 3. ~~补三处登记~~：start-all/stop-all 已完成（`17023d3`，见 §5 运行轮）；剩 gateway upstream（`proxy/grpc_clients.go` + `config/gateway_config.go` + `deploy/config/gateway.yaml`，等 idl/iam.proto 定稿）与 `tools/ci.sh`
-4. **阶段2**：idl/iam.proto 定稿（buf 生成，不手改桩）→ handler/网关接线（main.go TODO 位）→ OIDC 授权码+PKCE S256/Discovery/JWKS/刷新轮换 → iam-web / iam-manage-web → DeliverySender 接邮件域
+4. **阶段2（已启动）**：ADR-005 ✅（zitadel/oidc v3.42.0，go-jose 落锁门槛）→ ~~idl/iam.proto 定稿~~ ✅（`9b79d60`）→ ~~handler/网关接线~~ ✅（`fee7860`/`672d27d`）→ 下一步：OIDC 授权码+PKCE S256/Discovery/JWKS/刷新轮换（zitadel/oidc op.Storage GORM adapter）→ iam-web / iam-manage-web → DeliverySender 接邮件域（回收 Minor 6 与 Minor 1 注册域文案拍板）
 5. **阶段3–5**：platform_* 权威替换与缓存失效重设计（ADR-008 #12）→ chat 组织数据迁 server-im + 两客户端/camera iOS 接入 → 迁移演练、对比报告、server-user 退役判定
 6. **环境债**：本实施会话无 shell（git 经有界脚本通道执行，subagent 工具面不稳定）；ppb-docs stash `rollback-before-pull-20261027` 仍在（与分支内容疑似重叠，处置前先对账，勿直接 pop）
 
@@ -128,5 +128,12 @@
 - [x] gofmt + build/vet + `go test ./server-iam/...` 全绿（2026-10-27 macOS 会话，修复提交 `1389270`）；go.sum 按工作区约定不生成（见 §0）
 - [ ] ADR-008 四项待拍板：#3 邮件域落点 / #4 公告去向 / #5 部门负责人列 / #6 工号身份类型（拍板后同步 schema/字典再进对应阶段）
 - [x] start-all.sh / stop-all.sh 登记 ✅（2026-10-27，`17023d3`；七进程口径）
-- [ ] 剩两处：gateway upstream（等 idl/iam.proto 阶段2）、tools/ci.sh
+- [x] gateway upstream ✅（`672d27d`，conns[5] + ServiceIam + gateway.yaml）与 tools/ci.sh ✅（`2310864`）——**五处登记全部完成**
+
+### SDD 会话轮（2026-10-27 晚，subagent 驱动开发）
+
+- 任务1 ci.sh 登记（`2310864`，评审 clean）
+- 任务2 ADR-005 选型调研 → 裁决 zitadel/oidc v3.42.0（ppb-docs `c185b63`；备选 fosite、排除 go-oauth2；go-jose 落锁硬门槛写入 ADR）
+- 任务3 idl/iam.proto+桩/handler 接线/回环集成测试/gateway upstream（`9b79d60`/`fee7860`/`438dfcf`/`672d27d`，任务评审规格全符 + buf 幂等与防枚举红线独立验证；6 条 Minor 延后，台账见 ppb-base `.superpowers/sdd/CLAUDE_CODE_PROMPT/progress.md`）
+- 真机冒烟：9107 发码→注册→登录全链 ok（错密码 IAM-2001/Unauthenticated、无凭据直连 Unauthenticated），iam/gateway 重启后日志无新告警
 - [ ] 阶段2 启动项：idl/iam.proto 定稿（依赖 ADR-005 协议库选型 P0）→ handler/网关接线 → OIDC 授权码+PKCE
