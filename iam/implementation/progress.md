@@ -4,7 +4,7 @@
 
 ## 当前状态（2026-10-27，随每阶段刷新）
 
-**执行到**：阶段1 全闭环——代码已提交推送，**编译/测试验证已过**（2026-10-27 macOS 会话，go1.26.0 darwin/arm64：build/vet/test 全绿，修复 7 处提升字段字面量，见 §5 验证轮）；阶段2 未启动。
+**执行到**：阶段1 全闭环+本机运行验证——build/vet/test 全绿（§5 验证轮）+ SQLite 联库迁移修复与七进程 start-all 跑通（§5 运行轮，2026-10-27 macOS 会话）；阶段2 未启动。
 
 | 阶段 | 状态 | 产出/证据 |
 |---|---|---|
@@ -19,7 +19,7 @@
 
 1. ~~编译+测试验证~~ ✅ 已闭环（2026-10-27 macOS 会话，见 §5 验证轮；修复提交 ppb-base `1389270`）；go.sum 结论见 §0
 2. **ADR-008 四项拍板**（架构决策.md）：#3 邮件域落点 / #4 公告去向 / #5 部门负责人列 / **#6 工号身份类型（最急，影响 user_identities 三列唯一键设计）**；拍板后同步 schema.sql/字段字典/验收
-3. **编译通过后补三处登记**：gateway upstream（`proxy/grpc_clients.go` + `config/gateway_config.go` + `deploy/config/gateway.yaml`）、`deploy/scripts/start-all.sh`、`tools/ci.sh`
+3. ~~补三处登记~~：start-all/stop-all 已完成（`17023d3`，见 §5 运行轮）；剩 gateway upstream（`proxy/grpc_clients.go` + `config/gateway_config.go` + `deploy/config/gateway.yaml`，等 idl/iam.proto 定稿）与 `tools/ci.sh`
 4. **阶段2**：idl/iam.proto 定稿（buf 生成，不手改桩）→ handler/网关接线（main.go TODO 位）→ OIDC 授权码+PKCE S256/Discovery/JWKS/刷新轮换 → iam-web / iam-manage-web → DeliverySender 接邮件域
 5. **阶段3–5**：platform_* 权威替换与缓存失效重设计（ADR-008 #12）→ chat 组织数据迁 server-im + 两客户端/camera iOS 接入 → 迁移演练、对比报告、server-user 退役判定
 6. **环境债**：本实施会话无 shell（git 经有界脚本通道执行，subagent 工具面不稳定）；ppb-docs stash `rollback-before-pull-20261027` 仍在（与分支内容疑似重叠，处置前先对账，勿直接 pop）
@@ -27,7 +27,7 @@
 ## 0. 会话与环境约束（2026-10-27 记录）
 
 - **本会话无 shell**：主会话与 subagent 均无 Bash。commit / push / go build / go test 由用户 `!` 前缀代跑或换有 shell 的会话执行。git 基线经直读 `.git/`（config / refs / logs）重构，非 `git` 命令输出。
-- **暂不连真实数据库（用户指示 2026-10-27）**：阶段1 不接真实 MySQL/Redis；表结构以 SQL 文件维护（`deploy/sql/ppb_iam/*.sql` DDL 镜像 + GORM 模型），联库验证与 Redis 接入延后。
+- **数据库约束演进**：初版（2026-10-27 早）暂不连真实数据库；同日晚用户指示本机初始化并跑通——已按 SQLite 零依赖态完成联库（见 §5 运行轮）。MySQL 实例执行（G6）仍待；Redis 未接入（阶段2+）。
 - 工具链版本：go1.26.0 darwin/arm64（2026-10-27 macOS 会话实测）；node/git 待阶段2 前端时补记。
 - go.sum：**本工作区约定为无 per-module go.sum**（八服务均无，校验走 ppb-base 根 `go.work.sum`）；`go mod tidy` 因全工作区 genproto 新旧模块歧义（server-camera 同报错）不可用——工作区级依赖债务，登记待办，不阻塞阶段1。
 - ppb-docs 存在遗留 stash：`rollback-before-pull-20261027`（On main: camera/iam docs + wardrobe mods，与 feat/iam-v0.4 内容疑似重叠），**未 pop、不动**。
@@ -116,11 +116,17 @@
 - 验证轮（2026-10-27，macOS 会话，go1.26.0 darwin/arm64）✅：`cd server-iam && gofmt -l -w . && go build ./... && go vet ./... && go test ./...` 全绿（`internal/service ok 2.171s`，其余包无测试文件）。
   - 修复 4 类：① `account_service.go` 7 个结构体字面量删除 `CreateTime/UpdateTime` 赋值（dombase `autoCreateTime/autoUpdateTime` 承担；提升字段不可在字面量赋值，原代码不编译）+ `buildAudit` 的 `now` 变量随之移除；② mock `SaveChallenge` 补时间戳戳章模拟 `autoCreateTime`（限流窗口/最新挑战选择的测试语义依赖 CreateTime）；③ gofmt 补齐 4 文件（实施会话无 shell 遗留）；④ go.sum 确认按工作区约定不生成（§0）。
   - 提交：ppb-base `1389270`（fix(iam): drop promoted base-field literals to close stage-1 build）；tidy 误写 server-camera 的 go.mod/go.sum 已当场还原。
+- 运行轮（2026-10-27 晚，macOS 会话，用户指示本机初始化数据库并跑通）✅：
+  - **发现并修复 SQLite 全局索引名冲突**：GORM 标签沿用归档 DDL 表内名（`uk_biz_key` 各表重复），MySQL 合法、SQLite 全库唯一——实库首跑即在 user_profile 建索引时失败（mock 单测覆盖不到 DDL 层）。修复：非特定索引名表限定化（`uk_user_biz_key` 等），schemaChecks 同步，新增 `:memory:` 迁移/校验/幂等回归测试（`repo TestMigrateMemorySQLite`）；归档 MySQL DDL 不动，映射差异已注释。提交 `32df5d7`。
+  - **deploy 登记**（原五处清单完成 start-all/stop-all 两处）：build `iam`/`migrate-iam`、`IAM_DB_DSN` 按 APP_ENV 三模式推导、非 prod 放行 `PPB_ALLOW_DEV_CODE_SECRET`、migrate 先于启动、启动段 [4.6/6]（RPC 9107 / 健康 9117，plugin 与 gateway 之间）、stop-all 逆依赖序 + 端口兜底加 iam；cmd/server 的 internal_token 门禁在 `PPB_INTERNAL_RPC_TOKEN` 已注入真实凭据时跳过。另将 migrate-user 显式 `-dsn` 契约补丁落进本分支（此前仅存在于 main 的未提交本地改动）。提交 `17023d3`。
+  - **跑通验证**：`APP_ENV=sqlite bash scripts/start-all.sh` → **七进程全部健康**（user/im/file/plugin/gateway 健康复用跳过 + iam 新起）；iam `/ping`/`/healthz` 返回 `db:ok`，RPC 9107 监听，日志无 dev token 告警（真实凭据生效）；`data/ppb_iam.db` 7 表建成。
+  - 未做（如实）：gateway gRPC upstream 与 `tools/ci.sh` 登记（等 idl/iam.proto 阶段2）；MySQL 实例执行（G6 缺口不变）。
 
 ### 遗留与下一步
 - [x] 阶段0检查点提交（24e3d89）与阶段1代码提交（6a2251e/39d9ace）——**已推送远端**：ppb-docs `439ffa4..1213639`、ppb-base `18cd1c9..6a2251e`（2026-10-27；ppb-docs 首推 22 端口超时，重试成功）
 - [x] 工具链版本：go1.26.0 darwin/arm64 已实测（2026-10-27）；node/git 待补
 - [x] gofmt + build/vet + `go test ./server-iam/...` 全绿（2026-10-27 macOS 会话，修复提交 `1389270`）；go.sum 按工作区约定不生成（见 §0）
 - [ ] ADR-008 四项待拍板：#3 邮件域落点 / #4 公告去向 / #5 部门负责人列 / #6 工号身份类型（拍板后同步 schema/字典再进对应阶段）
-- [ ] 五处登记剩三处：gateway upstream（grpc_clients.go + gateway_config.go + gateway.yaml）、start-all.sh、ci.sh——建议编译通过后再动
+- [x] start-all.sh / stop-all.sh 登记 ✅（2026-10-27，`17023d3`；七进程口径）
+- [ ] 剩两处：gateway upstream（等 idl/iam.proto 阶段2）、tools/ci.sh
 - [ ] 阶段2 启动项：idl/iam.proto 定稿（依赖 ADR-005 协议库选型 P0）→ handler/网关接线 → OIDC 授权码+PKCE
