@@ -1,6 +1,8 @@
 # 阶段1 迁移对照清单（migration-checklist）
 
 > 基于文档与 server-user 代码静态对照，2026-10-27，未经联库验证。权威以 `tech/迁移计划.md` 与 ADR 为准；本清单是迁移演练执行底稿，冲突时上报不静默改。
+>
+> **拍板记录（2026-10-28）**：ADR-008 #3 邮箱个人配置迁 KV+mailbox/日志冻结；#4 user_announcement 冻结退役（0 行）；#5 leader_user_id 丢弃+映射报告；#6 identity_type=4=employee_code（namespace=组织域，旧存量 legacy 命名空间）。
 > 代码基线：ppb-base feat/iam-v0.4 起点 `18cd1c9`（progress.md §1）。旧库 = server-user domain 28 表；目标 = `tech/sql/schema.sql`（ppb_iam / ppb_im）。阶段口径对齐迁移计划 §3：P1 只建表不迁数据，P2 管理端确权，P3 数据迁移，P4 退役。
 
 ## 1. 现存表 → 目标去向总表

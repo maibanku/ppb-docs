@@ -137,3 +137,8 @@
 - 任务3 idl/iam.proto+桩/handler 接线/回环集成测试/gateway upstream（`9b79d60`/`fee7860`/`438dfcf`/`672d27d`，任务评审规格全符 + buf 幂等与防枚举红线独立验证；6 条 Minor 延后，台账见 ppb-base `.superpowers/sdd/CLAUDE_CODE_PROMPT/progress.md`）
 - 真机冒烟：9107 发码→注册→登录全链 ok（错密码 IAM-2001/Unauthenticated、无凭据直连 Unauthenticated），iam/gateway 重启后日志无新告警
 - [ ] 阶段2 启动项：idl/iam.proto 定稿（依赖 ADR-005 协议库选型 P0）→ handler/网关接线 → OIDC 授权码+PKCE
+
+## 6. 切换执行记录（2026-10-28，另一会话）
+- ADR-008 四项拍板（用户）：#3 KV+冻结 / #4 冻结退役 / #5 丢弃+报告 / #6 identity_type=4=employee_code（旧存量 legacy 命名空间）；ADR 表/字段字典/schema.sql/常量已同步。
+- dev 数据切换完成：cutover-20261028.sql（deploy/sql/ppb_user_to_iam/，幂等）——iam user/identities/credentials/profile/preference 与 im workspace/memberships/角色系全部落库，SC1/3/4/5 对账通过；manifest 见 ppb-base/deploy/backups/。
+- 切流：server-user 已停（可逆）。待人工：旧管理员 3 账号确权、迁移用户首登验证、四仓推送、生产动作（退役判定正式化）。

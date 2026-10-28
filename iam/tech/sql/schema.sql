@@ -62,7 +62,7 @@ CREATE TABLE `user_identities` (
   `user_identity_id` BIGINT UNSIGNED NOT NULL COMMENT '应用侧生成的稳定主键；迁移时保留旧ID',
   `user_identity_biz_key` VARCHAR(64) COLLATE utf8mb4_bin NOT NULL COMMENT '不透明业务键，应用侧生成',
   `user_id` BIGINT UNSIGNED NOT NULL COMMENT '全局用户',
-  `identity_type` TINYINT NOT NULL COMMENT '1=username；2=email；3=phone；标识类型',
+  `identity_type` TINYINT NOT NULL COMMENT '1=username；2=email；3=phone；4=employee_code（namespace=组织域）；标识类型',
   `identity_namespace` VARCHAR(64) COLLATE utf8mb4_bin NOT NULL DEFAULT 'global' COMMENT '登录命名空间',
   `normalized_value` VARCHAR(254) COLLATE utf8mb4_bin NOT NULL COMMENT '服务端规范化登录值，非展示副本',
   `verified_at` DATETIME NULL COMMENT '确权时间',
@@ -75,7 +75,7 @@ CREATE TABLE `user_identities` (
   UNIQUE KEY `uk_biz_key` (`user_identity_biz_key`),
   UNIQUE KEY `uk_identity_type_namespace_normalized_value` (`identity_type`,`identity_namespace`,`normalized_value`),
   KEY `idx_user_id` (`user_id`),
-  CHECK (`identity_type` IN (1,2,3)),
+  CHECK (`identity_type` IN (1,2,3,4)),
   CHECK (`identity_status` IN (1,2,3)),
   CHECK (deleted_flag IN (0,1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='登录标识；规范化值按类型制定，注销后默认保留占用';
