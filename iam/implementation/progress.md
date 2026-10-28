@@ -142,3 +142,12 @@
 - ADR-008 四项拍板（用户）：#3 KV+冻结 / #4 冻结退役 / #5 丢弃+报告 / #6 identity_type=4=employee_code（旧存量 legacy 命名空间）；ADR 表/字段字典/schema.sql/常量已同步。
 - dev 数据切换完成：cutover-20261028.sql（deploy/sql/ppb_user_to_iam/，幂等）——iam user/identities/credentials/profile/preference 与 im workspace/memberships/角色系全部落库，SC1/3/4/5 对账通过；manifest 见 ppb-base/deploy/backups/。
 - 切流：server-user 已停（可逆）。待人工：旧管理员 3 账号确权、迁移用户首登验证、四仓推送、生产动作（退役判定正式化）。
+
+## 7. 迁移后收尾与 camera 管理面（2026-10-28 晚，第三会话）
+- **server-user 服务删除**（ppb-base 7cbc1b8）：模块/go.work/start-all/stop-all/compose/ci.sh/config/binaries/建库 SQL 全摘；ppb_user 库保留为迁移源归档（DROP 两次被权限系统拦，待用户自行执行）。server-plugin 残留清除（1350415）。
+- **camera 管理面端到端**（9837960 + ppb-camera 4146b83）：idl AdminService（8 RPC，buf 重生成）、CameraAdminHandler（真实读数 4 + 诚实空态 4）、网关 8 条 /api/v1/manage/camera/* 挂 camera.*.read；policy.go 移除"camera 无 manage 即拒"过时卫语句；前端 8 页弃 stub 真实接入（base exports http 桥）。
+- **工号登录 resolver**（0241ff8）：Authenticate 邮箱未中→(4,legacy) 回查，附专项测试；**event_inbox 死清理下线**（同提交）。
+- **event_poller user 会话通道下线**（50c83b6，多会话协作：vscode-91 实施/本会话集成）：9101 警告归零；permguard 夹具同步（camera app_perm 已合法）。
+- IAM 治理面实况：iam-manage-web 五页（Users/Roles/Menus/Audit/Admins）俱在，生产构建 ✓；本沙箱 dev 拉起不稳，待交互终端跑。
+- 进行中（跨会话派发）：user_preference KV 模型（vscode-f3）。
+- 待办：Upstreams.User 数十 manage 端点与 SessionChecker（IAM 原生 manage 面整体替换时收）；旧管理员 3 账号签核；四仓推送。
