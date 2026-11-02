@@ -1,5 +1,7 @@
 # AI 相机 · 需求大纲
 
+> 2026-11-02 对齐说明：默认全屏无大参考框，普通快门保存完整原片，ROI 只作本地临时分析输入；拍摄范围/中心点/变焦入口以 [FS-12](pr/FS-12-AI选区与拍摄调整.md) 和 [FS-13](pr/FS-13-半圆变焦控制.md) 为准，本文残留的默认 3:4 自动裁切描述已过时。四 Tab 仍为需求目标，当前代码三 Tab 是待补差距。真实能力与后续 AI 需求见 [代码分析](implementation/2026-11-02-ppb-camera代码分析.md) 和 [FS-14](pr/FS-14-AI构图分析与实时引导.md)。
+
 | 项目 | 内容 |
 |---|---|
 | 版本 | V2.4（四 Tab 固定、Doka 参考边界、AI 构图交互分期、快门独立重申；**需求更新，不是发布实现状态**） |
@@ -352,3 +354,4 @@ WoZ 验证失败→M0 止损重设计；单帧测距不准→只说方向不说�
 analysis_requested仅在真正创建云任务时记录；授权卡曝光不算请求。analysis_succeeded代表已确认云结果，analysis_degraded记录本地兜底；另记analysis_ready、analysis_ack_unknown、analysis_released用于排障。公共字段增加subject匿名标识、request_id/task_id、guidance_id、prompt_version与result_source，禁止携带照片、token或手机号。事件名保持完整，不用succeeded等缩写作为真实事件名。
 
 发布前确认：云处理方及删除能力、反馈保留期、账号删除期限、付费价格与有效期、最低设备与性能基线、目标市场发布要求。未确认项不伪装为已实现能力。
+

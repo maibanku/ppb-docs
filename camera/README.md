@@ -1,6 +1,6 @@
 # AI 相机 · 文档导航
 
-> V2.4 · 2026-11-01（V2.4 为需求更新，不是发布实现状态）。独立iOS相机 + 团队Web后台。本目录存放设计文档；**代码在 ppb-camera 与 ppb-base 仓库**（同级目录）：`ppb-camera/camera-ios-app/`（App + 13 个 Swift Package）与 `ppb-camera/camera-manager-web/`（Vue3 管理后台插件，页面壳就绪、API stub 待替换）、`ppb-base/server-camera/`（Go 服务，表结构见[数据库专文](tech/database.md)）、`ppb-base/server-gateway/`（camera 域已接线）、`ppb-base/base-manage-web/`（后台底座）。实现进度与验证情况见[实施现状](implementation/实施现状与验证记录.md)。（V2.3 时期「代码在 ppb-chat」的口径已过时。）
+> V2.4 · 2026-11-01（V2.4 为需求更新，不是发布实现状态）。独立iOS相机 + 团队Web后台。本目录存放设计文档；**代码在 ppb-camera 与 ppb-base 仓库**（同级目录）：`ppb-camera/camera-ios-app/`（App + 13 个 Swift Package）与 `ppb-camera/camera-manager-web/`（Vue3 管理后台插件，已有 HTTP 入口，部分域仍为空态，见最新代码分析）、`ppb-base/server-camera/`（Go 服务，表结构见[数据库专文](tech/database.md)）、`ppb-base/server-gateway/`（camera 域已接线）、`ppb-base/base-manage-web/`（后台底座）。实现进度与验证情况见[实施现状](implementation/实施现状与验证记录.md)。（V2.3 时期「代码在 ppb-chat」的口径已过时。）
 
 [返回文档中心](../README.md)
 
@@ -16,6 +16,18 @@
 8. [Claude-Code 执行计划](implementation/Claude-Code执行计划.md)：按依赖排序的任务表（代码任务待执行；文档任务 T01 已随本轮校验关闭；首个代码任务=NetworkKit 模板客户端）。
 9. [实施现状与验证记录](implementation/实施现状与验证记录.md)：已实现/在改/未实现/未验证四档严格区分，随代码任务追加验证记录。
 10. [调整记录](adr/调整记录.md)：决策、修复的矛盾和待确认项（只追加，历史不覆盖）。
+
+## AI 构图增量文档（2026-11-02）
+
+本轮依据 ppb-camera main@b3b7dad 的固定提交更新，非此前通用方案直接上传。四 Tab 是需求目标，当前源码三 Tab 为差距；普通快门原片、ROI 仅分析输入以 FS-12/13 为准。
+
+| 文档 | 用途 |
+| --- | --- |
+| [FS-14：AI 构图分析与实时引导](pr/FS-14-AI构图分析与实时引导.md) | L1/L2/L3 范围、入口、FS14-01～18 与诚实边界 |
+| [AI 构图实现技术设计](tech/AI构图实现技术设计.md) | 实际包归属、帧源、坐标、规则、上下文、ready/ack、工程接线 |
+| [固定提交代码分析](implementation/2026-11-02-ppb-camera代码分析.md) | 已有/占位/待验证、源码位置、风险与实施次序 |
+| [AI 构图专项验收](ac/AI构图专项验收.md) | 21 项用例、需求映射、真机/隐私/账本验证门槛；未执行 |
+
 
 ## 功能细则
 
@@ -34,6 +46,7 @@
 | [FS-11](pr/FS-11-合规四件套.md) | 权限、用途授权、隐私说明与反馈 |
 | [FS-12](pr/FS-12-AI选区与拍摄调整.md) | 默认全屏取景、AI 构图本地 ROI 选区与读取、亮度（曝光补偿） |
 | [FS-13](pr/FS-13-半圆变焦控制.md) | 半圆变焦盘（数字变焦）、入口迁移与镜头切换边界 |
+| [FS-14](pr/FS-14-AI构图分析与实时引导.md) | ROI 与 AI 区别、真实端侧分析、云确认、规则与新增需求 |
 
 ## 维护约定
 
@@ -48,3 +61,4 @@
 | V2.3 | 2026-10-25 | 引入Doka界面参考；3 Tab+设置；统一授权、任务、额度、购买和分阶段验收 |
 | V2.2 | 2026-10-25 | 补充操作流、后台与服务端设计 |
 | V2.0 | 2026-10-25 | 拆分需求、技术与11份功能细则 |
+

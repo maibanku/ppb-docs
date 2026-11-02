@@ -1,5 +1,7 @@
 # AI 相机 · AI 构图交互与模块架构
 
+> 2026-11-02：本架构的增量实现以 [新技术设计](AI构图实现技术设计.md) 和 [固定提交分析](../implementation/2026-11-02-ppb-camera代码分析.md) 为准；四 Tab 为目标，当前代码仍三 Tab。L1 不产生智能结论，L2/L3 尚未实现。
+
 | 项目 | 内容 |
 |---|---|
 | 版本 | V2.4 · 2026-11-01（需求更新文档；架构深化，不推翻[技术大纲](技术大纲.md)） |
@@ -27,7 +29,7 @@ L1 本地辅助（无 AI）──→ L2 端侧检测（设备推理）──→ 
 
 | 层 | 数据流 | 模块（目标归属） | 诚实边界 |
 |---|---|---|---|
-| L1 | 纯 UI 几何，零采集零网络 | App/CaptureView（参考框、中心点、网格、指导卡） | 卡片标注「本地指导」；无进度、无达标反馈 |
+| L1 | UI 几何与主动 ROI 快照读取（本机拍一张），零网络、无智能分析 | App/CaptureView（参考框、中心点、网格、指导卡） | 卡片标注「本地指导」；无进度、无达标反馈 |
 | L2 | 相机帧 → 端侧检测（Vision）→ 平滑/置信度 → 状态机 → 双路输出（建议事件 + 覆盖层快照） | CameraCore（帧）· PoseKit（检测）· GuidanceEngine（状态机）· DesignSystem（呈现） | 低置信静默（P3）；达标只来自真实判定；过热降级链 |
 | L3 | 用户主动点击 + 单帧授权 → 抓帧编码 → 云任务 → 结果校验 → ack 核销 → 建议落屏 | SceneIntelligence · PrivacyKit（授权守卫）· EntitlementKit（额度）· NetworkKit（传输）· server-camera/server-gateway | 未确认不扣；迟到结果丢弃；云结果仍经端侧校验 |
 
@@ -74,55 +76,15 @@ created → reserved → running → ready → committed（ack 确认，核销�
 - 客户端只做：创建（带 requestId）、查询、ack、cancel；本地 Task.cancel 只是停止等待，另发 cancel 或依赖到期清扫。
 - ack 与 cancel 竞争由服务端行锁串行决定终态；同 `(subjectId, requestId)` 幂等。
 
-## 4. 预览与裁切坐标系（权威定义）
+## 4. 预览与分析坐标系（2026-11-02 对齐 FS-12/13）
 
-取景器坐标是全链路最容易漂移的部分，本文固定四个坐标域与换算规则（实现参照 `CaptureView.swift` 中的 `FinderGuideGeometry` / `CaptureLayout` / `GuideLayout` / `AspectFillCropMapping` / `WYSIWYMCaptureCrop`，见[实施现状 §2](../implementation/实施现状与验证记录.md)）。
+旧版参考框默认显示、普通快门 WYSIWYG 3:4 自动裁切与参考框中心点规则已由 FS-12/13 替代。当前为全屏 aspectFill，无默认大框/遮罩；普通快门保存完整原片。ROI 是用户选择的分析输入范围，不改变照片保存范围。
 
-### 4.1 坐标域
+坐标分设备 D、upright 图像 I、屏幕 S、ROI R 和控件避让 O。图像、预览、ROI 使用同一几何快照及显式正逆变换；视频帧与照片视野不能默认相同。ROI 外看不到的身体部分为未知，不能判原片裁切。方向、镜像、zoom、选区、镜头与场景变化须使旧结果失效。
 
-| 域 | 定义 | 用途 |
-|---|---|---|
-| S 屏幕域 | 预览层全屏 bounds（points） | 控件、参考框绘制 |
-| G 参考框域 | 3:4 矩形，S 的子矩形 | 构图辅助绘制、裁切窗口 |
-| I 图像域 | upright（EXIF 方向归一后）像素 | 检测输出、裁切、成片 |
-| D 设备域 | 相机输出原始方向/镜像（前摄镜像） | 仅在采集与归一层出现，UI 不直接使用 |
+已有 AspectFillCropMapping 作为初始映射实现；旧 WYSIWYMCaptureCrop helper 仍在源码中，但普通快门不调用。前摄镜像假设与照片/视频/预览映射需真机校准，不能以 helper 单测证明。
 
-### 4.2 参考框几何（S → G）
-
-- 比例固定 3:4（宽:高）；水平居中，左右最小边距 16pt。
-- 垂直方向在 `[topReserve, height − bottomReserve]` 预留带内取**能放下的最大 3:4 矩形**（预留带 = 安全区 + 顶部调整图标行 + 底部快门/工具/导航行），保证参考框不被控件与手势区遮挡。
-- 绘制与裁切**共用同一份布局快照**（GeometryReader 采集一次，Preference 回传状态），禁止两处各自计算。
-
-### 4.3 预览 → 像素映射（S/G → I）
-
-预览层为 aspectFill：3:4 画面填满更瘦长的屏幕时左右溢出。映射公式：
-
-```
-scale   = max(layerW / imageW, layerH / imageH)      // aspectFill 缩放
-offsetX = (imageW·scale − layerW) / 2                 // 居中裁切偏移
-imgRect = ((g.minX + offsetX)/scale, (g.minY + offsetY)/scale,
-           g.width/scale, g.height/scale)             // 参考框(裁剪到层内)对应像素矩形
-```
-
-规则：
-
-- 参考框先与预览层 bounds 求交（防越界）；交集为空 → 几何无效。
-- 检测输出（I 域）反向上屏走同一公式的逆变换；**任何一处单独实现映射都视为缺陷**。
-
-### 4.4 拍摄 WYSIWYG 裁切（所见即所得）
-
-```
-原片字节 → 解码 → EXIF 方向归一(upright) → §4.3 映射取整(integral) → 与图像边界求交
-→ 裁切 → 重编码(HEIC 优先 q0.9，失败回退 JPEG q0.95) → 3:4 成片
-```
-
-- 任一步失败：**回退保存原图并如实提示**，拍摄成功优先于裁切精确，不吞照片。
-- 圆角取景只是视觉遮罩，导出图像恒为矩形（界面设计规范 §2）。
-- **前摄镜像与设备方向**：D→I 归一是 L2 坐标正确性的前置条件（技术大纲 §4「坐标映射必须覆盖前摄镜像、方向、预览裁切和拍摄比例」）；L1 的 UI 叠加不依赖镜像，但 L2 检测框上屏必须先做镜像/方向归一，属 L2 任务的验收项。
-
-### 4.5 中心点落点（G 域）
-
-中心点位置 = G 域几何中心 `(g.midX, g.midY)`，**不是** S 域（整屏）中心。参考框因预留带而垂直偏移时，两者不同——这是「中心点默认在实际 3:4 参考框中心」要求的几何含义。
+当前中心点：非 ROI 模式为全屏画布中心，ROI 模式跟随选区中心。纯 UI 标记，不写入照片、不是对焦或识别结果。详细算法、revision 与校准见 [新技术设计 §3](AI构图实现技术设计.md)。
 
 ## 5. 中心点 vs 主体检测 vs 对焦
 
@@ -130,7 +92,7 @@ imgRect = ((g.minX + offsetX)/scale, (g.minY + offsetY)/scale,
 
 | 概念 | 是什么 | 数据来源 | 生命周期 | 是否进原片 |
 |---|---|---|---|---|
-| **中心点**（CenterAim） | 3:4 参考框几何中心的静态标记（小圆点+细环+十字刻线） | 纯 UI 几何，无任何感知 | 用户开关控制（默认开）；`allowsHitTesting(false)`、VoiceOver 隐藏 | 否 |
+| **中心点**（CenterAim） | 非 ROI 时画布中心、ROI 时选区中心的静态标记（小圆点+细环+十字刻线） | 纯 UI 几何，无任何感知 | 用户开关控制（默认开）；`allowsHitTesting(false)`、VoiceOver 隐藏 | 否 |
 | **主体检测**（L2） | 帧流中人体/主体的实时外接框与关键点 | 端侧 Vision 推理 + 平滑 | 仅检测运行期；输出进 OverlaySnapshot，驱动引导与参考 | 否（仅 UI 覆盖层） |
 | **对焦/曝光** | 设备控制域（AVFoundation focus/exposure） | 用户点按（如实现 tap-to-focus）或系统自动 | 相机会话控制，属 CameraCore 设备能力 | 影响成像参数，不是内容叠加 |
 
@@ -159,7 +121,8 @@ Features/
   Theme/        浅色页主题
 Packages/（13 个，见技术大纲 §3 命名）
   实包：CameraCore、AccountKit、StorageKit、SharedModels、DesignSystem、GalleryKit
-  marker（待实现）：NetworkKit、GuidanceEngine、PoseKit、SceneIntelligence、
+  NetworkKit：模板目录客户端已实现，App 接线待做；
+  marker（待实现）：GuidanceEngine、PoseKit、SceneIntelligence、
                    PrivacyKit、EntitlementKit、StyleKit
 ```
 
@@ -207,3 +170,4 @@ base-manage-web/    管理后台底座（Liquid Glass）
 | G3 引导稳定 | §3.2 状态机 + 滞回 + 冷却；假达标禁止转移规则 |
 | G4 快门独立 | §6.1 依赖规则；拍摄裁切在 App 层实现，CameraCore 无 AI 依赖 |
 | G5 授权边界 | PrivacyKit 上传守卫；分析帧与反馈附件授权分离 |
+
