@@ -1,5 +1,7 @@
 # AI 构图实现技术设计 · 基于 ppb-camera
 
+> 后续 [工具列与比例技术设计](右侧工具列与比例技术设计.md)定义PhotoAspect/ExpectedPeople及独立曝光、几何、目标revision：原始模式仍完整原片，选定比例派生成片不改ROI语义；本地裁切不调用云模型、不扣次。
+
 版本：1.0｜日期：2026-11-02｜性质：增量设计，未实现声明。
 
 基线：ppb-camera main@b3b7dadf82829631056eb28b98b8980df510362c；现状证据与边界见[代码分析](../implementation/2026-11-02-ppb-camera代码分析.md)。对应[FS-14](../pr/FS-14-AI构图分析与实时引导.md)与[专项验收](../ac/AI构图专项验收.md)。
@@ -244,3 +246,11 @@ PrivacyKit 分 AnalysisUpload/FeedbackUpload 用途检查，授权撤回阻止�
 - [S6 Core Motion](https://developer.apple.com/documentation/coremotion/getting-processed-device-motion-data)：重力、姿态、角速度与停止更新；不直接提供绝对机位高度。
 - [S7 TN2445](https://developer.apple.com/library/archive/technotes/tn2445/_index.html)：迟到帧丢弃与处理积压风险。
 - [S8 AVCam](https://developer.apple.com/documentation/avfoundation/avcam-building-a-camera-app)：相机会话与预览/照片输出组织；示例最低版本不等于本项目最低版本。
+
+
+
+## 12. 右侧工具列与比例联动（FS-15增量）
+
+增加独立ExpectedPeople、GuideStyle、PhotoAspect，曝光复用CameraCore真实设备状态。保持人数意图与检测人数分开，不把多人数偏好套入单人算法。PhotoAspect决定成片窗口P，ROI仍为分析R；用户选择非原始比例时指导/辅助线对齐P，拍照冻结配方，保存完整原片并生成派生文件。详见[配套技术设计](右侧工具列与比例技术设计.md)。
+
+原始模式维持既有全屏预览差异，非原始模式须先证明预览/照片映射；单纯画一个比例框不算完成。goal/geometry/roi/photometric revision按实际变更分别失效，纯辅助线/中心点切换不上传。ack前context改变不确认，ack在途后查询原终态，不自动重新收费。新能力与旧源码事实分别管理。
