@@ -254,3 +254,13 @@ PrivacyKit 分 AnalysisUpload/FeedbackUpload 用途检查，授权撤回阻止�
 增加独立ExpectedPeople、GuideStyle、PhotoAspect，曝光复用CameraCore真实设备状态。保持人数意图与检测人数分开，不把多人数偏好套入单人算法。PhotoAspect决定成片窗口P，ROI仍为分析R；用户选择非原始比例时指导/辅助线对齐P，拍照冻结配方，保存完整原片并生成派生文件。详见[配套技术设计](右侧工具列与比例技术设计.md)。
 
 原始模式维持既有全屏预览差异，非原始模式须先证明预览/照片映射；单纯画一个比例框不算完成。goal/geometry/roi/photometric revision按实际变更分别失效，纯辅助线/中心点切换不上传。ack前context改变不确认，ack在途后查询原终态，不自动重新收费。新能力与旧源码事实分别管理。
+
+## 13. 四角断线式圆角分析覆盖层
+
+新增独立AnalysisCornerOverlay渲染组件（建议命名），输入有效分析rect、geometry/ROI revision及真实分析状态；不将其接到图像滤镜、曝光、zoom或照片裁切管线。四个独立路径分别画短横段、圆弧、短竖段，圆头/圆接，不用完整RoundedRectangle再设置dash；矩形四边中段不绘制。
+
+候选角标范围：L=min(28pt, 0.15×min(width,height))，圆弧半径=min(12pt,L/2)，stroke约2pt；先按线宽向内收边，避免边缘裁切。退化/零矩形隐藏，不能画到屏幕外。参数通过布局验证调整；不要为满足固定28pt而让小框四边连接。
+
+层位：实时preview之上、必要操作控件之下；纯装饰不接收命中、不作为额外读屏焦点。显示分析框不停止CaptureService、不把分析单帧替代preview、不加整屏滤镜/蒙层。ROI编辑/分析外观由独立presentation状态控制，转换只影响叠层，不改变实际分析rect、设备参数或FS-15配方。
+
+状态文案依真实本地分析/云任务显示；L1读取不能产生analyzing。云请求仍单帧、context与ready/ack校验不变。取消/失效立即清当前分析框与等待文案，迟到回调按revision拒绝；不能由边框动画触发成功事件。与成片框/检测框重叠时使用语义区分或弱化次要覆盖层，禁止修改实时画面来解决遮挡。输出照片始终来自原拍摄与配方流程，不截屏保存UI。
