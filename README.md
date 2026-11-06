@@ -6,6 +6,7 @@
 
 | 项目 | 导航 | 代码仓库 | 状态 |
 |---|---|---|---|
+| 网关接口治理（gateway） | [gateway/README](gateway/README.md) | ppb-base：server-gateway / idl | 渐进改造设计、Claude Code 执行任务与验收标准，待实施 |
 | AI 相机（camera） | [camera/README](camera/README.md) | ppb-chat（同级目录 `../ppb-chat`：camera-ios-app / server-camera / server-gateway / camera-manager-web） | 设计基线 V2.3，尚无通过工程验证的实现 |
 | 统一认证中心（IAM） | [iam/README](iam/README.md) | ppb-base：server-iam / iam-web / iam-manage-web（规划） | 统一账号认证与平台授权设计 v0.4，58表SQL，待实施 |
 | 文件平台（file） | [file/README](file/README.md) | ppb-base：server-file / file-web / file-manage-web / file-worker（规划） | v0.1设计基线，多业务、大文件与视频、SQL及API，待实施 |
