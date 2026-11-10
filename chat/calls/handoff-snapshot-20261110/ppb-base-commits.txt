@@ -1,0 +1,10 @@
+63a56f5 deploy(rtc): start-all注入IM_RTC配置——通话切面随私有凭据装配
+74f346a fix(im): 通话切面五项安全修复——设备绑定/资格复核/门禁fail-closed/个人终态忙线/终态清扫
+19c4c03 feat(rtc): SFU媒体回调投影——官方验签+事务性投影+去重账+部署接线
+e415345 feat(im): 通话域G1——服务切面/Proto契约/网关路由/装配接线
+0a51390 feat(im): 通话域六表模型+纯状态机+迁移接线（RTC基础）
+c40e434 feat(rtc): 本地LiveKit/Egress部署与Go适配器基础
+00df34d docs: 用户码方案计划文档(2026-11-09)
+0c8de82 fix(file): 缩略图透明底垫白——气泡内图片黑背景根治
+d0ddef7 feat(im): 消息内容审计档——正文按会话回放+双人定位+独立权限码+强制审计
+e694194 fix(im): 补齐 2156c67 漏提交的 richImgCount 定义/测试/契约基线

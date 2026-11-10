@@ -1,0 +1,10 @@
+80d69fe docs: 用户编码 ADR + 语音消息发送栏/客户端布局 UI 设计文档(2026-11-09/10)
+a3bc00c docs(gateway): final review complete — ready to merge, fix wave df801e5, obligations recorded
+1332f64 docs(gateway): G4 complete — docs and CI gates, AC-09/AC-11 PASS; G0-G4 all done
+03ddc2e docs(gateway): G3 complete — todo generation pilot, AC-04..08/10/11 PASS
+dcc89d4 docs(gateway): G2 complete — validated API catalog, AC-02/AC-03 PASS
+85463db docs(gateway): G1 complete — registry determinism, AC-01 PASS
+308cccb docs(gateway): add governance design docs and G0 route/compatibility baseline
+bf5b2ce docs: 归档 Claude Code 记忆为永久文档并附工作台快照
+2ea0609 docs(camera): T21 验收执行记录 v0.1.0 + database.md V0.2
+9abad8d docs(wardrobe): add avatar management, 3D and try-on implementation design

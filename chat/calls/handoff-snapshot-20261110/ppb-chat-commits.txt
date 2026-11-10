@@ -1,0 +1,10 @@
+533a603d feat(rtc): rtc-audio-probe 双端合成音频真实验证工具
+20f22093 fix(rtc): rtc-probe装载-ObjC链接参数——macOS ObjC category被静态裁剪致SIGABRT
+2333a980 fix(rtc): 通话UI失败恢复契约+头像增强——受控busy复位pending、actionError可见提示、avatarUrl/稳定种子、圆角方头像
+7790b269 feat(rtc): 通话面板 CallPanel 纯展示组件——七阶段/成员视图/无假能力按钮/挂断最小化关闭三语义分离
+8196f2fd feat(rtc): 来电卡 IncomingCall 纯展示组件——忙碌拒重、Esc 只发最小化不接听不拒绝
+75adb0ce feat(rtc): 通话UI纯状态投影 callPresentation——proto status/inviteStatus/mediaMode 到面板阶段/终态/时长/群格映射
+947b0cd6 feat(rtc): CallMenu通话入口组件+rtc-probe原生探测工具
+9e531da2 feat(desktop): IAM 回调页「打开 ppbChat 客户端」深链唤起
+626b7749 feat(desktop): 会话列缩放约束——动态最大宽护住聊天区/发送区保底
+a5a1c34c feat(desktop): OCR 面板选区浮动工具条——复制片段/全选

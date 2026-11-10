@@ -1,0 +1,17 @@
+chat-desktop/src/components/CallMenu.vue
+chat-desktop/src/components/call/CallPanel.vue
+chat-desktop/src/components/call/IncomingCall.vue
+chat-desktop/src/components/call/tests/callPanel.test.ts
+chat-desktop/src/components/call/tests/incomingCall.test.ts
+chat-desktop/src/components/tests/callMenu.test.ts
+chat-desktop/src/domain/callPresentation.ts
+chat-desktop/src/domain/tests/callPresentation.test.ts
+tools/rtc-audio-probe/.gitignore
+tools/rtc-audio-probe/Cargo.lock
+tools/rtc-audio-probe/Cargo.toml
+tools/rtc-audio-probe/src/main.rs
+tools/rtc-probe/.gitignore
+tools/rtc-probe/Cargo.lock
+tools/rtc-probe/Cargo.toml
+tools/rtc-probe/build.rs
+tools/rtc-probe/src/main.rs

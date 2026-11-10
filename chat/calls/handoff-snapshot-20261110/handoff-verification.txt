@@ -1,0 +1,13 @@
+Verification provenance: Codex independent execution during handoff, 2026-11-10 Asia/Shanghai.
+Command cwd: /Users/pipi-ban/Desktop/code/vscode/ppb-base
+NO_PROXY=127.0.0.1,localhost no_proxy=127.0.0.1,localhost python3 deploy/rtc/local.py native-probe --probe-binary /Users/pipi-ban/Desktop/code/vscode/ppb-chat/tools/rtc-audio-probe/target/debug/ppb-rtc-audio-probe
+Exit code: 0
+A<-B frames=65 samples=31200 nonzero=21918 peak=3657 48000Hz mono verified=true
+B<-A frames=56 samples=26880 nonzero=22004 peak=3575 48000Hz mono verified=true
+PASS bidirectional synthetic audio through real SFU; approximately 990ms; both rooms closed.
+No microphone or speaker device was exercised.
+Lead PID84888 checked after SIGINT: exited; no direct children. UI/service/audio workers exited.
+Remote main checked during handoff:
+ppb-base 63a56f56bebb1b1619f98182a8cfc7fd6d72fd9d
+ppb-chat 533a603d4fc9f312eb1b2c8e94cdb790bed9a9ed
+User-login UI and human audio were not independently revalidated in this handoff.

@@ -1,0 +1,14 @@
+M chat-desktop/src/api/chatController.ts
+ M chat-desktop/src/api/tests/sendRich.test.ts
+ M chat-desktop/src/components/MessageComposer.vue
+ M chat-desktop/src/components/MessageList.vue
+ M chat-desktop/src/components/common/RichInput.vue
+ M chat-desktop/src/components/tests/composerRich.test.ts
+ M chat-desktop/src/domain/atMention.ts
+ M chat-desktop/src/domain/mergedForward.ts
+ M chat-desktop/src/domain/richComposer.ts
+ M chat-desktop/src/domain/tests/atMention.test.ts
+ M chat-desktop/src/domain/tests/mergedForward.test.ts
+?? chat-desktop/src/components/MergedForwardDialog.vue
+?? chat-desktop/src/components/tests/mergedForwardDialog.test.ts
+?? tools/rtc-audio-probe/build.rs
