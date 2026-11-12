@@ -35,7 +35,7 @@ Lead 负责产品/架构目标、任务依赖、集成、审查、真实验收�
 - PreCompact hook 自动写 RUNTIME-CHECKPOINT.md（git HEAD/status/stat、session ID/时间）；这不是业务总结，不能替代 Lead 手写 CHECKPOINT。
 - SessionStart 的 startup/resume/compact hook 注入简短检查点路径和内容，恢复后先核对实际 git 状态，继续当前批次，不从头重复分析。
 - Stop hook 在未完成时提醒继续，并先保存状态；真实 API/认证/资源阻塞必须记录，不可伪造 complete。为避免无限空转，hook 不反复阻止已由 Stop 提醒继续的一轮。
-- 不使用 cron/launchd 定时任务；本次仅启动原生后台 Claude 会话。查看状态使用 CLI agents/logs/attach。
+- 不使用 cron/launchd 定时任务；本次仅启动 screen 托管的 Claude 会话。查看状态使用运行目录提供的 screen -ls/-r 和日志命令。
 
 ## 汇报和阻塞
 
@@ -45,6 +45,6 @@ API 超限、余额、认证或本机环境异常，先做有限重试与可独�
 
 ## 继续/查看命令
 
-本机 CLI：`/Users/pipi-ban/.nvm/versions/node/v24.21.0/bin/claude`。本次后台会话 ID 和启动命令由运行目录记录，查看进度还可直接读取本目录 progress 文件。脚本/配置只对本次会话生效，不覆盖全局 Claude 设置。
+本机 CLI：`/Users/pipi-ban/.nvm/versions/node/v24.21.0/bin/claude`。本次 screen 会话 ID 和启动命令由运行目录记录，查看进度还可直接读取本目录 progress 文件。脚本/配置只对本次会话生效，不覆盖全局 Claude 设置。仅本次会话禁用故障的 claude-mem 插件，使用本目录检查点恢复，不依赖它的外部记忆服务。
 
 Hook 机制参照 [Claude Code 官方文档](https://code.claude.com/docs/en/hooks)；100k 参数以本机 `claude --help` 的 `--autocompact <auto|tokens>` 为依据。
