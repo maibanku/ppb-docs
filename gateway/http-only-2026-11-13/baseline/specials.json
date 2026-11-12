@@ -1,0 +1,211 @@
+[
+  {
+    "operation_id": "gateway.PostAuthMemberLogin",
+    "category": "auth-bridge",
+    "method": "POST",
+    "path": "/api/v1/auth/member/login",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "upstreams",
+    "source": "gateway_routes.go:148"
+  },
+  {
+    "operation_id": "gateway.PostAuthMemberSession",
+    "category": "auth-bridge",
+    "method": "POST",
+    "path": "/api/v1/auth/member/session",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "upstreams",
+    "source": "gateway_routes.go:149"
+  },
+  {
+    "operation_id": "gateway.PostAuthMemberOidcExchange",
+    "category": "auth-bridge",
+    "method": "POST",
+    "path": "/api/v1/auth/member/oidc-exchange",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "upstreams",
+    "source": "gateway_routes.go:157"
+  },
+  {
+    "operation_id": "gateway.PostFileUpload",
+    "category": "http-file",
+    "method": "POST",
+    "path": "/api/v1/file/upload",
+    "transport": "http-proxy",
+    "identity": "member",
+    "policy_class": "member",
+    "mount": "always",
+    "source": "gateway_routes.go:299"
+  },
+  {
+    "operation_id": "gateway.PostFileUploadChunk",
+    "category": "http-file",
+    "method": "POST",
+    "path": "/api/v1/file/upload/chunk/*path",
+    "transport": "http-proxy",
+    "identity": "member",
+    "policy_class": "member",
+    "mount": "always",
+    "source": "gateway_routes.go:310"
+  },
+  {
+    "operation_id": "gateway.GetFileDownload",
+    "category": "http-file",
+    "method": "GET",
+    "path": "/api/v1/file/download/*path",
+    "transport": "http-proxy",
+    "identity": "member",
+    "policy_class": "member",
+    "mount": "always",
+    "source": "gateway_routes.go:320"
+  },
+  {
+    "operation_id": "gateway.GetFileThumb",
+    "category": "http-file",
+    "method": "GET",
+    "path": "/api/v1/file/thumb/*path",
+    "transport": "http-proxy",
+    "identity": "member",
+    "policy_class": "member",
+    "mount": "always",
+    "source": "gateway_routes.go:321"
+  },
+  {
+    "operation_id": "gateway.AnyIamPassthrough",
+    "category": "iam-passthrough",
+    "method": "ANY",
+    "path": "/iam/*path",
+    "transport": "http-proxy",
+    "identity": "iam-session",
+    "policy_class": "iam-session",
+    "mount": "always",
+    "source": "gateway_routes.go:393"
+  },
+  {
+    "operation_id": "gateway.GetWs",
+    "category": "ws",
+    "method": "GET",
+    "path": "/ws",
+    "transport": "websocket",
+    "identity": "member",
+    "policy_class": "member",
+    "mount": "always",
+    "source": "gateway_routes.go:215"
+  },
+  {
+    "operation_id": "gateway.GetPing",
+    "category": "health",
+    "method": "GET",
+    "path": "/ping",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "always",
+    "source": "gateway_routes.go:132"
+  },
+  {
+    "operation_id": "gateway.GetSwagger",
+    "category": "docs",
+    "method": "GET",
+    "path": "/swagger",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "docs",
+    "source": "swagger/swagger.go:22"
+  },
+  {
+    "operation_id": "gateway.GetSwaggerDocJson",
+    "category": "docs",
+    "method": "GET",
+    "path": "/swagger/doc.json",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "docs",
+    "source": "swagger/swagger.go:23"
+  },
+  {
+    "operation_id": "gateway.GetSwaggerRoutes",
+    "category": "docs",
+    "method": "GET",
+    "path": "/swagger/routes",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "docs",
+    "source": "swagger/swagger.go:24"
+  },
+  {
+    "operation_id": "gateway.GetAdminIndex",
+    "category": "static",
+    "method": "GET",
+    "path": "/admin",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "admin-static",
+    "source": "static_files.go:40"
+  },
+  {
+    "operation_id": "gateway.GetAdminStatic",
+    "category": "static",
+    "method": "GET",
+    "path": "/admin/*filepath",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "admin-static",
+    "source": "static_files.go:43"
+  },
+  {
+    "operation_id": "gateway.GetAuthLoginPage",
+    "category": "static",
+    "method": "GET",
+    "path": "/auth/login",
+    "transport": "http-local",
+    "identity": "anonymous",
+    "policy_class": "anonymous",
+    "mount": "always",
+    "source": "static_files.go:55"
+  },
+  {
+    "operation_id": "gateway.NoRouteFallback",
+    "category": "fallback",
+    "method": "ANY",
+    "path": "(noroute)",
+    "transport": "http-local",
+    "identity": "none",
+    "policy_class": "none",
+    "mount": "always",
+    "source": "gateway_routes.go:219"
+  },
+  {
+    "operation_id": "gateway.GetMetrics",
+    "category": "dormant",
+    "method": "GET",
+    "path": "/metrics",
+    "transport": "http-local",
+    "identity": "none",
+    "policy_class": "none",
+    "mount": "dormant",
+    "source": "obs_gin.go:43"
+  },
+  {
+    "operation_id": "gateway.AnyDebugPprof",
+    "category": "dormant",
+    "method": "ANY",
+    "path": "/debug/pprof/*any",
+    "transport": "http-local",
+    "identity": "none",
+    "policy_class": "none",
+    "mount": "dormant",
+    "source": "obs_gin.go:45"
+  }
+]
