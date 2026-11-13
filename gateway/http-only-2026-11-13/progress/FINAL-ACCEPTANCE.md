@@ -23,19 +23,23 @@
 | A06 伪造身份字段 | ✅ | 伪造 X-Ppb-Actor/断言 → 403/忽略（transparent_test + live forged-actor 200 无 5xx）；operator 一律覆盖式注入 |
 | A07 管理权限矩阵 | ✅ | authzguard 测试（跨应用同码不互通/撤权下请求拒/revision 回源失败拒）+ 桥 is_super 不通配；活体：demo 超管全通 + 无码 403 |
 | A08 IAM 登录编排 | ✅ | 活体：login→orgs→session→token→profile 全链；wrong-password 401 IAM-2001；manage/login 退役信封保持 |
-| A09 消息 WS | ✅（连接/升级/下行帧） | 101 升级 + 下行帧 122B；帧内容不重写（透明转发） |
-| A10 跨节点/踢线 | ⚠️ 未做 | 单节点活栈；跨节点 Redis 路由与踢线全链未验证（rtws 单测覆盖逻辑面） |
-| A11 MQ 停机恢复 | ⚠️ 部分 | 公告 publish→MQ→（网关消费退役后）IM 消费→hub 广播闭环已活体验证；RabbitMQ 停机注入场景未执行 |
-| A12 通话信令 | ⚠️ 未做 | RTC 未配置（活栈 IM-8000）；信令面无真机验证 |
+| A09 消息 WS | ✅ | 101 升级 + 下行帧；msg.send→msg.ack(code=0)+双方 msg.push（同 bizKey/seq，336B 帧不重写）——A10 轮实测 |
+| A10 跨节点/踢线 | ✅ 跨节点投递 / ⚠️ 撤销踢线 | **跨节点已实测**：第二 IM 节点（9122/9132，同库同 Redis）上 b 建连，a 在节点1 发 msg.send → b 在节点2 收到相同 msg.push（同 bizKey msg-a10-*/seq 4）——Redis push bus 跨节点投递 ✓；撤销踢线：**基线既有缺口**（ListRevokedSessionsSince 轮询通道 2026-10-28 随 server-user 退役，见 event_poller.go 头注释——迁移前后行为一致：撤销会话后新连接被拒 ✓（实测 401），已建连接不主动断）；节点退出清理：连接关闭清理日志 ✓ |
+| A11 MQ 停机恢复 | ✅ | **全链实测**：docker stop ppb-mq → 好友申请仍落库（cfreq_a29c37b7 status=1）+ outbox 保留（retry_count 退避至 6）→ docker start → 两事件补投（delivered_at 12:40:55/12:41:11）→ 消费端定向推送实测（a/b 双方各收 friend.sync，eventId=obx_* 匹配去重键）→ decide 恢复好友（finally：broker 已恢复，QA 关系已还原基线）|
+| A12 通话信令 | ✅ | RTC env 注入后（restart 脚本对齐 start-all 读 credentials.json）实测两轮：创建→双方收 call.event(event=1 响铃 status=2)→b accept(deviceId)→双方收 event=2→a end→双方收 event=3 status=5 ended ✓；b reject→双方收 event=3 status=7 callee_declined ✓；未接来电超时自动清理（status=8 no_answer）✓ |
 | A13 语音/视频媒体 | ❌ 未做 | 无硬件条件；如实标记（未冒充） |
-| A14 文件流 | ✅（路由/身份） | file member 门（svcauth 直验注入 memberBizKey）+ manage 面 200；Range/206/大文件长传未注入大流量实测（服务端 handler 未改动——流式行为原样） |
+| A14 文件流 | ✅ 小文件全链 / ⚠️ 大文件 | 经网关：multipart 上传 200（file_b18497e5 落库）、全文下载 200（Content-Disposition/Length 保真）、无凭据下载 403、chunk init 200；分片数据上传与 >1MB 上传遇 **MinIO 环境级故障**（PutObject 服务端 EDEADLK "resource deadlock avoided"——SDK 直连探针复现，与网关无关；已如实记录，旧文件读路径正常）。Range：基线下载实现即 io.Copy 全量（无 206 语义）——行为保持一致 |
 | A15 重启/故障/歧义 | ✅ | restart-im-gateway.sh 全程使用；LoadRouteTable 歧义/未知 owner 拒起（测试）；上游不可达稳定 503（测试+活体） |
 | A16 build/test/CI/脚本 | ✅ | 61 测试包全绿；gen-routes/buf generate/service-http 三生成幂等本地验证；start-all/ci.sh/CI workflow 已对齐 |
 | A17 Git 提交 | ✅ | ppb-base 9989a6a→47e1b4a（每批可运行提交，已推送）；ppb-docs 同步推送；无秘密/他人改动/编译产物（两处误入二进制已即时移除并 gitignore） |
 
 ## 遗留与后续（如实）
 
-- A10 跨节点、A11 MQ 停机注入、A12 通话信令、A13 媒体、A14 大流量：需多节点部署/硬件/RTC 配置的真机窗口，本机条件未覆盖——按验收文档口径明确标记，不以测试全绿替代。
+- ~~A10 跨节点、A11 MQ 停机注入、A12 通话信令~~：本机已实测通过（见矩阵）。
+- A13 语音/视频媒体：无硬件条件——未做，不冒充通过（信令面 A12 全绿）。
+- A14 大文件：MinIO 服务端 EDEADLK（环境级，SDK 直连复现；分片/大对象 PutObject 受阻）——待存储层修复后补测；网关流式路径（transparent ReverseProxy）无缓冲证据：上传请求体经网关直达服务（错误由 MinIO 返回而非网关）。
+- 撤销踢线（A10 子项）：基线既有缺口（通道 2026-10-28 退役）——需后续任务把 IAM 会话撤销事件接入 IM 实时踢线（新连接拒绝已生效）。
+- ppb-chat 桌面客户端真机回归（发消息/好友/通话 UI 全链）未执行——服务端 API 契约兼容已由路由矩阵与负控覆盖。
 - `user/sessions` 族（logout/password/avatar/my-files/my-permissions/login-email/oauth 六条 + sessions 三条）：上游 RPC 在基线即未承接（UserIam 兼容面未实现），改造前后同为 503 行为等价——已记录 ROUTE-STATUS，承接属后续业务任务。
 - ppb-chat 桌面客户端真机回归（发消息/好友/通话 UI 全链）未执行——服务端 API 契约兼容已由路由矩阵与负控覆盖。
 - camera 为本地 sqlite 起步态（server-camera/config.yaml）；MySQL 目标态迁移属后续运维任务。
