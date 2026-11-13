@@ -3,10 +3,10 @@
   "code_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-base",
   "docs_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-docs/gateway/http-only-2026-11-13",
   "baseline_commit": "9989a6a",
-  "current_phase": "P1",
+  "current_phase": "P2",
   "phases": {
     "P0": "done",
-    "P1": "pending",
+    "P1": "done",
     "P2": "pending",
     "P3": "pending",
     "P4": "pending",
@@ -15,7 +15,8 @@
     "P7": "pending"
   },
   "blockers": [],
-  "last_commit": "9989a6a",
+  "last_commit": "e1c49e8",
   "last_verified": "2026-11-13",
-  "final_report": "progress/FINAL-ACCEPTANCE.md"
+  "final_report": "progress/FINAL-ACCEPTANCE.md",
+  "notes": "P1: svcauth+authzguard shared pkgs, gateway auth aliased, IM member HTTP direct verify, edgeauth transition preserved. Pre-existing IAM cookie test failure logged for P3."
 }
