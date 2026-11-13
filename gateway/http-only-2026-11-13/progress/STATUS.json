@@ -1,9 +1,9 @@
 {
-  "state": "running",
+  "state": "complete",
   "code_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-base",
   "docs_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-docs/gateway/http-only-2026-11-13",
   "baseline_commit": "9989a6a",
-  "current_phase": "P7",
+  "current_phase": "done",
   "phases": {
     "P0": "done",
     "P1": "done",
@@ -18,5 +18,5 @@
   "last_commit": "(see ppb-base git log)",
   "last_verified": "2026-11-13",
   "final_report": "progress/FINAL-ACCEPTANCE.md",
-  "notes": "P0-P7 complete with extended acceptance: A10 cross-node delivery verified (kick channel = pre-existing baseline gap, recorded); A11 MQ outage/restore full loop verified; A12 call signaling verified (create/ring/accept/end/reject/timeout); A14 small-file full chain verified (large-file blocked by MinIO server-side EDEADLK — environment, SDK-probed); A13 media honestly not done (no hardware). 167/167 routes; gateway deps clean; all suites green."
+  "notes": "P0-P7 complete. 167/167 route entries verified (owners, contracts, live evidence). Gateway = transparent proxy only (0 forbidden deps, CI-gated). Live-verified: login orchestration, 42 member routes, 39 IM manage, IAM user/manage faces, file/camera faces, IAM business bridge (all 4 owners), WS upgrade + cross-node msg.push, MQ outage/restore outbox loop, call signaling (create/ring/accept/reject/end/timeout), file upload/download. Honestly-unresolved external items (documented in FINAL-ACCEPTANCE, NOT route blockers): A13 audio/video media (no hardware); A14 >1MB uploads blocked by MinIO server-side EDEADLK (SDK-probed environment fault); revocation kick of established WS connections = pre-existing baseline gap (channel retired 2026-10-28, new connections correctly rejected); desktop client E2E not run."
 }
