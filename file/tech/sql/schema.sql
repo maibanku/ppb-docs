@@ -114,7 +114,6 @@ CREATE TABLE `file` (
   create_time DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '创建时间',
   update_time DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3) COMMENT '更新时间',
   deleted_flag TINYINT NOT NULL DEFAULT 0 COMMENT '软删除标记',
-  deleted_time DATETIME(3) NULL COMMENT '删除时间',
   file_application_id BIGINT UNSIGNED NOT NULL COMMENT '所属应用',
   owner_user_id BIGINT UNSIGNED NULL COMMENT '个人归属IAM user_id，组织/系统可空',
   uploader_user_id BIGINT UNSIGNED NULL COMMENT '上传者，可信系统作业可空并记录client',
