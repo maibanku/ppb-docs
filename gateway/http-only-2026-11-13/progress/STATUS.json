@@ -1,9 +1,9 @@
 {
-  "state": "complete",
+  "state": "running",
   "code_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-base",
   "docs_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-docs/gateway/http-only-2026-11-13",
   "baseline_commit": "9989a6a",
-  "current_phase": "P7",
+  "current_phase": "P7-acceptance",
   "phases": {
     "P0": "done",
     "P1": "done",
@@ -12,11 +12,11 @@
     "P4": "done",
     "P5": "done",
     "P6": "done",
-    "P7": "done"
+    "P7": "in_progress"
   },
   "blockers": [],
   "last_commit": "47e1b4a",
   "last_verified": "2026-11-13",
   "final_report": "progress/FINAL-ACCEPTANCE.md",
-  "notes": "All P0-P7 done. 167/167 routes resolved; transparent gateway 0 forbidden deps; live verified (login chain, member/manage/file/camera/bridge/WS). Remaining honestly unverified: A10 cross-node, A11 MQ outage injection, A12 call signaling, A13 media hardware, A14 large-file soak, desktop client E2E — see FINAL-ACCEPTANCE."
+  "notes": "P0-P6 code complete. Acceptance continuation: A14 file upload/download via gateway, A11 MQ outage (local ppb-mq), A10 cross-node realtime (second IM node + Redis), A12 RTC signaling (if deploy/rtc credentials exist), then re-assess complete. Not marked complete until these run."
 }
