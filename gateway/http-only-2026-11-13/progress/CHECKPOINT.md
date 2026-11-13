@@ -2,40 +2,39 @@
 
 目标：server-gateway 最终只做 HTTP/WS 透明反向代理；全部旧入口归属真实服务，权限与客户端契约不回退。
 
-基准：ppb-base/main@9989a6a 起步。当前 HEAD 8859f3b（P2 已提交推送）。所有测试包绿（42 包）。
+基准：ppb-base/main@9989a6a 起步。当前 HEAD cc92503（P3 已提交推送；活栈已切 forward.enabled=true）。31 测试包绿。
 
 ## 已完成
 
-### P0（docs 71e53fe）
-环境复核、ROUTE-STATUS.csv 167 行、负控基线。**环境事实**：活栈 IM/IAM/file/camera 数据在 LAN MySQL 192.168.3.55（deploy/db.env 凭据，gitignored）；本地 sqlite 是旧快照。legacy /api/v1/manage/login 已退役（USER-9501）——真实管理入口是 IAM Cookie 业务桥 /iam/api/v1/business/manage/**。
+### P0/P1/P2（详见前次检查点；docs 96338dd + 本轮）
+P0 基线/负控；P1 svcauth/authzguard/网关别名/IM member 直验；P2 IM 39 manage 路由 + 网关前转 + MQ 公告广播（14/14 活体验证）。
 
-### P1（ppb-base 0ae216a+e1c49e8）
-svcauth（member/manage/camera 直验+双检查器 fail-closed）、authzguard（permguard 平移）、网关 auth 别名化单源、IM member HTTP 直验（D4 闸门、edgeauth 过渡兼容）、servicehttp 身份类扩展。
+### P3（cc92503）
+- IAM 服务自有 HTTP：user-member 8 + user-anon 8（含 manage/login 退役信封）+ user-manage 5 契约；D4 闸门/IAM_JWT_SECRET env。
+- 登录编排迁 IAM（memberauth 包平移：两步链/OIDC 兑换 in-process/denylist/minClientVersion）；IssueMemberCredentials RPC（注册/邀请 token 签发权威=IAM）。
+- IM public 契约 4 匿名（register/accept 经 mint 钩子注入 token）。
+- IAM 业务桥：internal/bridge（Cookie→新鲜授权→请求绑定断言按 owner 前转；治理段拒；file/camera 503 待 P4）；网关桥仅保留 file/camera legacy 闭包。
+- 网关 user/auth 前转表 + ForwardConfig 回退杠杆（已 enable）。
+- 活体验证：login/session/profile 全链、wrong-password 401、email-log 200、桥无 Cookie 401、死路由（user/sessions 族——上游 RPC 基线即未承接）行为等价 503（已如实记录）、P2 回归 14/14。
+- IAM cookie Secure 测试债：**未修**（基线既有 TestE2E_HTTPAPIContract 失败，P4 顺手修）。
 
-### P2（ppb-base 2ca2344+f402168+f3c3524）
-- IM 自有 manage HTTP：39 条（api/manage-http.json；嵌套 PageParam 桥接；roles-scope resolver；5 审计+公告广播入服务；AdminListGroupMembers 补码）。
-- 网关 manage 前转：ForwardRegistry 39 条 + AuthorizeManage（permguard 纵深保留）+ NewServiceManageForward（Authorization 透传、X-Ppb-* 清除）；IAM 业务桥仍走 registry gRPC 闭包（P3 迁）。
-- 公告实时：IM→MQ announcement.publish→网关 hub 广播（P5 迁 IM）；发布/撤回 QA 公告已清理。
-- servicehttp：claims 二源身份（svcauth 优先/edgeauth 兼容）、manage Operator 可空、政策/审计/广播 schema。
-- 活体验证 14/14 PASS（deploy/scripts/verify-p2-manage.sh）：直连负控 401、member 网关+直连双通、manage 全链 200、roles-scope、未知路由双侧 403 fail-closed、伪造 actor 无害、公告 MQ 链端到端日志。
-- 2 条匿名发码路由已备 public-http.json（edgeauth 退役后启用；现走网关闭包）。register/accept-invite 留网关（P3 IAM 签发）。
-
-## 当前批次：P3（IAM 自有 HTTP + 登录编排迁移）
+## 当前批次：P4（File + Camera 服务承接）
 
 范围：
-1. server-iam 服务自有 HTTP：15 user 路由（8 member+7 anonymous 契约）+ 6 manage 路由（login/exempt 归匿名面）+ system-health 承接评估。
-2. 登录编排迁 IAM：member/login+session+oidc-exchange（调 IM ChatOrg 查组织）、token mint 密钥归 IAM、register/accept-invite 成功后 IAM 签发（新 RPC IssueMemberCredentials）；网关 /api/v1/auth/member/* 兼容前转。
-3. IAM 业务桥迁移：/iam/api/v1/business/manage/** 按 owner 前转到承接服务 HTTP（IAM 会话验证后的服务间凭据机制）；网关桥退役。
-4. IAM 侧测试债：cookie Secure 断言与 LAN issuer 行为（基线既有失败）。
-5. manage 2 条匿名发码路由随网关 member 面前转策略处理。
+1. server-file：12 manage 路由契约（bridgeAppKey=file 重映射！）+ member 文件流面（upload/download/thumb/chunk 的 memberBizKey 从网关注入改为服务端 svcauth 直验注入——A06/A14 加固）；网关 /api/v1/file/* 切凭据透传。
+2. server-camera：10 subject + 18 manage 路由契约（camera 主体 token 直验 svcauth.CameraSubjectAuth；管理面 CameraAdmin）+ 9116 HTTP 装配；网关 camera 域切前转。
+3. 网关桥 file/camera legacy 闭包退役（/iam business 全量直通 IAM）。
+4. IAM cookie 测试债修复。
+5. PolicySpec 增 bridgeAppKey 字段（servicehttp 桥判定用）。
 
 ## 下一步
 
-1. 读 server-iam cmd/server main + iam_http_handler 的 mux 结构与 session/OIDC handler（P3 集成点）。
-2. 设计 IssueMemberCredentials RPC（proto+服务端）与 IAM member-token 配置。
-3. 分派 2-3 个子任务（IAM user/manage 契约、登录编排迁移、桥迁移），Lead 集成。
-4. 每批活体验证（复用 restart-im-gateway.sh 模式扩 iam）。
+1. servicehttp PolicySpec.bridgeAppKey（Lead，小改）。
+2. 分派 P4a（file 契约+装配+member 面加固）、P4b（camera 契约+装配）；Lead 网关切换+验收。
+3. P5 实时面迁移（ws/hub/route/poller→server-im realtime；网关 WS 透明 Upgrade）。
+4. P6 透明网关替换（去 registry/JWT/edgeauth/permguard 依赖）。
+5. P7 部署/CI/全量验收。
 
 ## 纪律不变项
 
-不动他人 dirty 文件；不 force push；密钥不进日志/提交；服务端授权未等价前不删网关守卫；P6 前网关 permguard/JWT/edgeauth 全保留。远端 MySQL/Redis/MQ 凭据只经 deploy/db.env 与进程环境。
+不动他人 dirty 文件；不 force push；密钥不进日志/提交；P6 前网关守卫全保留；远端 MySQL/Redis/MQ 凭据只经 db.env 与进程环境。

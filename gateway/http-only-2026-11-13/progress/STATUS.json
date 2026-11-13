@@ -3,20 +3,20 @@
   "code_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-base",
   "docs_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-docs/gateway/http-only-2026-11-13",
   "baseline_commit": "9989a6a",
-  "current_phase": "P3",
+  "current_phase": "P4",
   "phases": {
     "P0": "done",
     "P1": "done",
     "P2": "done",
-    "P3": "pending",
+    "P3": "done",
     "P4": "pending",
     "P5": "pending",
     "P6": "pending",
     "P7": "pending"
   },
   "blockers": [],
-  "last_commit": "8859f3b",
+  "last_commit": "cc92503",
   "last_verified": "2026-11-13",
   "final_report": "progress/FINAL-ACCEPTANCE.md",
-  "notes": "P2: IM manage HTTP 39 routes live (fwd+direct verified 14/14). Env facts: live data on LAN MySQL 192.168.3.55 via deploy/db.env; legacy manage/login retired (USER-9501); real manage entry = IAM cookie business bridge."
+  "notes": "P3: IAM HTTP contracts + login orchestration + IssueMemberCredentials + IAM business bridge live; gateway forward.enabled=true. Dead user routes (sessions/password/avatar family) preserved as 503-equivalent (upstream RPC unimplemented at baseline)."
 }
