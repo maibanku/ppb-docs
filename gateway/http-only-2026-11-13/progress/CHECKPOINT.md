@@ -18,7 +18,13 @@ P0 基线/负控；P1 svcauth/authzguard/网关别名/IM member 直验；P2 IM 3
 - 活体验证：login/session/profile 全链、wrong-password 401、email-log 200、桥无 Cookie 401、死路由（user/sessions 族——上游 RPC 基线即未承接）行为等价 503（已如实记录）、P2 回归 14/14。
 - IAM cookie Secure 测试债：**未修**（基线既有 TestE2E_HTTPAPIContract 失败，P4 顺手修）。
 
-## 当前批次：P4（File + Camera 服务承接）
+## P4/P5 并行进行中（2026-11-13 上午）
+
+- 3 subagents 运行：file-http（12 manage + member 面加固）、camera-http（10 subject + 18 manage）、im-realtime（ws/route ~2600 行迁 server-im/internal/realtime + /ws 端点 + MQ 消费）。
+- Lead 已落：servicehttp PolicySpec.bridgeAppKey（file 桥重映射）；IAM cookie 测试债修复（f25620a）；网关 /ws 透明前转（4e54e11，forward.enabled 联动——**活栈下次重启必须等 IM realtime 就绪**，否则 WS 断）。
+- 协调点：P4+P5 全部就绪后统一重启（im/iam/gateway/file），跑 P2 矩阵 + WS 真机验证。
+
+## 后续批次：P6/P7（不变）
 
 范围：
 1. server-file：12 manage 路由契约（bridgeAppKey=file 重映射！）+ member 文件流面（upload/download/thumb/chunk 的 memberBizKey 从网关注入改为服务端 svcauth 直验注入——A06/A14 加固）；网关 /api/v1/file/* 切凭据透传。
