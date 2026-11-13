@@ -3,11 +3,11 @@
   "code_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-base",
   "docs_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-docs/gateway/http-only-2026-11-13",
   "baseline_commit": "9989a6a",
-  "current_phase": "P2",
+  "current_phase": "P3",
   "phases": {
     "P0": "done",
     "P1": "done",
-    "P2": "pending",
+    "P2": "done",
     "P3": "pending",
     "P4": "pending",
     "P5": "pending",
@@ -15,8 +15,8 @@
     "P7": "pending"
   },
   "blockers": [],
-  "last_commit": "e1c49e8",
+  "last_commit": "8859f3b",
   "last_verified": "2026-11-13",
   "final_report": "progress/FINAL-ACCEPTANCE.md",
-  "notes": "P1: svcauth+authzguard shared pkgs, gateway auth aliased, IM member HTTP direct verify, edgeauth transition preserved. Pre-existing IAM cookie test failure logged for P3."
+  "notes": "P2: IM manage HTTP 39 routes live (fwd+direct verified 14/14). Env facts: live data on LAN MySQL 192.168.3.55 via deploy/db.env; legacy manage/login retired (USER-9501); real manage entry = IAM cookie business bridge."
 }
