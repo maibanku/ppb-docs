@@ -1,11 +1,11 @@
 {
-  "state": "queued",
+  "state": "running",
   "code_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-base",
   "docs_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-docs/gateway/http-only-2026-11-13",
   "baseline_commit": "9989a6a",
-  "current_phase": "P0",
+  "current_phase": "P1",
   "phases": {
-    "P0": "pending",
+    "P0": "done",
     "P1": "pending",
     "P2": "pending",
     "P3": "pending",

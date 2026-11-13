@@ -47,7 +47,7 @@ if mode == 'resume':
     print('语义检查点：' + str(checkpoint))
     if checkpoint.exists():
         print(checkpoint.read_text()[:5000])
-    print('当前窗口使用 --autocompact 100k；每个批次后更新检查点，长日志只写本地文件。')
+    print('当前窗口使用 --autocompact 1M；每个批次后更新检查点，长日志只写本地文件。')
 elif mode == 'stop':
     snapshot()
     # One continuation reminder only; respect real blockers and avoid an endless hook loop.

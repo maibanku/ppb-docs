@@ -1,149 +1,168 @@
 operation_id,method,legacy_path,owner,target_http,identity,permission,audit_location,implementation,tests,evidence,commit,status
-im.DeleteGroupsByGroupBizKey,DELETE,/api/v1/im/groups/{groupBizKey},server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.DeleteGroupsByGroupBizKeyMembersByMemberBizKey,DELETE,/api/v1/im/groups/{groupBizKey}/members/{memberBizKey},server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-manage.DeleteMembers,DELETE,/api/v1/manage/members,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.offboard""}",,,,,,pending
-user.DeleteSessionsBySessionBizKey,DELETE,/api/v1/user/sessions/{sessionBizKey},server-iam,,member,"{""kind"": ""unknown""}",,,,,,pending
-camera.GetAnalysisByTaskId,GET,/api/v1/camera/analysis/{taskId},server-camera,,camera-subject,"{""kind"": ""unknown""}",,,,,,pending
-camera.GetQuota,GET,/api/v1/camera/quota,server-camera,,camera-subject,"{""kind"": ""unknown""}",,,,,,pending
-camera.GetTemplates,GET,/api/v1/camera/templates,server-camera,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-im.GetCallsByCallBizKey,GET,/api/v1/im/calls/{callBizKey},server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetCallsByCallBizKeyRecordings,GET,/api/v1/im/calls/{callBizKey}/recordings,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetConversationsByConvBizKeyActiveCall,GET,/api/v1/im/conversations/{convBizKey}/active-call,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetConversationsByConvBizKeyReadStats,GET,/api/v1/im/conversations/{convBizKey}/read-stats,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetGroupsByGroupBizKeyMembers,GET,/api/v1/im/groups/{groupBizKey}/members,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetMeActiveCall,GET,/api/v1/im/me/active-call,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetMessages,GET,/api/v1/im/messages,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetMessagesByMsgBizKey,GET,/api/v1/im/messages/{msgBizKey},server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetPendingEvents,GET,/api/v1/im/pending-events,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetSearch,GET,/api/v1/im/search,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.GetSessions,GET,/api/v1/im/sessions,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-manage.GetAnnouncements,GET,/api/v1/manage/announcements,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""announcement.read""}",,,,,,pending
-manage.GetAuditChat,GET,/api/v1/manage/audit/chat,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""audit.read""}",,,,,,pending
-manage.GetAuditIam,GET,/api/v1/manage/audit/iam,server-iam,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""audit.read""}",,,,,,pending
-manage.GetCameraAccounts,GET,/api/v1/manage/camera/accounts,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.account.read""}",,,,,,pending
-manage.GetCameraAudit,GET,/api/v1/manage/camera/audit,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.audit.read""}",,,,,,pending
-manage.GetCameraCompensations,GET,/api/v1/manage/camera/compensations,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.compensation.write""}",,,,,,pending
-manage.GetCameraCostsOverview,GET,/api/v1/manage/camera/costs/overview,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.cost.read""}",,,,,,pending
-manage.GetCameraFeedback,GET,/api/v1/manage/camera/feedback,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.feedback.read""}",,,,,,pending
-manage.GetCameraOverview,GET,/api/v1/manage/camera/overview,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.overview.read""}",,,,,,pending
-manage.GetCameraStrategies,GET,/api/v1/manage/camera/strategies,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.strategy.read""}",,,,,,pending
-manage.GetCameraStyles,GET,/api/v1/manage/camera/styles,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.style.read""}",,,,,,pending
-manage.GetCameraTemplates,GET,/api/v1/manage/camera/templates,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.template.read""}",,,,,,pending
-manage.GetCameraTemplatesDiff,GET,/api/v1/manage/camera/templates/diff,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.template.write""}",,,,,,pending
-manage.GetCameraTemplatesVersions,GET,/api/v1/manage/camera/templates/versions,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.template.write""}",,,,,,pending
-manage.GetChatFiles,GET,/api/v1/manage/chat-files,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""message.read""}",,,,,,pending
-manage.GetConversationsResolve,GET,/api/v1/manage/conversations/resolve,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""message.read""}",,,,,,pending
-manage.GetEmailLog,GET,/api/v1/manage/email-log,server-iam,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""mail.read""}",,,,,,pending
-manage.GetFileList,GET,/api/v1/manage/file/list,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.read""}",,,,,,pending
-manage.GetFileOrphans,GET,/api/v1/manage/file/orphans,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.read""}",,,,,,pending
-manage.GetFileOverview,GET,/api/v1/manage/file/overview,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.read""}",,,,,,pending
-manage.GetFileQuotas,GET,/api/v1/manage/file/quotas,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.read""}",,,,,,pending
-manage.GetFileRecycleBin,GET,/api/v1/manage/file/recycle-bin,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.read""}",,,,,,pending
-manage.GetFriendRequests,GET,/api/v1/manage/friend-requests,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""friend.read""}",,,,,,pending
-manage.GetFriends,GET,/api/v1/manage/friends,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""friend.read""}",,,,,,pending
-manage.GetGroups,GET,/api/v1/manage/groups,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""group.read""}",,,,,,pending
-manage.GetGroupsByGroupBizKeyMembers,GET,/api/v1/manage/groups/{groupBizKey}/members,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""group.read""}",,,,,,pending
-manage.GetImMessagesContent,GET,/api/v1/manage/im/messages/content,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""message.content.read""}",,,,,,pending
-manage.GetMeProfile,GET,/api/v1/manage/me/profile,server-iam,,manage,"{""kind"": ""self""}",,,,,,pending
-manage.GetMembers,GET,/api/v1/manage/members,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.read""}",,,,,,pending
-manage.GetMembersByMemberBizKeyAccount,GET,/api/v1/manage/members/{memberBizKey}/account,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.read""}",,,,,,pending
-manage.GetMembersByMemberBizKeyProfileView,GET,/api/v1/manage/members/{memberBizKey}/profile-view,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.read""}",,,,,,pending
-manage.GetMembersByMemberBizKeyRoles,GET,/api/v1/manage/members/{memberBizKey}/roles,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""role.read""}",,,,,,pending
-manage.GetMembersByMemberBizKeySessions,GET,/api/v1/manage/members/{memberBizKey}/sessions,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.read""}",,,,,,pending
-manage.GetMessages,GET,/api/v1/manage/messages,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""message.read""}",,,,,,pending
-manage.GetMessagesByMsgBizKey,GET,/api/v1/manage/messages/{msgBizKey},server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""message.read""}",,,,,,pending
-manage.GetMyPerms,GET,/api/v1/manage/my-perms,server-iam,,manage,"{""kind"": ""manage-exempt""}",,,,,,pending
-manage.GetRoles,GET,/api/v1/manage/roles,server-im,,manage,"{""kind"": ""super_gov"", ""resolve"": true}",,,,,,pending
-manage.GetRolesByRoleBizKeyMembers,GET,/api/v1/manage/roles/{roleBizKey}/members,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""role.read""}",,,,,,pending
-manage.GetSessions,GET,/api/v1/manage/sessions,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.read""}",,,,,,pending
-manage.GetSettings,GET,/api/v1/manage/settings,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""settings.read""}",,,,,,pending
-manage.GetSystemHealth,GET,/api/v1/manage/system/health,unknown,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""system.read""}",,,,,,pending
-user.GetAnnouncements,GET,/api/v1/user/announcements,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetContactsSearch,GET,/api/v1/user/contacts/search,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetContactsTree,GET,/api/v1/user/contacts/tree,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetFriends,GET,/api/v1/user/friends,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetFriendsRequests,GET,/api/v1/user/friends/requests,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetFriendsSummary,GET,/api/v1/user/friends/summary,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetMembersByMemberBizKeyProfile,GET,/api/v1/user/members/{memberBizKey}/profile,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetMyFiles,GET,/api/v1/user/my-files,server-iam,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetPermissions,GET,/api/v1/user/permissions,server-iam,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetPreferencesByKey,GET,/api/v1/user/preferences/{key},server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetProfile,GET,/api/v1/user/profile,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.GetSessions,GET,/api/v1/user/sessions,server-iam,,member,"{""kind"": ""unknown""}",,,,,,pending
-camera.PostAnalysis,POST,/api/v1/camera/analysis,server-camera,,camera-subject,"{""kind"": ""unknown""}",,,,,,pending
-camera.PostAnalysisByTaskIdAck,POST,/api/v1/camera/analysis/{taskId}/ack,server-camera,,camera-subject,"{""kind"": ""unknown""}",,,,,,pending
-camera.PostAnalysisByTaskIdCancel,POST,/api/v1/camera/analysis/{taskId}/cancel,server-camera,,camera-subject,"{""kind"": ""unknown""}",,,,,,pending
-camera.PostAuthApple,POST,/api/v1/camera/auth/apple,server-camera,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-camera.PostAuthSms,POST,/api/v1/camera/auth/sms,server-camera,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-camera.PostFeedback,POST,/api/v1/camera/feedback,server-camera,,camera-subject,"{""kind"": ""unknown""}",,,,,,pending
-camera.PostGuestSessions,POST,/api/v1/camera/guest-sessions,server-camera,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCalls,POST,/api/v1/im/calls,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCallsByCallBizKeyAccept,POST,/api/v1/im/calls/{callBizKey}/accept,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCallsByCallBizKeyCancel,POST,/api/v1/im/calls/{callBizKey}/cancel,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCallsByCallBizKeyEnd,POST,/api/v1/im/calls/{callBizKey}/end,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCallsByCallBizKeyJoin,POST,/api/v1/im/calls/{callBizKey}/join,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCallsByCallBizKeyLeave,POST,/api/v1/im/calls/{callBizKey}/leave,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCallsByCallBizKeyRecordings,POST,/api/v1/im/calls/{callBizKey}/recordings,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCallsByCallBizKeyRecordingsByRecordingBizKeyConsent,POST,/api/v1/im/calls/{callBizKey}/recordings/{recordingBizKey}/consent,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCallsByCallBizKeyRecordingsByRecordingBizKeyStop,POST,/api/v1/im/calls/{callBizKey}/recordings/{recordingBizKey}/stop,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostCallsByCallBizKeyReject,POST,/api/v1/im/calls/{callBizKey}/reject,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostGroups,POST,/api/v1/im/groups,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PostGroupsByGroupBizKeyMembers,POST,/api/v1/im/groups/{groupBizKey}/members,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-manage.PostAdminsChangeMyPassword,POST,/api/v1/manage/admins/change-my-password,server-iam,,manage,"{""kind"": ""manage-exempt""}",,,,,,pending
-manage.PostAnnouncements,POST,/api/v1/manage/announcements,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""announcement.publish""}",,,,,,pending
-manage.PostAnnouncementsByBizKeyRevoke,POST,/api/v1/manage/announcements/{bizKey}/revoke,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""announcement.revoke""}",,,,,,pending
-manage.PostCameraCompensations,POST,/api/v1/manage/camera/compensations,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.compensation.write""}",,,,,,pending
-manage.PostCameraCompensationsReview,POST,/api/v1/manage/camera/compensations/review,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.compensation.write""}",,,,,,pending
-manage.PostCameraFeedbackStatus,POST,/api/v1/manage/camera/feedback/status,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.feedback.write""}",,,,,,pending
-manage.PostCameraStrategies,POST,/api/v1/manage/camera/strategies,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.strategy.write""}",,,,,,pending
-manage.PostCameraStrategiesTransition,POST,/api/v1/manage/camera/strategies/transition,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.strategy.write""}",,,,,,pending
-manage.PostCameraStylesStatus,POST,/api/v1/manage/camera/styles/status,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.style.write""}",,,,,,pending
-manage.PostCameraTemplates,POST,/api/v1/manage/camera/templates,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.template.write""}",,,,,,pending
-manage.PostCameraTemplatesTransition,POST,/api/v1/manage/camera/templates/transition,server-camera,,manage,"{""kind"": ""app_perm"", ""app_key"": ""camera"", ""perm"": ""camera.template.write""}",,,,,,pending
-manage.PostFileOrphansClean,POST,/api/v1/manage/file/orphans/clean,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.orphan""}",,,,,,pending
-manage.PostFileOrphansScan,POST,/api/v1/manage/file/orphans/scan,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.orphan""}",,,,,,pending
-manage.PostFileQuota,POST,/api/v1/manage/file/quota,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.quota""}",,,,,,pending
-manage.PostFileRecycleBinPurge,POST,/api/v1/manage/file/recycle-bin/purge,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.recycle""}",,,,,,pending
-manage.PostFileRecycleBinRestore,POST,/api/v1/manage/file/recycle-bin/restore,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.recycle""}",,,,,,pending
-manage.PostFileTakedown,POST,/api/v1/manage/file/takedown,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.takedown""}",,,,,,pending
-manage.PostFileTakedownRestore,POST,/api/v1/manage/file/takedown/restore,server-file,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""file.takedown""}",,,,,,pending
-manage.PostFriendsForceUnfriend,POST,/api/v1/manage/friends/force-unfriend,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""friend.manage""}",,,,,,pending
-manage.PostGroupsDissolve,POST,/api/v1/manage/groups/dissolve,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""group.dissolve""}",,,,,,pending
-manage.PostGroupsTransferOwner,POST,/api/v1/manage/groups/transfer-owner,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""group.transfer""}",,,,,,pending
-manage.PostLogin,POST,/api/v1/manage/login,server-iam,,anonymous,"{""kind"": ""manage-exempt""}",,,,,,pending
-manage.PostMembers,POST,/api/v1/manage/members,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.create""}",,,,,,pending
-manage.PostMembersImport,POST,/api/v1/manage/members/import,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.create""}",,,,,,pending
-manage.PostMembersByMemberBizKeyDisable,POST,/api/v1/manage/members/{memberBizKey}/disable,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.disable""}",,,,,,pending
-manage.PostMembersByMemberBizKeyEnable,POST,/api/v1/manage/members/{memberBizKey}/enable,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.disable""}",,,,,,pending
-manage.PostMembersByMemberBizKeyResetPassword,POST,/api/v1/manage/members/{memberBizKey}/reset-password,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.update""}",,,,,,pending
-manage.PostMembersByMemberBizKeySessionsRevokeAll,POST,/api/v1/manage/members/{memberBizKey}/sessions/revoke-all,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.disable""}",,,,,,pending
-manage.PostMembersByMemberBizKeySessionsBySessionBizKeyRevoke,POST,/api/v1/manage/members/{memberBizKey}/sessions/{sessionBizKey}/revoke,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.disable""}",,,,,,pending
-manage.PostMembersByMemberBizKeyUnlock,POST,/api/v1/manage/members/{memberBizKey}/unlock,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.update""}",,,,,,pending
-manage.PostMessagesRecall,POST,/api/v1/manage/messages/recall,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""message.recall""}",,,,,,pending
-manage.PostSessionsBySessionBizKeyRevoke,POST,/api/v1/manage/sessions/{sessionBizKey}/revoke,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.disable""}",,,,,,pending
-user.PostAvatarSet,POST,/api/v1/user/avatar/set,server-iam,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.PostFriendsApply,POST,/api/v1/user/friends/apply,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.PostFriendsDecide,POST,/api/v1/user/friends/decide,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.PostFriendsRelation,POST,/api/v1/user/friends/relation,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.PostInvitationsAccept,POST,/api/v1/user/invitations/accept,server-im,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostInvitationsSendCode,POST,/api/v1/user/invitations/send-code,server-im,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostLogin,POST,/api/v1/user/login,server-iam,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostLoginEmailSendCode,POST,/api/v1/user/login-email/send-code,server-iam,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostLoginEmailVerify,POST,/api/v1/user/login-email/verify,server-iam,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostLogout,POST,/api/v1/user/logout,server-iam,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.PostOauthBindEmailSendCode,POST,/api/v1/user/oauth/bind-email/send-code,server-iam,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostOauthBindEmailVerify,POST,/api/v1/user/oauth/bind-email/verify,server-iam,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostOauthConfig,POST,/api/v1/user/oauth/config,server-iam,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostOauthExchange,POST,/api/v1/user/oauth/exchange,server-iam,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostRegister,POST,/api/v1/user/register,server-im,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostRegisterSendCode,POST,/api/v1/user/register/send-code,server-im,,anonymous,"{""kind"": ""unknown""}",,,,,,pending
-user.PostSessionsRevokeOthers,POST,/api/v1/user/sessions/revoke-others,server-iam,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PutGroupsByGroupBizKeyName,PUT,/api/v1/im/groups/{groupBizKey}/name,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PutGroupsByGroupBizKeyNotice,PUT,/api/v1/im/groups/{groupBizKey}/notice,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-im.PutSessionsByConvBizKeyFlags,PUT,/api/v1/im/sessions/{convBizKey}/flags,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-manage.PutMembers,PUT,/api/v1/manage/members,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""member.update""}",,,,,,pending
-manage.PutMembersByMemberBizKeyRoles,PUT,/api/v1/manage/members/{memberBizKey}/roles,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""role.assign""}",,,,,,pending
-manage.PutSettings,PUT,/api/v1/manage/settings,server-im,,manage,"{""kind"": ""app_perm"", ""app_key"": ""chat"", ""perm"": ""settings.update""}",,,,,,pending
-user.PutPassword,PUT,/api/v1/user/password,server-iam,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.PutPreferencesByKey,PUT,/api/v1/user/preferences/{key},server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
-user.PutProfile,PUT,/api/v1/user/profile,server-im,,member,"{""kind"": ""unknown""}",,,,,,pending
+im.DeleteGroupsByGroupBizKey,DELETE,/api/v1/im/groups/{groupBizKey},server-im,/api/v1/im/groups/{groupBizKey},member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.DeleteGroupsByGroupBizKeyMembersByMemberBizKey,DELETE,/api/v1/im/groups/{groupBizKey}/members/{memberBizKey},server-im,/api/v1/im/groups/{groupBizKey}/members/{memberBizKey},member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+manage.DeleteMembers,DELETE,/api/v1/manage/members,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.DeleteSessionsBySessionBizKey,DELETE,/api/v1/user/sessions/{sessionBizKey},server-iam,,member,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.GetAnalysisByTaskId,GET,/api/v1/camera/analysis/{taskId},server-camera,,camera-subject,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.GetQuota,GET,/api/v1/camera/quota,server-camera,,camera-subject,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.GetTemplates,GET,/api/v1/camera/templates,server-camera,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+im.GetCallsByCallBizKey,GET,/api/v1/im/calls/{callBizKey},server-im,/api/v1/im/calls/{callBizKey},member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetCallsByCallBizKeyRecordings,GET,/api/v1/im/calls/{callBizKey}/recordings,server-im,/api/v1/im/calls/{callBizKey}/recordings,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetConversationsByConvBizKeyActiveCall,GET,/api/v1/im/conversations/{convBizKey}/active-call,server-im,/api/v1/im/conversations/{convBizKey}/active-call,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetConversationsByConvBizKeyReadStats,GET,/api/v1/im/conversations/{convBizKey}/read-stats,server-im,/api/v1/im/conversations/{convBizKey}/read-stats,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetGroupsByGroupBizKeyMembers,GET,/api/v1/im/groups/{groupBizKey}/members,server-im,/api/v1/im/groups/{groupBizKey}/members,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetMeActiveCall,GET,/api/v1/im/me/active-call,server-im,/api/v1/im/me/active-call,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetMessages,GET,/api/v1/im/messages,server-im,/api/v1/im/messages,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetMessagesByMsgBizKey,GET,/api/v1/im/messages/{msgBizKey},server-im,/api/v1/im/messages/{msgBizKey},member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetPendingEvents,GET,/api/v1/im/pending-events,server-im,/api/v1/im/pending-events,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetSearch,GET,/api/v1/im/search,server-im,/api/v1/im/search,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.GetSessions,GET,/api/v1/im/sessions,server-im,/api/v1/im/sessions,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+manage.GetAnnouncements,GET,/api/v1/manage/announcements,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetAuditChat,GET,/api/v1/manage/audit/chat,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetAuditIam,GET,/api/v1/manage/audit/iam,server-iam,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraAccounts,GET,/api/v1/manage/camera/accounts,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraAudit,GET,/api/v1/manage/camera/audit,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraCompensations,GET,/api/v1/manage/camera/compensations,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraCostsOverview,GET,/api/v1/manage/camera/costs/overview,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraFeedback,GET,/api/v1/manage/camera/feedback,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraOverview,GET,/api/v1/manage/camera/overview,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraStrategies,GET,/api/v1/manage/camera/strategies,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraStyles,GET,/api/v1/manage/camera/styles,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraTemplates,GET,/api/v1/manage/camera/templates,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraTemplatesDiff,GET,/api/v1/manage/camera/templates/diff,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetCameraTemplatesVersions,GET,/api/v1/manage/camera/templates/versions,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetChatFiles,GET,/api/v1/manage/chat-files,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetConversationsResolve,GET,/api/v1/manage/conversations/resolve,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetEmailLog,GET,/api/v1/manage/email-log,server-iam,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetFileList,GET,/api/v1/manage/file/list,server-file,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetFileOrphans,GET,/api/v1/manage/file/orphans,server-file,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetFileOverview,GET,/api/v1/manage/file/overview,server-file,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetFileQuotas,GET,/api/v1/manage/file/quotas,server-file,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetFileRecycleBin,GET,/api/v1/manage/file/recycle-bin,server-file,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetFriendRequests,GET,/api/v1/manage/friend-requests,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetFriends,GET,/api/v1/manage/friends,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetGroups,GET,/api/v1/manage/groups,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetGroupsByGroupBizKeyMembers,GET,/api/v1/manage/groups/{groupBizKey}/members,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetImMessagesContent,GET,/api/v1/manage/im/messages/content,server-im,,manage,app_perm,im-service,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetMeProfile,GET,/api/v1/manage/me/profile,server-iam,,manage,self,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetMembers,GET,/api/v1/manage/members,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetMembersByMemberBizKeyAccount,GET,/api/v1/manage/members/{memberBizKey}/account,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetMembersByMemberBizKeyProfileView,GET,/api/v1/manage/members/{memberBizKey}/profile-view,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetMembersByMemberBizKeyRoles,GET,/api/v1/manage/members/{memberBizKey}/roles,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetMembersByMemberBizKeySessions,GET,/api/v1/manage/members/{memberBizKey}/sessions,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetMessages,GET,/api/v1/manage/messages,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetMessagesByMsgBizKey,GET,/api/v1/manage/messages/{msgBizKey},server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetMyPerms,GET,/api/v1/manage/my-perms,server-iam,,manage,manage-exempt,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetRoles,GET,/api/v1/manage/roles,server-im,,manage,super_gov,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetRolesByRoleBizKeyMembers,GET,/api/v1/manage/roles/{roleBizKey}/members,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetSessions,GET,/api/v1/manage/sessions,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetSettings,GET,/api/v1/manage/settings,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.GetSystemHealth,GET,/api/v1/manage/system/health,unknown,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.GetAnnouncements,GET,/api/v1/user/announcements,server-im,/api/v1/user/announcements,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.GetContactsSearch,GET,/api/v1/user/contacts/search,server-im,/api/v1/user/contacts/search,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.GetContactsTree,GET,/api/v1/user/contacts/tree,server-im,/api/v1/user/contacts/tree,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.GetFriends,GET,/api/v1/user/friends,server-im,/api/v1/user/friends,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.GetFriendsRequests,GET,/api/v1/user/friends/requests,server-im,/api/v1/user/friends/requests,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.GetFriendsSummary,GET,/api/v1/user/friends/summary,server-im,/api/v1/user/friends/summary,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.GetMembersByMemberBizKeyProfile,GET,/api/v1/user/members/{memberBizKey}/profile,server-im,/api/v1/user/members/{memberBizKey}/profile,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.GetMyFiles,GET,/api/v1/user/my-files,server-iam,,member,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.GetPermissions,GET,/api/v1/user/permissions,server-iam,,member,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.GetPreferencesByKey,GET,/api/v1/user/preferences/{key},server-im,/api/v1/user/preferences/{key},member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.GetProfile,GET,/api/v1/user/profile,server-im,/api/v1/user/profile,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.GetSessions,GET,/api/v1/user/sessions,server-iam,,member,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.PostAnalysis,POST,/api/v1/camera/analysis,server-camera,,camera-subject,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.PostAnalysisByTaskIdAck,POST,/api/v1/camera/analysis/{taskId}/ack,server-camera,,camera-subject,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.PostAnalysisByTaskIdCancel,POST,/api/v1/camera/analysis/{taskId}/cancel,server-camera,,camera-subject,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.PostAuthApple,POST,/api/v1/camera/auth/apple,server-camera,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.PostAuthSms,POST,/api/v1/camera/auth/sms,server-camera,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.PostFeedback,POST,/api/v1/camera/feedback,server-camera,,camera-subject,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+camera.PostGuestSessions,POST,/api/v1/camera/guest-sessions,server-camera,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+im.PostCalls,POST,/api/v1/im/calls,server-im,/api/v1/im/calls,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostCallsByCallBizKeyAccept,POST,/api/v1/im/calls/{callBizKey}/accept,server-im,/api/v1/im/calls/{callBizKey}/accept,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostCallsByCallBizKeyCancel,POST,/api/v1/im/calls/{callBizKey}/cancel,server-im,/api/v1/im/calls/{callBizKey}/cancel,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostCallsByCallBizKeyEnd,POST,/api/v1/im/calls/{callBizKey}/end,server-im,/api/v1/im/calls/{callBizKey}/end,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostCallsByCallBizKeyJoin,POST,/api/v1/im/calls/{callBizKey}/join,server-im,/api/v1/im/calls/{callBizKey}/join,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostCallsByCallBizKeyLeave,POST,/api/v1/im/calls/{callBizKey}/leave,server-im,/api/v1/im/calls/{callBizKey}/leave,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostCallsByCallBizKeyRecordings,POST,/api/v1/im/calls/{callBizKey}/recordings,server-im,/api/v1/im/calls/{callBizKey}/recordings,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostCallsByCallBizKeyRecordingsByRecordingBizKeyConsent,POST,/api/v1/im/calls/{callBizKey}/recordings/{recordingBizKey}/consent,server-im,/api/v1/im/calls/{callBizKey}/recordings/{recordingBizKey}/consent,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostCallsByCallBizKeyRecordingsByRecordingBizKeyStop,POST,/api/v1/im/calls/{callBizKey}/recordings/{recordingBizKey}/stop,server-im,/api/v1/im/calls/{callBizKey}/recordings/{recordingBizKey}/stop,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostCallsByCallBizKeyReject,POST,/api/v1/im/calls/{callBizKey}/reject,server-im,/api/v1/im/calls/{callBizKey}/reject,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostGroups,POST,/api/v1/im/groups,server-im,/api/v1/im/groups,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PostGroupsByGroupBizKeyMembers,POST,/api/v1/im/groups/{groupBizKey}/members,server-im,/api/v1/im/groups/{groupBizKey}/members,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+manage.PostAdminsChangeMyPassword,POST,/api/v1/manage/admins/change-my-password,server-iam,,manage,manage-exempt,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostAnnouncements,POST,/api/v1/manage/announcements,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostAnnouncementsByBizKeyRevoke,POST,/api/v1/manage/announcements/{bizKey}/revoke,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostCameraCompensations,POST,/api/v1/manage/camera/compensations,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostCameraCompensationsReview,POST,/api/v1/manage/camera/compensations/review,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostCameraFeedbackStatus,POST,/api/v1/manage/camera/feedback/status,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostCameraStrategies,POST,/api/v1/manage/camera/strategies,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostCameraStrategiesTransition,POST,/api/v1/manage/camera/strategies/transition,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostCameraStylesStatus,POST,/api/v1/manage/camera/styles/status,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostCameraTemplates,POST,/api/v1/manage/camera/templates,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostCameraTemplatesTransition,POST,/api/v1/manage/camera/templates/transition,server-camera,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostFileOrphansClean,POST,/api/v1/manage/file/orphans/clean,server-file,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostFileOrphansScan,POST,/api/v1/manage/file/orphans/scan,server-file,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostFileQuota,POST,/api/v1/manage/file/quota,server-file,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostFileRecycleBinPurge,POST,/api/v1/manage/file/recycle-bin/purge,server-file,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostFileRecycleBinRestore,POST,/api/v1/manage/file/recycle-bin/restore,server-file,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostFileTakedown,POST,/api/v1/manage/file/takedown,server-file,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostFileTakedownRestore,POST,/api/v1/manage/file/takedown/restore,server-file,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostFriendsForceUnfriend,POST,/api/v1/manage/friends/force-unfriend,server-im,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostGroupsDissolve,POST,/api/v1/manage/groups/dissolve,server-im,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostGroupsTransferOwner,POST,/api/v1/manage/groups/transfer-owner,server-im,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostLogin,POST,/api/v1/manage/login,server-iam,,anonymous,manage-exempt,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostMembers,POST,/api/v1/manage/members,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostMembersImport,POST,/api/v1/manage/members/import,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostMembersByMemberBizKeyDisable,POST,/api/v1/manage/members/{memberBizKey}/disable,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostMembersByMemberBizKeyEnable,POST,/api/v1/manage/members/{memberBizKey}/enable,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostMembersByMemberBizKeyResetPassword,POST,/api/v1/manage/members/{memberBizKey}/reset-password,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostMembersByMemberBizKeySessionsRevokeAll,POST,/api/v1/manage/members/{memberBizKey}/sessions/revoke-all,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostMembersByMemberBizKeySessionsBySessionBizKeyRevoke,POST,/api/v1/manage/members/{memberBizKey}/sessions/{sessionBizKey}/revoke,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostMembersByMemberBizKeyUnlock,POST,/api/v1/manage/members/{memberBizKey}/unlock,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostMessagesRecall,POST,/api/v1/manage/messages/recall,server-im,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PostSessionsBySessionBizKeyRevoke,POST,/api/v1/manage/sessions/{sessionBizKey}/revoke,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostAvatarSet,POST,/api/v1/user/avatar/set,server-iam,,member,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostFriendsApply,POST,/api/v1/user/friends/apply,server-im,/api/v1/user/friends/apply,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.PostFriendsDecide,POST,/api/v1/user/friends/decide,server-im,/api/v1/user/friends/decide,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.PostFriendsRelation,POST,/api/v1/user/friends/relation,server-im,/api/v1/user/friends/relation,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.PostInvitationsAccept,POST,/api/v1/user/invitations/accept,server-im,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostInvitationsSendCode,POST,/api/v1/user/invitations/send-code,server-im,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostLogin,POST,/api/v1/user/login,server-iam,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostLoginEmailSendCode,POST,/api/v1/user/login-email/send-code,server-iam,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostLoginEmailVerify,POST,/api/v1/user/login-email/verify,server-iam,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostLogout,POST,/api/v1/user/logout,server-iam,,member,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostOauthBindEmailSendCode,POST,/api/v1/user/oauth/bind-email/send-code,server-iam,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostOauthBindEmailVerify,POST,/api/v1/user/oauth/bind-email/verify,server-iam,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostOauthConfig,POST,/api/v1/user/oauth/config,server-iam,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostOauthExchange,POST,/api/v1/user/oauth/exchange,server-iam,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostRegister,POST,/api/v1/user/register,server-im,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostRegisterSendCode,POST,/api/v1/user/register/send-code,server-im,,anonymous,anonymous,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PostSessionsRevokeOthers,POST,/api/v1/user/sessions/revoke-others,server-iam,,member,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+im.PutGroupsByGroupBizKeyName,PUT,/api/v1/im/groups/{groupBizKey}/name,server-im,/api/v1/im/groups/{groupBizKey}/name,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PutGroupsByGroupBizKeyNotice,PUT,/api/v1/im/groups/{groupBizKey}/notice,server-im,/api/v1/im/groups/{groupBizKey}/notice,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+im.PutSessionsByConvBizKeyFlags,PUT,/api/v1/im/sessions/{convBizKey}/flags,server-im,/api/v1/im/sessions/{convBizKey}/flags,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+manage.PutMembers,PUT,/api/v1/manage/members,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PutMembersByMemberBizKeyRoles,PUT,/api/v1/manage/members/{memberBizKey}/roles,server-im,,manage,app_perm,none,server-gateway/proxy (gRPC proxy),,,,pending
+manage.PutSettings,PUT,/api/v1/manage/settings,server-im,,manage,app_perm,gateway-writeback,server-gateway/proxy (gRPC proxy),,,,pending
+user.PutPassword,PUT,/api/v1/user/password,server-iam,,member,member,none,server-gateway/proxy (gRPC proxy),,,,pending
+user.PutPreferencesByKey,PUT,/api/v1/user/preferences/{key},server-im,/api/v1/user/preferences/{key},member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+user.PutProfile,PUT,/api/v1/user/profile,server-im,/api/v1/user/profile,member,member,none,server-im member-http adapter via server-pkg/servicehttp,,,,http_adapter_exists_auth_still_at_gateway
+gateway.PostAuthMemberLogin,POST,/api/v1/auth/member/login,iam (member session app),/api/v1/auth/member/login,anonymous,anonymous,,gateway_routes.go:148,,,,special:auth-bridge:pending
+gateway.PostAuthMemberSession,POST,/api/v1/auth/member/session,iam (member session app),/api/v1/auth/member/session,anonymous,anonymous,,gateway_routes.go:149,,,,special:auth-bridge:pending
+gateway.PostAuthMemberOidcExchange,POST,/api/v1/auth/member/oidc-exchange,iam (member session app),/api/v1/auth/member/oidc-exchange,anonymous,anonymous,,gateway_routes.go:157,,,,special:auth-bridge:pending
+gateway.PostFileUpload,POST,/api/v1/file/upload,server-file,/api/v1/file/upload,member,member,,gateway_routes.go:299,,,,special:http-file:pending
+gateway.PostFileUploadChunk,POST,/api/v1/file/upload/chunk/*path,server-file,/api/v1/file/upload/chunk/*path,member,member,,gateway_routes.go:310,,,,special:http-file:pending
+gateway.GetFileDownload,GET,/api/v1/file/download/*path,server-file,/api/v1/file/download/*path,member,member,,gateway_routes.go:320,,,,special:http-file:pending
+gateway.GetFileThumb,GET,/api/v1/file/thumb/*path,server-file,/api/v1/file/thumb/*path,member,member,,gateway_routes.go:321,,,,special:http-file:pending
+gateway.AnyIamPassthrough,ANY,/iam/*path,server-iam (direct),/iam/*path,iam-session,iam-session,,gateway_routes.go:393,,,,special:iam-passthrough:pending
+gateway.GetWs,GET,/ws,server-im realtime,/ws,member,member,,gateway_routes.go:215,,,,special:ws:pending
+gateway.GetPing,GET,/ping,transparent gateway + service healthz,/ping,anonymous,anonymous,,gateway_routes.go:132,,,,special:health:pending
+gateway.GetSwagger,GET,/swagger,transparent gateway (static),/swagger,anonymous,anonymous,,swagger/swagger.go:22,,,,special:docs:pending
+gateway.GetSwaggerDocJson,GET,/swagger/doc.json,transparent gateway (static),/swagger/doc.json,anonymous,anonymous,,swagger/swagger.go:23,,,,special:docs:pending
+gateway.GetSwaggerRoutes,GET,/swagger/routes,transparent gateway (static),/swagger/routes,anonymous,anonymous,,swagger/swagger.go:24,,,,special:docs:pending
+gateway.GetAdminIndex,GET,/admin,transparent gateway (static),/admin,anonymous,anonymous,,static_files.go:40,,,,special:static:pending
+gateway.GetAdminStatic,GET,/admin/*filepath,transparent gateway (static),/admin/*filepath,anonymous,anonymous,,static_files.go:43,,,,special:static:pending
+gateway.GetAuthLoginPage,GET,/auth/login,transparent gateway (static),/auth/login,anonymous,anonymous,,static_files.go:55,,,,special:static:pending
+gateway.NoRouteFallback,ANY,(noroute),transparent gateway,(noroute),none,none,,gateway_routes.go:219,,,,special:fallback:pending
+gateway.GetMetrics,GET,/metrics,transparent gateway (dormant),/metrics,none,none,,obs_gin.go:43,,,,special:dormant:pending
+gateway.AnyDebugPprof,ANY,/debug/pprof/*any,transparent gateway (dormant),/debug/pprof/*any,none,none,,obs_gin.go:45,,,,special:dormant:pending

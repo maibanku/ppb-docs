@@ -27,7 +27,7 @@ Lead 负责产品/架构目标、任务依赖、集成、审查、真实验收�
 
 ## 自动压缩（本次本地 CLI 已验证支持）
 
-运行器使用 `claude --autocompact 100k`，不使用 1M 窗口拖延压缩。该值是本地 CLI 的自动压缩窗口参数；实际触发由 Claude Code 控制。
+运行器使用 `claude --autocompact 1M`，按用户最新要求使用最大窗口；保留自动压缩与检查点，不关闭恢复机制。该值是本地 CLI 的自动压缩窗口参数；实际触发由 Claude Code 控制。
 
 - 每次批次/关键测试/提交后，更新 CHECKPOINT.md（控制在约 1500 中文字以内）和 STATUS.json，不等接近窗口上限才写。
 - CHECKPOINT 必须含：HEAD、目标不变项、当前批次、已完成与未完成、修改文件、最近测试及日志、正在运行任务、明确下一步、真实阻塞。
@@ -47,4 +47,4 @@ API 超限、余额、认证或本机环境异常，先做有限重试与可独�
 
 本机 CLI：`/Users/pipi-ban/.nvm/versions/node/v24.21.0/bin/claude`。本次 screen 会话 ID 和启动命令由运行目录记录，查看进度还可直接读取本目录 progress 文件。脚本/配置只对本次会话生效，不覆盖全局 Claude 设置。仅本次会话禁用故障的 claude-mem 插件，使用本目录检查点恢复，不依赖它的外部记忆服务。
 
-Hook 机制参照 [Claude Code 官方文档](https://code.claude.com/docs/en/hooks)；100k 参数以本机 `claude --help` 的 `--autocompact <auto|tokens>` 为依据。
+Hook 机制参照 [Claude Code 官方文档](https://code.claude.com/docs/en/hooks)；1M 参数以本机 `claude --help` 的 `--autocompact <auto|tokens>` 为依据。
