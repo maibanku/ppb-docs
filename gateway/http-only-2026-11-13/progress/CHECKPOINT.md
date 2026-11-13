@@ -1,46 +1,25 @@
 # 当前执行检查点
 
-目标：server-gateway 最终只做 HTTP/WS 透明反向代理；全部旧入口归属真实服务，权限与客户端契约不回退。
+目标：server-gateway 最终只做 HTTP/WS 透明反向代理；全部旧入口归属真实服务，权限与客户端契约不回退。**P6 已完成**（858f6e5 已推送；活栈运行透明网关）。
 
-基准：ppb-base/main@9989a6a 起步。当前 HEAD cc92503（P3 已提交推送；活栈已切 forward.enabled=true）。31 测试包绿。
+基准：ppb-base/main@9989a6a → 当前 858f6e5。
 
-## 已完成
+## 全批次完成情况
 
-### P0/P1/P2（详见前次检查点；docs 96338dd + 本轮）
-P0 基线/负控；P1 svcauth/authzguard/网关别名/IM member 直验；P2 IM 39 manage 路由 + 网关前转 + MQ 公告广播（14/14 活体验证）。
+- P0 基线/负控（docs）；P1 svcauth/authzauth 共享验证（0ae216a）；P2 IM 39 manage + 前转 + MQ 公告（f3c3524）；P3 IAM 登录编排/契约/业务桥（cc92503）；P4 file/camera 承接 + 桥全 owner（3f00420）；P5 实时面迁 IM + WS 透明升级（3f00420）；P6 透明网关唯一形态 + legacy 删除 + 依赖图干净（858f6e5）。
+- ROUTE-STATUS 167/167 全量落位（163 service_http/special done + 4 P6 退役记录）。
+- 透明网关依赖审计：`go list -deps ./server-gateway` 0 个业务禁项（此前 79 个 grpc 族）。
+- 活体验证（透明网关）：/ping、登录编排全链（login/session/profile）、42 member 路由、manage 14/14、file/camera/桥全 owner 200、WS 101 升级、无凭据负控 401/404 拒绝。61 测试包全绿。
+- 行为差异（已记录，均为拒绝语义等价）：未知路由 404（legacy 403）；方法不匹配 405（legacy 401）；camera JWT manage 直连 503（基线即如此——gRPC 面只收断言，桥为有效通道）。
 
-### P3（cc92503）
-- IAM 服务自有 HTTP：user-member 8 + user-anon 8（含 manage/login 退役信封）+ user-manage 5 契约；D4 闸门/IAM_JWT_SECRET env。
-- 登录编排迁 IAM（memberauth 包平移：两步链/OIDC 兑换 in-process/denylist/minClientVersion）；IssueMemberCredentials RPC（注册/邀请 token 签发权威=IAM）。
-- IM public 契约 4 匿名（register/accept 经 mint 钩子注入 token）。
-- IAM 业务桥：internal/bridge（Cookie→新鲜授权→请求绑定断言按 owner 前转；治理段拒；file/camera 503 待 P4）；网关桥仅保留 file/camera legacy 闭包。
-- 网关 user/auth 前转表 + ForwardConfig 回退杠杆（已 enable）。
-- 活体验证：login/session/profile 全链、wrong-password 401、email-log 200、桥无 Cookie 401、死路由（user/sessions 族——上游 RPC 基线即未承接）行为等价 503（已如实记录）、P2 回归 14/14。
-- IAM cookie Secure 测试债：**未修**（基线既有 TestE2E_HTTPAPIContract 失败，P4 顺手修）。
+## 当前批次：P7（部署/CI/全量验收收尾）
 
-## P4/P5 并行进行中（2026-11-13 上午）
-
-- 3 subagents 运行：file-http（12 manage + member 面加固）、camera-http（10 subject + 18 manage）、im-realtime（ws/route ~2600 行迁 server-im/internal/realtime + /ws 端点 + MQ 消费）。
-- Lead 已落：servicehttp PolicySpec.bridgeAppKey（file 桥重映射）；IAM cookie 测试债修复（f25620a）；网关 /ws 透明前转（4e54e11，forward.enabled 联动——**活栈下次重启必须等 IM realtime 就绪**，否则 WS 断）。
-- 协调点：P4+P5 全部就绪后统一重启（im/iam/gateway/file），跑 P2 矩阵 + WS 真机验证。
-
-## 后续批次：P6/P7（不变）
-
-范围：
-1. server-file：12 manage 路由契约（bridgeAppKey=file 重映射！）+ member 文件流面（upload/download/thumb/chunk 的 memberBizKey 从网关注入改为服务端 svcauth 直验注入——A06/A14 加固）；网关 /api/v1/file/* 切凭据透传。
-2. server-camera：10 subject + 18 manage 路由契约（camera 主体 token 直验 svcauth.CameraSubjectAuth；管理面 CameraAdmin）+ 9116 HTTP 装配；网关 camera 域切前转。
-3. 网关桥 file/camera legacy 闭包退役（/iam business 全量直通 IAM）。
-4. IAM cookie 测试债修复。
-5. PolicySpec 增 bridgeAppKey 字段（servicehttp 桥判定用）。
-
-## 下一步
-
-1. servicehttp PolicySpec.bridgeAppKey（Lead，小改）。
-2. 分派 P4a（file 契约+装配+member 面加固）、P4b（camera 契约+装配）；Lead 网关切换+验收。
-3. P5 实时面迁移（ws/hub/route/poller→server-im realtime；网关 WS 透明 Upgrade）。
-4. P6 透明网关替换（去 registry/JWT/edgeauth/permguard 依赖）。
-5. P7 部署/CI/全量验收。
+1. deploy/scripts/start-all.sh 对齐（透明网关启动带 -routes；camera 纳入启动面）。
+2. .github/workflows/gateway-governance.yml 与 tools/ci.sh 更新（网关依赖审计门禁：禁项=非零退出；契约漂移检查 gen-routes 幂等）。
+3. go.work 清理（无变更则不动）；go.mod tidy 各模块。
+4. FINAL-ACCEPTANCE.md：逐项 A01-A17 证据；STATUS.json complete 判定。
+5. 最终全量回归（restart-all + 全脚本 + WS 长连消息收发冒烟）。
 
 ## 纪律不变项
 
-不动他人 dirty 文件；不 force push；密钥不进日志/提交；P6 前网关守卫全保留；远端 MySQL/Redis/MQ 凭据只经 db.env 与进程环境。
+不 force push；密钥不进日志/提交；camera.pid 由本次会话管理（start-all 未纳管——P7 一并对齐）。

@@ -3,20 +3,20 @@
   "code_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-base",
   "docs_root": "/Users/pipi-ban/Desktop/code/vscode/ppb-docs/gateway/http-only-2026-11-13",
   "baseline_commit": "9989a6a",
-  "current_phase": "P4",
+  "current_phase": "P7",
   "phases": {
     "P0": "done",
     "P1": "done",
     "P2": "done",
     "P3": "done",
-    "P4": "pending",
-    "P5": "pending",
-    "P6": "pending",
+    "P4": "done",
+    "P5": "done",
+    "P6": "done",
     "P7": "pending"
   },
   "blockers": [],
-  "last_commit": "cc92503",
+  "last_commit": "858f6e5",
   "last_verified": "2026-11-13",
   "final_report": "progress/FINAL-ACCEPTANCE.md",
-  "notes": "P3: IAM HTTP contracts + login orchestration + IssueMemberCredentials + IAM business bridge live; gateway forward.enabled=true. Dead user routes (sessions/password/avatar family) preserved as 503-equivalent (upstream RPC unimplemented at baseline)."
+  "notes": "P4 file/camera live; P5 realtime in IM (WS 101 via transparent forward); P6 transparent gateway only-mode, legacy deleted, deps clean (0 forbidden). All 167 routes resolved. Live: login chain, 42 member routes, manage 14/14, bridge all owners, WS upgrade verified."
 }
