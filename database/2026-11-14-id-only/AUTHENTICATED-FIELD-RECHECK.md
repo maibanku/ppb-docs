@@ -41,3 +41,9 @@ JWT改动后全量Go回归有1项定时窗口测试TestCoalesceBurst出现调度
 桌面原生通话/退役待办等剩余清理由Claude继续处理，需等待原生编译和回归后才能给出全部完成结论。
 
 更新后再次认证复测完成：53认证请求旧字段0；MFA5请求全部200；JWT2种解析均无biz_key。以上均为本轮实际执行，非历史推断。unused idOrKey回退已删除并通过IM handler回归，ff056d4已推送。
+
+## 实际存储补查
+
+MySQL13个JSON/文本列发现41条审计JSON含旧字段名：IAM39条、IM2条。已先将原文写入私有0600归档，再按原文CAS转换；11条引用映射为真实ID，30条历史引用无法映射，user_id置null并显式标记unresolved_historical_reference，原引用只在离线归档保留。没有删除审计事件。转换后复扫旧JSON字段0；实际Camera SQLite51个文本/JSON列同样0。
+
+桌面清理代码独立Rust回归207通过、0失败、2忽略。但实际用户数据目录中6个历史SQLite仍有36个旧列，含2条草稿（待发队列均0），已交Claude执行备份和无损迁移。此部分未处理前不能声称所有本地数据库清理完成；此前“数据库清零”仅指服务端MySQL与Camera SQLite。
