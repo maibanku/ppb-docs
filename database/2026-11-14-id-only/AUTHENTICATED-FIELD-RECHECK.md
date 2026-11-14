@@ -47,3 +47,11 @@ JWT改动后全量Go回归有1项定时窗口测试TestCoalesceBurst出现调度
 MySQL13个JSON/文本列发现41条审计JSON含旧字段名：IAM39条、IM2条。已先将原文写入私有0600归档，再按原文CAS转换；11条引用映射为真实ID，30条历史引用无法映射，user_id置null并显式标记unresolved_historical_reference，原引用只在离线归档保留。没有删除审计事件。转换后复扫旧JSON字段0；实际Camera SQLite51个文本/JSON列同样0。
 
 桌面清理代码独立Rust回归207通过、0失败、2忽略。但实际用户数据目录中6个历史SQLite仍有36个旧列，含2条草稿（待发队列均0），已交Claude执行备份和无损迁移。此部分未处理前不能声称所有本地数据库清理完成；此前“数据库清零”仅指服务端MySQL与Camera SQLite。
+
+## 最终实际缓存复核（20:59）
+
+6个实际桌面SQLite旧列0、旧JSON字段0。207条消息留在运行缓存，19条无法完整映射的历史消息保存在外部私有归档，合计226条原消息逐条内容摘要守恒；2条草稿均恢复到真实会话ID，scope/text/update_time摘要与原库一致。
+
+迁移后另独立发现并处理79处file_info.fileBizKey和5处账号元数据memberBizKey：83行结构化转换，1个无法映射的失效账号缓存条目私有归档。未改变消息正文或草稿文本。证据desktop-cache-final-check.json、cache-json-cleanup-results.json及外部原库备份。
+
+桌面源码提交7ba95eb7：通话/视频帧字段改ID、移除退役待办调用；207项Rust测试通过、2项原有忽略。全量244入口业务验收仍不能由本次62请求替代。
