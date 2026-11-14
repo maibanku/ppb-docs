@@ -55,3 +55,5 @@ MySQL13个JSON/文本列发现41条审计JSON含旧字段名：IAM39条、IM2条
 迁移后另独立发现并处理79处file_info.fileBizKey和5处账号元数据memberBizKey：83行结构化转换，1个无法映射的失效账号缓存条目私有归档。未改变消息正文或草稿文本。证据desktop-cache-final-check.json、cache-json-cleanup-results.json及外部原库备份。
 
 桌面源码提交7ba95eb7：通话/视频帧字段改ID、移除退役待办调用；207项Rust测试通过、2项原有忽略。全量244入口业务验收仍不能由本次62请求替代。
+
+运行同步完成：IAM、File、Camera均已更新至移除旧身份claim/读取回退的二进制，各服务健康200；File旧字段名校验提示已改为memberId（7e3f9b8）。外部缓存归档目录700、文件600。全量接口矩阵继续独立执行，未宣称244入口全部通过。
