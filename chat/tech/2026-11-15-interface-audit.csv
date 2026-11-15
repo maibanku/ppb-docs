@@ -243,3 +243,5 @@ pkg:GRPC authzport (per-method admin authz),pkg,internal,INTERNAL,,,defense-in-d
 pkg:HTTP edgeauth (edge assertion verification),pkg,internal,INTERNAL,,,"legacy gateway→service signed-assertion channel (P6 退役中); HTTP faces now use svcauth direct token verification — lane asserts the direct path, assertion path deliberately not exercised",0,0,1
 pkg:GRPC internalauth (token interceptor),pkg,internal,INTERNAL,,,shared-secret gRPC interceptor gating every service-to-service leg — exercised implicitly by all HTTP faces; not an endpoint,0,0,1
 pkg:GRPC refaccess (file reference adjudication),pkg,internal,INTERNAL,,,file access adjudication callback consumed server-side (im/mail) during file download happy paths — indirect coverage only,0,0,1
+im:POST /api/v1/manage/sessions/{sessionId}/revoke,im,admin,PASS_MANUAL,200,0,Restored route; real owned-session revoke/repeat/ownership/privilege tests. See session-revoke-real-check-20261115.json,4,0,0
+im:POST /api/v1/manage/members/{memberId}/sessions/{sessionId}/revoke,im,admin,PASS_MANUAL,200,0,Restored route; real owned-session revoke/repeat/ownership/privilege tests. See session-revoke-real-check-20261115.json,3,0,0
