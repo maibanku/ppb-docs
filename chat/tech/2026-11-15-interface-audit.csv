@@ -1,0 +1,245 @@
+﻿endpoint,owner,auth_kind,happy_observation,http_status,business_code,reason,pass_cases,fail_cases,blocked_cases
+camera:POST /api/v1/camera/analysis,camera,camera,BLOCKED,0,,spec-blocked: pending-analysis-backend: needs the AI analysis backend configured in the isolated deployment,1,0,2
+camera:GET /api/v1/camera/analysis/{taskId},camera,camera,BLOCKED,0,,missing authenticated credential (login/fixture setup failed),1,0,2
+camera:POST /api/v1/camera/analysis/{taskId}/ack,camera,camera,BLOCKED,0,,spec-blocked: pending-analysis-task: ack requires a completed analysis task,1,0,2
+camera:POST /api/v1/camera/analysis/{taskId}/cancel,camera,camera,BLOCKED,0,,missing authenticated credential (login/fixture setup failed),1,0,2
+camera:POST /api/v1/camera/auth/apple,camera,anon,BLOCKED,0,,spec-blocked: pending-apple-identity-token: requires a signed Apple identity token,1,1,1
+camera:POST /api/v1/camera/auth/sms,camera,anon,BLOCKED,0,,spec-blocked: pending-sms-code: dev sms delivery goes to the provider stub/log; unauth/param still exercised,1,1,1
+camera:POST /api/v1/camera/auth/sms (phase-2 LoginBySms),camera,anon,BLOCKED,0,,spec-blocked: pending-sms-code: needs the phase-1 code for the same phone,1,1,1
+camera:POST /api/v1/camera/feedback,camera,camera,BLOCKED,0,,missing authenticated credential (login/fixture setup failed),1,0,2
+camera:POST /api/v1/camera/guest-sessions,camera,anon,FAIL,429,CAM-4290,non-2xx on happy path,1,2,0
+camera:GET /api/v1/camera/quota,camera,camera,BLOCKED,0,,missing authenticated credential (login/fixture setup failed),1,0,2
+camera:GET /api/v1/camera/templates,camera,anon,PASS,200,0,,3,0,0
+camera:GET /api/v1/manage/camera/accounts,camera,admin,PASS,200,0,,4,1,0
+camera:GET /api/v1/manage/camera/audit,camera,admin,PASS,200,0,,4,1,0
+camera:POST /api/v1/manage/camera/compensations,camera,admin,BLOCKED,0,,pending-fixture: unresolved placeholders subjectId,3,1,1
+camera:GET /api/v1/manage/camera/compensations,camera,admin,PASS,200,0,,4,1,0
+camera:POST /api/v1/manage/camera/compensations/review,camera,admin,BLOCKED,0,,pending-fixture: unresolved placeholders compensationId,3,1,1
+camera:GET /api/v1/manage/camera/costs/overview,camera,admin,PASS,200,0,,5,0,0
+camera:GET /api/v1/manage/camera/feedback,camera,admin,PASS,200,0,,4,1,0
+camera:POST /api/v1/manage/camera/feedback/status,camera,admin,BLOCKED,0,,pending-fixture: unresolved placeholders feedbackId,3,1,1
+camera:GET /api/v1/manage/camera/overview,camera,admin,PASS,200,0,,5,0,0
+camera:POST /api/v1/manage/camera/strategies,camera,admin,FAIL,400,CAM-9002,non-2xx on happy path,3,2,0
+camera:GET /api/v1/manage/camera/strategies,camera,admin,PASS,200,0,,4,1,0
+camera:POST /api/v1/manage/camera/strategies/transition,camera,admin,FAIL,404,CAM-4042,non-2xx on happy path,3,2,0
+camera:GET /api/v1/manage/camera/styles,camera,admin,PASS,200,0,,4,1,0
+camera:POST /api/v1/manage/camera/styles/status,camera,admin,FAIL,404,CAM-4042,non-2xx on happy path,3,2,0
+camera:POST /api/v1/manage/camera/templates,camera,admin,PASS,200,0,,5,0,1
+camera:GET /api/v1/manage/camera/templates,camera,admin,PASS,200,0,,4,1,0
+camera:GET /api/v1/manage/camera/templates/diff,camera,admin,BLOCKED,0,,pending-fixture: unresolved placeholders cameraTemplateId,4,0,1
+camera:POST /api/v1/manage/camera/templates/transition,camera,admin,BLOCKED,0,,pending-fixture: unresolved placeholders cameraTemplateId,3,1,1
+camera:GET /api/v1/manage/camera/templates/versions,camera,admin,BLOCKED,0,,pending-fixture: unresolved placeholders cameraTemplateId,4,0,1
+camera:GET /ping,camera,health,PASS,200,,,3,0,0
+file:GET /api/v1/file/download/{fileId},file,member,PASS,200,(no-envelope),download digest matches uploaded fixture,5,0,0
+file:GET /api/v1/file/thumb/{fileId},file,member,BLOCKED,0,,spec-blocked: pending-thumb-generation: 720px thumb is generated server-side for image files only (FILE-2005 fallback is the documented path for the octet-stream fixture),4,0,1
+file:POST /api/v1/file/upload,file,member,PASS,200,0,,5,0,0
+file:POST /api/v1/file/upload/chunk/init,file,member,PASS,200,0,,4,1,0
+file:POST /api/v1/file/upload/chunk/{uploadId}/complete,file,member,BLOCKED,0,,spec-blocked: pending-chunk-session: engine runs the full init→part→complete chain as one composite fixture; standalone complete probes stay param/unauth,4,0,1
+file:POST /api/v1/file/upload/chunk/{uploadId}/proof,file,member,BLOCKED,0,,spec-blocked: pending-chunk-challenge: proof needs an instant-upload challenge from a matching blob hash,4,0,1
+file:POST /api/v1/file/upload/chunk/{uploadId}?seq=N,file,member,BLOCKED,0,,spec-blocked: pending-chunk-session: part needs a live uploadId from chunk/init (composite chain fixture),4,0,1
+file:GET /api/v1/manage/file/list,file,admin,PASS,200,0,,4,1,0
+file:GET /api/v1/manage/file/orphans,file,admin,PASS,200,0,,4,1,0
+file:POST /api/v1/manage/file/orphans/clean,file,admin,FAIL,404,FILE-7006,non-2xx on happy path,3,2,0
+file:POST /api/v1/manage/file/orphans/scan,file,admin,PASS,200,0,,5,0,0
+file:GET /api/v1/manage/file/overview,file,admin,PASS,200,0,,5,0,0
+file:POST /api/v1/manage/file/quota,file,admin,PASS,200,0,,4,1,0
+file:GET /api/v1/manage/file/quotas,file,admin,PASS,200,0,,4,1,0
+file:GET /api/v1/manage/file/recycle-bin,file,admin,PASS,200,0,,4,1,0
+file:POST /api/v1/manage/file/recycle-bin/purge,file,admin,FAIL,400,FILE-7002,non-2xx on happy path,3,3,0
+file:POST /api/v1/manage/file/recycle-bin/restore,file,admin,FAIL,400,FILE-7002,non-2xx on happy path,3,2,0
+file:POST /api/v1/manage/file/takedown,file,admin,PASS,200,0,,4,1,0
+file:POST /api/v1/manage/file/takedown/restore,file,admin,PASS,200,0,,4,1,0
+file:GET /ping,file,health,PASS,200,,,3,0,0
+gateway:GET /ping,gateway,health,PASS,200,0,,3,0,0
+iam:GET /.well-known/openid-configuration,iam,anon,PASS,200,,,3,0,0
+iam:POST /api/v1/auth/member/login,iam,anon,PASS,200,0,,2,1,0
+iam:POST /api/v1/auth/member/oidc-exchange,iam,anon,PASS,200,0,,2,1,0
+iam:POST /api/v1/auth/member/session,iam,anon,PASS,200,0,,2,1,0
+iam:POST /api/v1/manage/admins/change-my-password,iam,admin,FAIL,401,USER-0001,401-only is NOT a functional pass (happy path must succeed),3,2,0
+iam:GET /api/v1/manage/audit/iam,iam,admin,FAIL,401,USER-0001,401-only is NOT a functional pass (happy path must succeed),3,2,0
+iam:GET /api/v1/manage/email-log,iam,admin,FAIL,401,USER-0001,401-only is NOT a functional pass (happy path must succeed),4,1,0
+iam:POST /api/v1/manage/login,iam,anon,FAIL,501,USER-9501,server error: HTTP 501,1,2,0
+iam:GET /api/v1/manage/me/profile,iam,admin,FAIL,401,USER-0001,401-only is NOT a functional pass (happy path must succeed),3,2,0
+iam:GET /api/v1/manage/my-perms,iam,admin,FAIL,401,USER-0001,401-only is NOT a functional pass (happy path must succeed),3,2,0
+iam:POST /api/v1/user/avatar/set,iam,member,FAIL,501,USER-9501,server error: HTTP 501,2,3,0
+iam:POST /api/v1/user/login,iam,anon,FAIL,429,SYSTEM-4291,non-2xx on happy path,1,2,0
+iam:POST /api/v1/user/login-email/send-code,iam,anon,FAIL,429,SYSTEM-4291,non-2xx on happy path,1,2,0
+iam:POST /api/v1/user/login-email/verify,iam,anon,BLOCKED,0,,pending-fixture: unresolved placeholders emailCode,1,1,1
+iam:POST /api/v1/user/logout,iam,member,FAIL,501,USER-9501,server error: HTTP 501,2,3,0
+iam:GET /api/v1/user/my-files,iam,member,FAIL,501,USER-9501,server error: HTTP 501,2,3,0
+iam:POST /api/v1/user/oauth/bind-email/send-code,iam,anon,FAIL,429,SYSTEM-4291,non-2xx on happy path,1,2,0
+iam:POST /api/v1/user/oauth/bind-email/verify,iam,anon,BLOCKED,0,,pending-fixture: unresolved placeholders emailCode,1,1,1
+iam:POST /api/v1/user/oauth/config,iam,anon,FAIL,501,USER-9501,server error: HTTP 501,0,3,0
+iam:POST /api/v1/user/oauth/exchange,iam,anon,FAIL,429,SYSTEM-4291,non-2xx on happy path,1,2,0
+iam:PUT /api/v1/user/password,iam,member,FAIL,501,USER-9501,server error: HTTP 501,2,3,0
+iam:GET /api/v1/user/permissions,iam,member,FAIL,501,USER-9501,server error: HTTP 501,2,3,0
+iam:GET /api/v1/user/sessions,iam,member,FAIL,501,USER-9501,server error: HTTP 501,2,3,0
+iam:POST /api/v1/user/sessions/revoke-others,iam,member,FAIL,501,USER-9501,server error: HTTP 501,2,3,0
+iam:DELETE /api/v1/user/sessions/{sessionId},iam,member,BLOCKED,0,,pending-fixture: unresolved placeholders memberSessionKey,2,2,1
+iam:GET /authorize,iam,anon,PASS,302,(no-envelope),,3,0,0
+iam:GET /authorize/callback,iam,anon,BLOCKED,0,,spec-blocked: pending-oidc-request: callback consumes a live authorize request id (covered indirectly by the oidc fixture chain),1,1,1
+iam:POST /device_authorization,iam,anon,PASS,400,,,3,0,0
+iam:GET /end_session,iam,anon,FAIL,400,,oidc happy path non-2xx/3xx,2,1,0
+iam:GRPC /iam.IamAccountBridge/*,iam,internal,INTERNAL,,,idl/iamx.proto account-bridge face (chat org provisioning) — internal data plane,0,0,1
+iam:GRPC /iam.IamService/*,iam,internal,INTERNAL,,,internal service-to-service gRPC (internalauth token; member login chain consume) — not part of the HTTP acceptance lane,0,0,1
+iam:FAMILY /iam/api/v1/business/manage/*,iam,admin,PASS,0,,,4,0,1
+iam:POST /iam/api/v1/identity/change-email/confirm,iam,member,BLOCKED,0,,spec-blocked: pending-code-retriever: needs emailed change-identity code,3,1,1
+iam:POST /iam/api/v1/identity/change-email/start,iam,member,PASS,200,,,4,1,0
+iam:POST /iam/api/v1/login,iam,anon,PASS,200,,,2,1,0
+iam:POST /iam/api/v1/logout,iam,member,PASS,200,,,4,1,0
+iam:POST /iam/api/v1/manage/admins,iam,admin,PASS,200,,,5,0,0
+iam:GET /iam/api/v1/manage/admins,iam,admin,FAIL,403,IAM-3003,401-only is NOT a functional pass (happy path must succeed),4,1,0
+iam:DELETE /iam/api/v1/manage/admins/{admin_id},iam,admin,FAIL,404,IAM-1007,non-2xx on happy path,4,1,0
+iam:PUT /iam/api/v1/manage/admins/{admin_id}/roles,iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders roleId,4,0,1
+iam:GET /iam/api/v1/manage/admins/{admin_id}/roles,iam,admin,FAIL,403,IAM-3003,401-only is NOT a functional pass (happy path must succeed),4,1,0
+iam:GET /iam/api/v1/manage/applications,iam,admin,FAIL,403,IAM-3003,401-only is NOT a functional pass (happy path must succeed),4,1,0
+iam:PATCH /iam/api/v1/manage/applications/{app_key},iam,admin,PASS,200,,,5,0,0
+iam:POST /iam/api/v1/manage/applications/{app_key}/assignments,iam,admin,PASS,200,,,5,0,0
+iam:GET /iam/api/v1/manage/applications/{app_key}/assignments,iam,admin,FAIL,403,IAM-3003,401-only is NOT a functional pass (happy path must succeed),4,1,0
+iam:DELETE /iam/api/v1/manage/applications/{app_key}/assignments/{user_id},iam,admin,PASS,200,,,6,0,0
+iam:GET /iam/api/v1/manage/audit,iam,admin,FAIL,403,IAM-3003,401-only is NOT a functional pass (happy path must succeed),4,1,0
+iam:GET /iam/api/v1/manage/context,iam,admin,PASS,200,,,5,0,0
+iam:GET /iam/api/v1/manage/login-records,iam,admin,FAIL,400,IAM-1001,non-2xx on happy path,4,1,0
+iam:GET /iam/api/v1/manage/me,iam,admin,PASS,200,,,5,0,0
+iam:GET /iam/api/v1/manage/menus,iam,admin,PASS,200,,,5,0,0
+iam:POST /iam/api/v1/manage/menus,iam,admin,FAIL,404,IAM-1007,non-2xx on happy path,4,1,1
+iam:DELETE /iam/api/v1/manage/menus/{menu_key},iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders menuKey,4,0,1
+iam:PUT /iam/api/v1/manage/menus/{menu_key},iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders menuKey,4,0,1
+iam:POST /iam/api/v1/manage/menus/{menu_key}/permissions,iam,admin,BLOCKED,0,,"pending-fixture: unresolved placeholders menuKey,permissionKey",4,0,1
+iam:GET /iam/api/v1/manage/mfa/factors,iam,admin,FAIL,400,IAM-1001,non-2xx on happy path,4,1,0
+iam:POST /iam/api/v1/manage/mfa/factors/{factor_id}/reset,iam,admin,FAIL,404,IAM-1007,non-2xx on happy path,4,1,0
+iam:GET /iam/api/v1/manage/mfa/recovery-codes,iam,admin,FAIL,400,IAM-1001,non-2xx on happy path,4,1,0
+iam:GET /iam/api/v1/manage/oauth-clients,iam,admin,PASS,200,,,5,0,0
+iam:PATCH /iam/api/v1/manage/oauth-clients/{client_id},iam,admin,FAIL,400,IAM-1001,non-2xx on happy path,4,1,0
+iam:PUT /iam/api/v1/manage/oauth-clients/{client_id}/redirects,iam,admin,FAIL,404,IAM-1007,non-2xx on happy path,4,1,0
+iam:POST /iam/api/v1/manage/oauth-clients/{client_id}/secrets,iam,admin,FAIL,404,IAM-1007,non-2xx on happy path,4,1,0
+iam:DELETE /iam/api/v1/manage/oauth-clients/{client_id}/secrets/{secret_id},iam,admin,FAIL,404,IAM-1007,non-2xx on happy path,5,1,0
+iam:GET /iam/api/v1/manage/permissions,iam,admin,PASS,200,,,5,0,0
+iam:POST /iam/api/v1/manage/permissions,iam,admin,FAIL,404,IAM-1007,non-2xx on happy path,4,1,1
+iam:DELETE /iam/api/v1/manage/permissions/{permission_key},iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders permissionKey,4,0,1
+iam:PUT /iam/api/v1/manage/permissions/{permission_key},iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders permissionKey,4,0,1
+iam:GET /iam/api/v1/manage/permissions/{permission_key}/usage,iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders permissionKey,4,0,1
+iam:GET /iam/api/v1/manage/roles,iam,admin,PASS,200,,,5,0,0
+iam:POST /iam/api/v1/manage/roles,iam,admin,FAIL,404,IAM-1007,non-2xx on happy path,4,1,1
+iam:PUT /iam/api/v1/manage/roles/{role_id},iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders roleId,4,0,1
+iam:DELETE /iam/api/v1/manage/roles/{role_id},iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders roleId,4,0,1
+iam:PUT /iam/api/v1/manage/roles/{role_id}/menus,iam,admin,BLOCKED,0,,"pending-fixture: unresolved placeholders menuKey,roleId",4,0,1
+iam:GET /iam/api/v1/manage/roles/{role_id}/menus,iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders roleId,4,0,1
+iam:GET /iam/api/v1/manage/sessions,iam,admin,FAIL,400,IAM-1001,non-2xx on happy path,4,1,0
+iam:POST /iam/api/v1/manage/sessions/{session_id}/revoke,iam,admin,BLOCKED,0,,pending-fixture: unresolved placeholders sessionKey,4,0,1
+iam:GET /iam/api/v1/manage/signing-keys,iam,admin,PASS,200,,,5,0,0
+iam:GET /iam/api/v1/manage/tokens,iam,admin,FAIL,400,IAM-1001,non-2xx on happy path,4,1,0
+iam:POST /iam/api/v1/manage/tokens/refresh-families/{family_id}/revoke,iam,admin,FAIL,404,IAM-1007,non-2xx on happy path,4,1,0
+iam:GET /iam/api/v1/manage/users,iam,admin,PASS,200,,,5,0,0
+iam:PUT /iam/api/v1/manage/users/{user_id}/status,iam,admin,FAIL,400,IAM-1001,non-2xx on happy path,4,1,0
+iam:GET /iam/api/v1/me,iam,member,PASS,200,,,5,0,0
+iam:POST /iam/api/v1/mfa/enroll/confirm,iam,member,BLOCKED,0,,spec-blocked: pending-totp: confirm consumes a TOTP code from the QR secret,3,1,1
+iam:POST /iam/api/v1/mfa/enroll/start,iam,member,PASS,200,,,5,0,0
+iam:POST /iam/api/v1/mfa/recovery-codes,iam,member,BLOCKED,0,,spec-blocked: pending-totp: requires enrolled factor + 5min reauth window,3,1,1
+iam:GET /iam/api/v1/mfa/status,iam,member,PASS,200,,,5,0,0
+iam:POST /iam/api/v1/mfa/verify,iam,anon,BLOCKED,0,,spec-blocked: pending-totp: needs a live mfa_token from a TOTP-enrolled fixture (enroll chain requires interactive TOTP codes); param/unauth still exercised,1,1,1
+iam:POST /iam/api/v1/password/forgot,iam,anon,PASS,200,,,2,1,0
+iam:POST /iam/api/v1/password/reset,iam,anon,BLOCKED,0,,spec-blocked: pending-code-retriever: needs emailed reset code,1,1,1
+iam:POST /iam/api/v1/reauthenticate,iam,member,PASS,200,,,4,1,0
+iam:POST /iam/api/v1/register,iam,anon,BLOCKED,0,,spec-blocked: pending-code-retriever: needs emailed register code (--code-retriever),1,1,1
+iam:POST /iam/api/v1/register/code,iam,anon,PASS,200,,,2,1,0
+iam:GET /keys,iam,anon,PASS,200,,,3,0,0
+iam:POST /oauth/introspect,iam,anon,FAIL,401,(no-envelope),401-only is NOT a functional pass (happy path must succeed),2,1,0
+iam:POST /oauth/token,iam,anon,FAIL,400,,oidc happy path non-2xx/3xx,2,1,0
+iam:GET /ping,iam,health,PASS,200,,,3,0,0
+iam:POST /revoke,iam,anon,FAIL,401,,401-only is NOT a functional pass (happy path must succeed),2,1,0
+iam:GRPC /user.UserService/* (compat),iam,internal,INTERNAL,,,legacy user.UserService compat gRPC face terminating on server-iam (admin/audit/authz authority for authzport回源) — exercised indirectly via HTTP manage faces; direct gRPC out of lane,0,0,1
+iam:GET /userinfo,iam,anon,FAIL,401,(no-envelope),401-only is NOT a functional pass (happy path must succeed),1,2,0
+im:POST /api/v1/im/calls,im,member,BLOCKED,0,,pending-fixture: unresolved placeholders convId,3,1,1
+im:GET /api/v1/im/calls/{callId},im,member,BLOCKED,0,,pending-fixture: unresolved placeholders callId,4,0,1
+im:POST /api/v1/im/calls/{callId}/accept,im,member,BLOCKED,0,,spec-blocked: pending-call-fixture: accept requires an in-progress call with the operator as callee,4,0,1
+im:POST /api/v1/im/calls/{callId}/cancel,im,member,BLOCKED,0,,spec-blocked: pending-call-fixture: cancel requires an outgoing ringing call,4,0,1
+im:POST /api/v1/im/calls/{callId}/end,im,member,BLOCKED,0,,spec-blocked: pending-call-fixture: end requires an ongoing call with participants,4,0,1
+im:POST /api/v1/im/calls/{callId}/join,im,member,BLOCKED,0,,spec-blocked: pending-call-fixture,4,0,1
+im:POST /api/v1/im/calls/{callId}/leave,im,member,BLOCKED,0,,spec-blocked: pending-call-fixture: leave requires an accepted/ongoing call,4,0,1
+im:GET /api/v1/im/calls/{callId}/recordings,im,member,BLOCKED,0,,spec-blocked: pending-call-fixture,4,0,1
+im:POST /api/v1/im/calls/{callId}/recordings,im,member,BLOCKED,0,,spec-blocked: pending-call-fixture: recording apply requires an active call,4,0,1
+im:POST /api/v1/im/calls/{callId}/recordings/{recordingId}/consent,im,member,BLOCKED,0,,spec-blocked: pending-recording-fixture,4,0,1
+im:POST /api/v1/im/calls/{callId}/recordings/{recordingId}/stop,im,member,BLOCKED,0,,spec-blocked: pending-recording-fixture,4,0,1
+im:POST /api/v1/im/calls/{callId}/reject,im,member,BLOCKED,0,,spec-blocked: pending-call-fixture,4,0,1
+im:GET /api/v1/im/conversations/{convId}/active-call,im,member,BLOCKED,0,,spec-blocked: pending-call-fixture: happy needs an active call on the fixture conv,4,0,1
+im:GET /api/v1/im/conversations/{convId}/read-stats,im,member,BLOCKED,0,,pending-fixture: unresolved placeholders convId,4,0,1
+im:POST /api/v1/im/groups,im,member,FAIL,403,IM-6012,401-only is NOT a functional pass (happy path must succeed),3,2,1
+im:DELETE /api/v1/im/groups/{groupId},im,member,BLOCKED,0,,pending-fixture: unresolved placeholders groupId,4,0,1
+im:GET /api/v1/im/groups/{groupId}/members,im,member,BLOCKED,0,,pending-fixture: unresolved placeholders groupId,4,0,1
+im:POST /api/v1/im/groups/{groupId}/members,im,member,BLOCKED,0,,pending-fixture: unresolved placeholders groupId,4,0,1
+im:DELETE /api/v1/im/groups/{groupId}/members/{userId},im,member,BLOCKED,0,,pending-fixture: unresolved placeholders groupId,4,0,1
+im:PUT /api/v1/im/groups/{groupId}/name,im,member,BLOCKED,0,,pending-fixture: unresolved placeholders groupId,4,0,1
+im:PUT /api/v1/im/groups/{groupId}/notice,im,member,BLOCKED,0,,pending-fixture: unresolved placeholders groupId,4,0,1
+im:GET /api/v1/im/me/active-call,im,member,PASS,200,0,,5,0,0
+im:GET /api/v1/im/messages,im,member,BLOCKED,0,,pending-fixture: unresolved placeholders convId,4,0,1
+im:GET /api/v1/im/messages/{msgId},im,member,BLOCKED,0,,pending-fixture: unresolved placeholders msgId,4,0,1
+im:GET /api/v1/im/pending-events,im,member,PASS,200,0,,4,1,0
+im:GET /api/v1/im/search,im,member,PASS,200,0,,4,1,0
+im:GET /api/v1/im/sessions,im,member,PASS,200,0,,4,1,0
+im:PUT /api/v1/im/sessions/{convId}/flags,im,member,BLOCKED,0,,pending-fixture: unresolved placeholders convId,4,0,1
+im:GET /api/v1/manage/announcements,im,admin,PASS,200,0,,4,1,0
+im:POST /api/v1/manage/announcements,im,admin,PASS,200,0,,4,1,1
+im:POST /api/v1/manage/announcements/{announcementId}/revoke,im,admin,BLOCKED,0,,pending-fixture: unresolved placeholders announcementId,4,0,1
+im:GET /api/v1/manage/audit/chat,im,admin,PASS,200,0,,5,0,0
+im:GET /api/v1/manage/chat-files,im,admin,FAIL,400,IM-9002,non-2xx on happy path,4,1,0
+im:GET /api/v1/manage/conversations/resolve,im,admin,PASS,200,0,,4,1,0
+im:GET /api/v1/manage/friend-requests,im,admin,PASS,200,0,,4,1,0
+im:GET /api/v1/manage/friends,im,admin,PASS,200,0,,4,1,0
+im:POST /api/v1/manage/friends/force-unfriend,im,admin,FAIL,404,CHORG-1002,non-2xx on happy path,3,2,0
+im:GET /api/v1/manage/groups,im,admin,PASS,200,0,,4,1,0
+im:POST /api/v1/manage/groups/dissolve,im,admin,BLOCKED,0,,pending-fixture: unresolved placeholders groupId,3,1,1
+im:POST /api/v1/manage/groups/transfer-owner,im,admin,BLOCKED,0,,pending-fixture: unresolved placeholders groupId,3,1,1
+im:GET /api/v1/manage/im/messages/content,im,admin,FAIL,400,IM-9002,non-2xx on happy path,4,1,0
+im:GET /api/v1/manage/members,im,admin,PASS,200,0,,5,0,0
+im:POST /api/v1/manage/members,im,admin,PASS,200,0,,4,1,0
+im:PUT /api/v1/manage/members,im,admin,PASS,200,0,,4,1,0
+im:DELETE /api/v1/manage/members,im,admin,FAIL,409,CHORG-1004,non-2xx on happy path,4,1,0
+im:POST /api/v1/manage/members/import,im,admin,PASS,200,0,,4,1,0
+im:GET /api/v1/manage/members/{memberId}/account,im,admin,PASS,200,0,,5,0,0
+im:POST /api/v1/manage/members/{memberId}/disable,im,admin,PASS,200,0,,5,0,0
+im:POST /api/v1/manage/members/{memberId}/enable,im,admin,PASS,200,0,,5,0,0
+im:GET /api/v1/manage/members/{memberId}/profile-view,im,admin,PASS,200,0,,5,0,0
+im:POST /api/v1/manage/members/{memberId}/reset-password,im,admin,PASS,200,0,,5,0,0
+im:PUT /api/v1/manage/members/{memberId}/roles,im,admin,BLOCKED,0,,pending-fixture: unresolved placeholders roleId,4,0,1
+im:GET /api/v1/manage/members/{memberId}/roles,im,admin,PASS,200,0,,5,0,0
+im:GET /api/v1/manage/members/{memberId}/sessions,im,admin,PASS,200,0,,5,0,0
+im:POST /api/v1/manage/members/{memberId}/sessions/revoke-all,im,admin,PASS,200,0,,6,0,0
+im:POST /api/v1/manage/members/{memberId}/unlock,im,admin,PASS,200,0,,6,0,0
+im:GET /api/v1/manage/messages,im,admin,FAIL,400,IM-9002,non-2xx on happy path,4,1,0
+im:POST /api/v1/manage/messages/recall,im,admin,BLOCKED,0,,pending-fixture: unresolved placeholders msgId,3,1,1
+im:GET /api/v1/manage/roles,im,admin,PASS,200,0,,5,0,0
+im:GET /api/v1/manage/roles/{roleId}/members,im,admin,BLOCKED,0,,pending-fixture: unresolved placeholders roleId,4,0,1
+im:GET /api/v1/manage/sessions,im,admin,PASS,200,0,,5,0,0
+im:PUT /api/v1/manage/settings,im,admin,FAIL,400,CHORG-6010,non-2xx on happy path,3,2,0
+im:GET /api/v1/manage/settings,im,admin,PASS,200,0,,5,0,0
+im:GET /api/v1/user/announcements,im,member,PASS,200,0,,5,0,0
+im:GET /api/v1/user/contacts/search,im,member,PASS,200,0,,4,1,0
+im:GET /api/v1/user/contacts/tree,im,member,PASS,200,0,,5,0,0
+im:GET /api/v1/user/friends,im,member,PASS,200,0,,4,1,0
+im:POST /api/v1/user/friends/apply,im,member,FAIL,404,CHORG-7104,non-2xx on happy path,3,2,0
+im:POST /api/v1/user/friends/decide,im,member,BLOCKED,0,,pending-fixture: unresolved placeholders friendRequestId,3,1,1
+im:POST /api/v1/user/friends/relation,im,member,PASS,200,0,,4,1,0
+im:GET /api/v1/user/friends/requests,im,member,PASS,200,0,,4,1,0
+im:GET /api/v1/user/friends/summary,im,member,PASS,200,0,,5,0,0
+im:POST /api/v1/user/invitations/accept,im,anon,BLOCKED,0,,spec-blocked: pending-invitation-fixture: needs an invitation token + emailed code,1,1,1
+im:POST /api/v1/user/invitations/send-code,im,anon,BLOCKED,0,,spec-blocked: pending-invitation-fixture,1,1,1
+im:GET /api/v1/user/preferences/{key},im,member,PASS,200,0,,4,1,0
+im:PUT /api/v1/user/preferences/{key},im,member,PASS,200,0,,4,1,0
+im:GET /api/v1/user/profile,im,member,PASS,200,0,,5,0,0
+im:PUT /api/v1/user/profile,im,member,FAIL,400,USER-3003,non-2xx on happy path,3,2,0
+im:POST /api/v1/user/register,im,anon,BLOCKED,0,,spec-blocked: pending-code-retriever: register issues credentials only after emailed code verification,1,1,1
+im:POST /api/v1/user/register/send-code,im,anon,FAIL,429,SYSTEM-4291,non-2xx on happy path,1,2,0
+im:GET /healthz,im,health,PASS,200,,,3,0,0
+im:POST /im/rtc/webhook,im,anon,BLOCKED,0,,pending-rtc-signing-key: --rtc-api-key/--rtc-api-secret not supplied,2,0,1
+im:WS /ws,im,ws,PASS,0,0,,3,0,0
+im:WS-MSG conv.read,im,ws-msg,BLOCKED,0,,pending-fixture: convId,3,0,1
+im:WS-MSG msg.recall,im,ws-msg,BLOCKED,0,,pending-fixture: msgId,3,0,1
+im:WS-MSG msg.resend,im,ws-msg,BLOCKED,0,,pending-fixture: convId,3,0,1
+im:WS-MSG msg.send,im,ws-msg,BLOCKED,0,,pending-fixture: convId,3,0,1
+im:WS-MSG ping,im,ws-msg,PASS,0,0,,3,1,0
+im:WS-MSG reaction.set,im,ws-msg,BLOCKED,0,,pending-fixture: msgId,3,0,1
+pkg:GRPC authzport (per-method admin authz),pkg,internal,INTERNAL,,,defense-in-depth per-method authz (回源 user.AdminAuthz via loopback); reachable only through each service's manage HTTP face which the lane covers,0,0,1
+pkg:HTTP edgeauth (edge assertion verification),pkg,internal,INTERNAL,,,"legacy gateway→service signed-assertion channel (P6 退役中); HTTP faces now use svcauth direct token verification — lane asserts the direct path, assertion path deliberately not exercised",0,0,1
+pkg:GRPC internalauth (token interceptor),pkg,internal,INTERNAL,,,shared-secret gRPC interceptor gating every service-to-service leg — exercised implicitly by all HTTP faces; not an endpoint,0,0,1
+pkg:GRPC refaccess (file reference adjudication),pkg,internal,INTERNAL,,,file access adjudication callback consumed server-side (im/mail) during file download happy paths — indirect coverage only,0,0,1
