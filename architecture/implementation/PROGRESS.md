@@ -190,3 +190,15 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 - main 已推 origin（97dd8b0..4599213）。本地 main 此前仅多 2ad1e37（menuKey 跨线修复）一并上线。
 - 至此形态：ppb-base main = 平台底座（go-framework/contracts/platform-sdk 14 模块 + server-pkg 过渡桥 + 五服务消费切换 v0.1.0 + 前端底座双产物 + 清单化路由生成 + P8 方案）；六业务仓各自独立（iam/gateway/file 已上远端 main，chat/camera 在 worktree 分支待终波收口后推）。
 - 待续：终波（五仓依赖全远程化）在途；旧家移除（server-*/旧前端副本）按 P8-SWITCH §6 三门执行（各仓独立回归+部署切换后）；G4 RabbitMQ 决策。
+
+### 全链路串联验证（2026-11-19，运行时 E2E）
+
+- **后端已切换至迁移主线运行**：stop-all → start-all 从合并 main@4599213 重建（五服务走 v0.1.0 家族依赖，go.work 解析）→ 6/6 健康（im 9112/file 9114/iam 9117/camera 9116/gateway 8080）；路由由清单模式新生成（1 前缀+147 路由）——start-all 链路本身即 P8 前置成果的运行时首验。
+- **E2E 链路证明（全部经网关 8080，迁移后代码）**：
+  - 登录链：POST /auth/member/login（demo@ppb.local）→ 200，iam↔im bridge 回组织/成员/部门真实数据 + JWT；
+  - 成员链：member session 建会（token/memberId/userId）→ GET /im/sessions 200；
+  - 管理三面：/manage/file/overview（gateway→file→管理鉴权→ppb_file 库，99 文件/55MB 实数）、/manage/members、/manage/groups（gateway→im）、/manage/audit/iam（审计含本次登录事件）全 200；
+  - 内部链：qatokens 经 internalauth RPC→iam 9107 铸票成功；
+  - 负控：IM 直连无凭据/坏票 401×2、member 越权管理面 403 USER-0003、未知管理路由 403 MANAGE-0004、伪造 actor 头无 5xx。
+- **verify-p2-manage.sh 14/14 PASS**（修正后）：脚本对齐 id-only 线面三处——session 键 workspaceBizKey→workspaceId、qatokens 参数十进制化、adminId 固定 demo 超管 userId（QA 成员非超管）。提交 61c507f 已推 main。
+- 静态接线审计（调用关系矩阵）与新仓二进制独立启动冒烟在途/待终波收口后。
