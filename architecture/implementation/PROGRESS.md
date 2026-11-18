@@ -9,7 +9,7 @@
 | 文档与静态分析 | 文档已编写 | architecture 目录及现有入口更新 |
 | P0 本地工具／运行基线 | 已执行 | [P0 证据](p0-evidence.md)：工具/五仓 SHA/六模块/15:39 运行态实测 |
 | P1 框架与适配 | 完成（评审 APPROVE_WITH_NITS） | worktree p1-framework：925fd32（P1b）+ 9e9c478..ff88bbe（P1c）+ 8f85abe（M1 gofmt）；11 模块 66 ok/0 fail |
-| P2 契约与 SDK | P2a 完成（评审 APPROVE_WITH_NITS）；P2b 实施中 | contracts/{common,iam,file,im,camera,user-compat} 六模块 @ 093928f，buf 真重生成零漂移，17 模块 66 ok；platform-sdk 两模块在途 |
+| P2 契约与 SDK | P2a+P2b 完成（P2b 评审在途） | contracts 六模块 + platform-sdk/{iam,file} @ ce44d25；19 模块 69 ok；RegisterFileMeta 静默缺陷实锤修复（带复现）；I1 CI 门禁已修 |
 | P3 网关独立仓 | 目标仓已建（本地） | ppb-gateway/service-gateway 独立构建全绿；原仓移除与部署切换未做 |
 | P4 前端公共包 | P4a 完成（verify PASS） | base-manage-web 库/演示双产物 + npm pack 消费实证（p4-frontend worktree）；P4b 发布链/插件化待 |
 | P5 IAM 独立仓 | 目标仓已建（本地） | ppb-iam/service-iam 独立构建全绿；原仓移除与部署切换未做 |
@@ -96,3 +96,12 @@ P1 评审收口后进入 P2：grpc_gen/user-compat/refaccess 契约拆分与 pla
 - 回退依据与下一步：三新仓为独立目录，删除即回退；ppb-base 主检出/运行态零改动；P1 线独立 worktree 可整线 revert。下一步：P1 评审收口 → P2（grpc_gen/user-compat/refaccess 契约 + platform-sdk/iam、file 客户端）→ tag 发布与 replace 切换 → 远端建仓推送（G7 解除后）。
 
 P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git archive 副本进行（未碰实施 worktree）。线面零变化升级为**全 8 域 FileDescriptorSet 级证明**（基线/终态两状态 buf build 描述符剥 options 后全等，唯一差异 goPackage）；单注册/垫片完备（FullMethodName 257/257 零缺、导出符号集合全等）/模块自洽/消费方零改动/endpoint-audit 相对路径全 PASS。**I1（Important）**：CI gateway-governance 的 buf 漂移门禁仍守 server-pkg/grpc_gen 旧路径→空转，需一行改 `-- contracts server-pkg/grpc_gen`——已转 P2b 批顺带独立提交。M1/M2（报告措辞与中间提交幂等性）、N1-N3（措辞/func→var 固有代价/buf-lint-baseline 格式无法 key 匹配——范围外建议另行修）登记在案。未核对项五条明示（01 文档本体、66 测试未全量重跑、运行期反射、gen-routes CI 步、三新仓构建实测）。
+
+### P2b platform-sdk（2026-11-18，worktree p1-framework 093928f..ce44d25）
+
+- 提交：7f8a94b（platform-sdk/iam：svcauth 核心+authzport+authzguard+edgeauth+垫片）、a910248（IAM SDK 四态错误处理+ValidateSession 两态区分+测试）、ff08b21（platform-sdk/file：File SDK 客户端自 im rpcclient 公共化）、202a1c2（**RegisterFileMeta 四类回执校验——00 文档登记缺陷修复，复现保存**：旧实现 biz-fail→(0,nil)、zero-id→(0,nil)、mismatch→(999,nil) 静默；现 KindBiz/KindReceipt 显式返回）、cc95a13（I1 CI 漂移门禁改 `-- contracts server-pkg/grpc_gen`）、ce44d25（notes+README）。
+- 证据：两 module GOWORK=off 自洽全过；工作区 **19 模块 69 ok/0 FAIL**（基线 66+3 新 SDK 测试包，零回退）。SDK 四态 8+6 用例（互斥断言）、四类回执 5 用例 -race（16 路并发幂等）。消费方零改动。
+- 结构裁决：svcauth 半拆分（核心迁 SDK，HTTP 装配面/envelope 留驻 server-pkg 经 forward.go 直通——envelope 是跨前端线契约，P2a 裁决延续）；iam module 依赖 contracts/{iam,common,im,user-compat}+go-framework{根,rpcx}（盘点明文含 im 成员判定半边）。
+- 遗留登记：server-im 私有 rpcclient 副本仍带原缺陷（im 切 SDK 消费时修复，p2b-notes）；envelope 归位裁决；三新仓 post-merge 需补 platform-sdk/iam replace；四态 taxonomy 两 SDK 各自同形（有意独立）。
+
+第二波并行登记（19:3x 起）：P2b 评审（归档副本）∥ P7b rtc/friendevent 迁 ppb-chat（ppb-chat-wt，P2 杂项分仓避免双写者）∥ P2 杂项（idl proto 迁 contracts、errcode BizError 归位、lint-baseline 修，p1-framework）∥ P4b 三线（iam+file/chat/camera manage-web 插件化）∥ P8 前置（gen-routes 清单化、每服务 Dockerfile、P8-SWITCH 方案，p8-deploy worktree）。
