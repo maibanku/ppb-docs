@@ -9,7 +9,7 @@
 | 文档与静态分析 | 文档已编写 | architecture 目录及现有入口更新 |
 | P0 本地工具／运行基线 | 已执行 | [P0 证据](p0-evidence.md)：工具/五仓 SHA/六模块/15:39 运行态实测 |
 | P1 框架与适配 | 完成（评审 APPROVE_WITH_NITS） | worktree p1-framework：925fd32（P1b）+ 9e9c478..ff88bbe（P1c）+ 8f85abe（M1 gofmt）；11 模块 66 ok/0 fail |
-| P2 契约与 SDK | P2a+P2b 完成（P2b 评审在途） | contracts 六模块 + platform-sdk/{iam,file} @ ce44d25；19 模块 69 ok；RegisterFileMeta 静默缺陷实锤修复（带复现）；I1 CI 门禁已修 |
+| P2 契约与 SDK | **完成——v0.1.0 本地已 tag（13 枚@59fb6d0）** | contracts×6+platform-sdk×2+go-framework×5 全评审链收口；远程读取验证与 go.sum 收尾 tidy 待 G7 推送后 |
 | P3 网关独立仓 | 目标仓已建（本地） | ppb-gateway/service-gateway 独立构建全绿；原仓移除与部署切换未做 |
 | P4 前端公共包 | P4a 完成（verify PASS） | base-manage-web 库/演示双产物 + npm pack 消费实证（p4-frontend worktree）；P4b 发布链/插件化待 |
 | P5 IAM 独立仓 | 目标仓已建（本地） | ppb-iam/service-iam 独立构建全绿；原仓移除与部署切换未做 |
@@ -131,3 +131,24 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 
 - **P2 杂项评审：APPROVE_WITH_NITS，核心声明全部真跑复现**——8 proto R100 rename 与 --follow 穿透；buf 双轮 diff 空（15 pb.go 逐字节）；errcode 三向 Code 同型（sp↔cec↔gf）编译+运行探针、AST 导出集合全等；lint 基线 1402 全量逐字节对齐+负例注入 exit 1 实证；功能性 idl/ 残留=0（51 处全为注释/rawDesc/废弃脚本）。Minor-1（Unauthenticated 钉子缺防误桶断言）转发布准备批 rider；Minor-2 报告措辞勘正；Info×2 不处理。
 - **发布准备批在途**：13 公共模块（go-framework×5 + contracts×6 + platform-sdk×2）撤家族 replace、兄弟引用 v0.0.0-占位→v0.1.0——tag 前终态；server-pkg/五服务 replace 不动（不发布）。tag 由协调方在终态提交统一打，远程依赖读取验证（空模块缓存）待 G7。
+
+### 第二波总收口（2026-11-18 21:2x）——13 模块 v0.1.0 本地 tag 完成
+
+- 发布链终态：3030c02（M1 钉子保险）→ 59fb6d0（发布准备：20 处家族 require→v0.1.0、14 条家族 replace 撤除、工作区 19 模块 69 ok 改动前后等价、五服务/server-pkg/go.work/go.sum 零改动）→ **13 枚 annotated tag 统一打于 59fb6d0**（go-framework、rpcx、gormx、mq/rabbitmq、messaging/kafka、contracts/{common,iam,file,im,camera,user-compat}、platform-sdk/{iam,file}，均 /v0.1.0）。
+- 实施偏差登记：go.work 模式下 tidy 不感知工作区仍向 proxy 解析兄弟版本（只读失败）——一致性由「仅版本串/删 replace+sum 零改动+全量 build/test 等价」背书；go work sync 会越界改写非发布模块 go.mod，禁用。
+- **待 G7 的收尾**（tag 推送后一次性执行）：① push 13 tag；② 13 模块 GOWORK=off go mod tidy 各一遍（补兄弟 v0.1.0 go.sum 哈希——replace 时期不需要，现已可独立解析但本地无远端源）；③ 临时空模块缓存 GOWORK=off 真远程读取验证（03 文档要求，未执行不得记"已发布验证"）；④ GOPRIVATE=github.com/maibanku/* 配置口径通报 CI。
+- 环境注记：本机 /etc/paths.d/go 指向不存在的 /usr/local/go，go 经 ~/sdk/go1.26.0/bin 或 GOTOOLCHAIN 缓存 go1.26.10 解析（PATH 缺口 G5 延续）。
+
+## 全程波次总账（截至 21:2x）
+
+| 批 | 状态 | 评审 |
+|---|---|---|
+| P0 基线 / P1b / P1c | 完成 | P1 评审 APPROVE_WITH_NITS（M1 修） |
+| 三仓拆分 iam/gateway/file | 完成（verify PASS×3+修复轮+终验） | 完整性审计补强 |
+| P2a 契约 / P2b SDK / P2 杂项 | 完成 | 三评审全 APPROVE_WITH_NITS（I1/M4/M6/L1/L2 已修） |
+| P7 IM / P7b rtc·friendevent / P6 Camera / P4a | 完成 | verify PASS×4 |
+| P4b 第一波（四 manage-web 插件化） | 完成 | verify PASS×3 |
+| P8 前置（gen-routes 清单化/Dockerfile/SWITCH） | 完成 | APPROVE_WITH_NITS（L1/L2 已修） |
+| v0.1.0 发布准备 + 13 tag | 完成（本地） | 依赖 G7 远程验证 |
+
+未完清单：G7 推送（用户 gh auth/建仓）→ tag 推送+tidy+远程验证 → 消费方切换波（五服务+三新仓 import 切 maibanku 模块、撤 server-pkg replace）→ P1/P2 线合 ppb-base main（征授权）→ 三新仓补 contracts/platform-sdk replace 或直切远程 → P8 主批（镜像切换/旧家移除/ rtc 收敛/验收矩阵）→ P4b 第二波（发布链/portal 消费）。G4 RabbitMQ 部署决策仍待用户。
