@@ -202,3 +202,11 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
   - 负控：IM 直连无凭据/坏票 401×2、member 越权管理面 403 USER-0003、未知管理路由 403 MANAGE-0004、伪造 actor 头无 5xx。
 - **verify-p2-manage.sh 14/14 PASS**（修正后）：脚本对齐 id-only 线面三处——session 键 workspaceBizKey→workspaceId、qatokens 参数十进制化、adminId 固定 demo 超管 userId（QA 成员非超管）。提交 61c507f 已推 main。
 - 静态接线审计（调用关系矩阵）与新仓二进制独立启动冒烟在途/待终波收口后。
+
+### 远程化终波总收口（2026-11-19）——"单仓检出即可构建"验收达成
+
+- **server-pkg 路径改名**（6c9dbb0）：module → github.com/maibanku/ppb-base/server-pkg（68 文件纯机械替换，19/19 build、69 ok、6/6 运行时、14/14 验证器）；**tag server-pkg/v0.1.1 已发布**（v0.1.0 因旧路径 clean-env 404 作废存档）。CI 守卫/生成链旧路径同步修复（3891495：gateway-governance、tools/ci.sh 禁项 grep，buf.gen Mtodo 映射，gen.sh/bat）。
+- **五仓依赖远程化终波 + v0.1.1 终对齐**（每仓 2-3 提交，全推送）：ppb-iam main@ce3aab7（9 ok）、ppb-gateway main@be7eb12（3 ok + 冷缓存 311MB 全下载面实证）、ppb-file main@1986c55（6 ok）、ppb-chat 分支@bf4f5ad1（17 ok）、ppb-camera 分支@ee6a315（9 ok）——本地 replace 全撤，envelope/servicehttp/obs/svcauth 装配面经 server-pkg@v0.1.1 远程解析。终波 verify 的"非 import hunk"FAIL 项经协调方追认（svcauthmw/gferrcode 别名重限定=双 import 拆分必然，行为中立、已披露）。
+- **验证器实证（iam 线）**：go.sum 哈希=tag 树基哈希（VCS zip 时间戳归一），v0.1.1 发布后无需 re-tidy 自然一致。
+- **至此验收闭环**：任一业务仓单仓检出 + GOPRIVATE=github.com/maibanku/* 即可 GOWORK=off 独立构建测试（ppb-base 检出不再必需）。ppb-base main@3891495 为权威底座（14 公共模块 tag + 垫片 + 五服务 v0.1.0 家族消费 + 配置卫生批 + 全链路 E2E 14/14）。
+- 尾款登记（非阻塞）：ppb-iam go.mod 头注释与 README/MIGRATION 旧路径叙述（注释卫生批）；endpoint-audit 独立构建 tidy 诉求（基线既有）；ppb-gateway 仓 gateway-routes.yaml 静态副本（P8-SWITCH §3 收敛案待定）；五服务自身 module 路径仍 ppbchat/server-*（ppb-base 内部残留，P8 旧家移除时一并消亡）。
