@@ -10,6 +10,12 @@
 | P0 本地工具／运行基线 | 已执行 | [P0 证据](p0-evidence.md)：工具/五仓 SHA/六模块/15:39 运行态实测 |
 | P1 框架与适配 | 完成（评审 APPROVE_WITH_NITS） | worktree p1-framework：925fd32（P1b）+ 9e9c478..ff88bbe（P1c）+ 8f85abe（M1 gofmt）；11 模块 66 ok/0 fail |
 | P2 契约与 SDK | P2a 完成（评审 APPROVE_WITH_NITS）；P2b 实施中 | contracts/{common,iam,file,im,camera,user-compat} 六模块 @ 093928f，buf 真重生成零漂移，17 模块 66 ok；platform-sdk 两模块在途 |
+| P3 网关独立仓 | 目标仓已建（本地） | ppb-gateway/service-gateway 独立构建全绿；原仓移除与部署切换未做 |
+| P4 前端公共包 | P4a 完成（verify PASS） | base-manage-web 库/演示双产物 + npm pack 消费实证（p4-frontend worktree）；P4b 发布链/插件化待 |
+| P5 IAM 独立仓 | 目标仓已建（本地） | ppb-iam/service-iam 独立构建全绿；原仓移除与部署切换未做 |
+| P6 Camera 后端 | 目标仓已建（本地） | ppb-camera/service-camera 9 ok（verify PASS）；原仓移除未做 |
+| P7 IM 与 File | IM+File 仓均已建（本地） | ppb-chat/service-im 16 ok（verify PASS）；rtc/friendevent 迁移挂 P7b |
+| P8 独立构建／集成／回退 | 待执行 | 待生成实际制品与证据 |
 
 并行波次登记（2026-11-18 17:50 起，四线六 agent）：A=P2a 完成→评审+P2b 接续（p1-framework worktree）；B=P7 IM 迁入 ppb-chat（vscode/ppb-chat-wt，分支 refactor/ppb-repository-layout-im）；C=P6 Camera 迁入 ppb-camera（vscode/ppb-camera-wt）；D=P4a base-manage-web 双产物（p4-frontend worktree）。IM/Camera 拆仓统一自冻结基点 97dd8b0；其 worktree 置于 vscode 层使 ../../ppb-base 桥接路径与主检出同深度可验证。
 
@@ -22,13 +28,13 @@
 - 前瞻（P1/P2 线合入 ppb-base main 后）：三新仓需补 contracts 六条 replace（非主模块 replace 不传导，同 endpoint-audit 收口模式）。
 - P8 切换面预查：服务编排全在 ppb-base/deploy/docker-compose.yml（MODULE 构建参数），vscode/infra compose 零服务引用（纯底座）。
 
+### B/C/D 三线（2026-11-18 18:0x–19:1x，三 verify 全 PASS）
 
-| P3 网关独立仓 | 目标仓已建（本地） | ppb-gateway/service-gateway 独立构建全绿；原仓移除与部署切换未做 |
-| P4 前端公共包 | 待执行 | 新仓前端经 file:／相对路径桥接至 ppb-base（临时，见各仓 MIGRATION.md） |
-| P5 IAM 独立仓 | 目标仓已建（本地） | ppb-iam/service-iam 独立构建全绿；原仓移除与部署切换未做 |
-| P6 Camera 后端 | 待执行 | 目标 ppb-camera/service-camera |
-| P7 IM 与 File | File 仓已建（本地）；IM 未动 | ppb-file/service-file 独立构建全绿 |
-| P8 独立构建／集成／回退 | 待执行 | 待生成实际制品与证据 |
+- **P7 IM**（ppb-chat worktree vscode/ppb-chat-wt，分支 refactor/ppb-repository-layout-im）：merge `bd9a72ad`（双父无公共祖先，第二父线可达历史 165 commits；service-im/deploy 树与源逐字节一致，仅剔除 37MB deploy/bin/im 与 25MB e2efixture 陈旧产物）+ module 迁家 `4bc0f697`（229/229 纯 import 行重写）+ 勘误 `a5373ada`。GOWORK=off **16 ok/0 FAIL**。deploy/rtc 经查证为 IM/RTC 专属随迁（ppb-base 保留自有副本，收敛挂 P8）。登记：ppb_im.db 86KB 种子库随迁（<1MB 阈值合规，退役另议）、rtc/friendevent 留守 server-pkg 桥接（P7b）。
+- **P6 Camera**（ppb-camera worktree vscode/ppb-camera-wt，分支 refactor/ppb-repository-layout）：merge `bbeee88`（第二父线 18 commits 至骨架 e8fc0ac）+ module 迁家 `1de972d`（70/70 纯 import）。GOWORK=off **9 ok/0 FAIL**。RTC 与 camera 零交集确认（grep 命中全为子串误报）。dev 占位 jwt_secret 随历史迁入（ppbchat-dev-jwt-secret，投产前部署层覆盖——原 ppb-base 既有状态非本批引入）。
+- **P4a 前端公共包**（ppb-base worktree p4-frontend，分支 refactor/ppb-repository-layout-p4，5 提交至 b8eb564）：base-manage-web 库/演示双产物（dist-lib + types，files 白名单、exports 三条件、peerDeps 镜像）；npm pack 消费实证——临时 Vue3 工程装 tarball，全谱 import（工厂/插件契约/10 组件值+类型/样式子路径）+ 22 个导出类型 any 探测（含负向对照），vue-tsc --noEmit 零输出。private:true 保留（P4b 发布链待办）。
+- **跨线修复**：P4a 验收发现 ppb-chat `4171c131` bizKey→menuKey 改名打红 ppb-base 主检出 base-manage-web 测试——修复 `b8eb564` 已 cherry-pick 至 ppb-base main（`2ad1e37`，未推送），主检出 npm test **163/163 恢复绿**。
+
 
 ## 下一次启动
 
