@@ -110,3 +110,13 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 
 - **P7b**（ppb-chat-wt，ec59a45b+912dbf12）：rtc/friendevent 经 filter-repo 历史迁入 service-im/pkg/（4 条触达提交保留；迁入包源码零改动——两包不依赖 server-pkg 其它件）；service-im 消费切换 10 行 import；**17 ok/0 FAIL**（基线 16+rtc 自带测试）；守卫 0。登记：与 ppb-base server-pkg 原件双份并存至 P8 统一退役（退役前避免两仓并行改同名包）。
 - **P2b 评审收口：APPROVE_WITH_NITS，零阻塞**。四态互斥结构性成立（ErrIdentityInvalid 仅 KindBiz 装载；err≠nil 时 gRPC 恒 resp==nil，击穿不可能）；RegisterFileMeta 修复经 server-file 源码核实回执前提、16 路真并发（srv.calls==16 断言+-race）；svcauth 半拆分 forward 纯别名+导出面 100% 全等（76 符号探测）；19 模块 69 ok 独立复现精确相符。Minor×2（SDK 测试钉子三条、依赖文档漏 jwt/v5）已作 rider 转 P2 杂项批顺带；Info×2 登记不处理。refType=2 mail 域为真实活契约非 YAGNI。
+
+### P4b 第一波（2026-11-18 20:2x，三线 verify 全 PASS）
+
+- 四个业务 manage-web 插件化导出面落地（纯增量，行为零变化——验收做到结构级：main.ts 模块图未变、.vue 零触碰、路由表零编辑）：
+  - ppb-iam/iam-manage-web `5a705ef`+`64f7975`：iamManagePlugin（13 治理路由+beforeEnter is_super∨iam.*.read）+registerIamManagePlugin+13 条菜单权限清单；**287/287**（基线 283+4）。
+  - ppb-file/file-manage-web `0a112f8`+`bf8da3e`：fileManagePlugin（5 路由）+5 条清单；**16/16**（12+4）。
+  - ppb-chat-wt/chat-manage-web `d741c1fc`+`ec92d1d7`：chatManagePlugin（13 /chat/* 路由、12 入菜单、10 权限码，Pick<BizRouteDef> 派生投影）+installChatManagePlugin；**90/90**（87+3）；一次性真实底座注册表冒烟（getPlugin('chat') 持全路由）后已清理。
+  - ppb-camera-wt/camera-manager-web（两提交）：cameraManagePlugin+清单；三件套绿。
+- 契约类型全部 import 自 base-manage-web/exports（零复制）；registerPlugin 仅函数体内调用（无顶层副作用，不破坏 tree-shaking）。各仓 package.json 落 exports map（./、./exports、./plugin——后者为 platform-manage-web 现行 vite alias 深路径的切换预留，验收实证 portal 今日仍绕过包解析直连 src/plugin.ts）。
+- 第二波遗留（各仓 docs/p4b-notes.md 登记）：发布链（dist-lib/files 白名单/peerDeps/npm pack 实证，对齐 P4a 形态）、vendor 门面收编、file 仓 vitest resolve 口径统一、portal 消费切换、chatMenuPermManifest 门户装配自检/种子 SQL 对账。
