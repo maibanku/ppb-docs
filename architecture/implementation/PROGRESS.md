@@ -8,7 +8,7 @@
 |---|---|---|
 | 文档与静态分析 | 文档已编写 | architecture 目录及现有入口更新 |
 | P0 本地工具／运行基线 | 已执行 | [P0 证据](p0-evidence.md)：工具/五仓 SHA/六模块/15:39 运行态实测 |
-| P1 框架与适配 | 实施完成，评审在途 | worktree p1-framework：925fd32（P1b）+ 9e9c478..ff88bbe（P1c）；11 模块 66 ok/0 fail |
+| P1 框架与适配 | 完成（评审 APPROVE_WITH_NITS） | worktree p1-framework：925fd32（P1b）+ 9e9c478..ff88bbe（P1c）+ 8f85abe（M1 gofmt）；11 模块 66 ok/0 fail |
 | P2 契约与 SDK | 待执行 | 远程版本尚未发布（前置：go-framework 打 tag） |
 | P3 网关独立仓 | 目标仓已建（本地） | ppb-gateway/service-gateway 独立构建全绿；原仓移除与部署切换未做 |
 | P4 前端公共包 | 待执行 | 新仓前端经 file:／相对路径桥接至 ppb-base（临时，见各仓 MIGRATION.md） |
@@ -73,5 +73,5 @@ P1 评审收口后进入 P2：grpc_gen/user-compat/refaccess 契约拆分与 pla
 - 实际执行命令及结果：P1 线各新模块 `GOWORK=off go mod download/build/test/vet ./...` 全过，工作区 11 模块 `go build+test` **66 ok／0 FAIL**（基线 68，差 2 为退役死包自身测试）。三新仓 `GOWORK=off go build ./... && go test ./...`：iam **9 ok**、gateway **3 ok**、file **6 ok**，0 FAIL（go1.26.0，GOPROXY=goproxy.cn,direct，控制器本机复跑确认）。前端：file-manage-web typecheck 过 + vitest 12 tests 过；iam 双前端 typecheck **零诊断**（node 24.21.0）。守卫：三仓 grep 与 `git grep HEAD` 旧 module 全路径 **0 命中**。流程：每仓独立实施（subagent）→ 独立验收（subagent）→ 修复轮（iam 补 vite 别名/vendor/源码 import 桥接、gateway/iam 二进制退役、MIGRATION 守卫归零）→ 控制器终验。
 - 发布版本：无。module 更名 `github.com/maibanku/ppb-{iam,gateway,file}/service-*` 已落；公共库经 `replace github.com/ppbchat/server-pkg => ../../ppb-base/server-pkg` 本地桥接（P2 打 tag 后切远程版本，各仓 go.mod 有注释标记）。
 - 数据、协议、权限与旧路径兼容：wire 面零改动——.go 变更逐 hunk 验收为**纯 import 行**（非 import 行 0）；protobuf package／字段编号／数据库／配置文件路径全保持；运行态进程与数据库零触碰。
-- 已知缺口、阻塞与可继续工作：**G7** gh CLI 已装未登录（token 认证需用户 `gh auth login`，或网页建私有空仓 maibanku/ppb-{iam,gateway,file}），三新仓未设远端未推送；G4 RabbitMQ 未部署沿用；前端 typecheck 须 **node 24.x**（homebrew node 25.2.1 下 vue-tsc 出 33+47 条伪影错误，24.21.0 下零诊断——CI 应锁版本）；ppb_user*.sql／seed_menus.sql／00-create-databases.sql／deploy/docker/Dockerfile.service／tools/gen-routes 留守 ppb-base（P2/P4/P8 裁决）；原仓移除与部署引用切换未做（P8 序）；P1 独立评审在途（结论落地后补记）。可继续：P2 契约/SDK、前端构建产物链验证（npm run build 未跑，仅 typecheck/vitest）。
+- 已知缺口、阻塞与可继续工作：**G7** gh CLI 已装未登录（token 认证需用户 `gh auth login`，或网页建私有空仓 maibanku/ppb-{iam,gateway,file}），三新仓未设远端未推送；G4 RabbitMQ 未部署沿用；前端 typecheck 须 **node 24.x**（homebrew node 25.2.1 下 vue-tsc 出 33+47 条伪影错误，24.21.0 下零诊断——CI 应锁版本）；ppb_user*.sql／seed_menus.sql／00-create-databases.sql／deploy/docker/Dockerfile.service／tools/gen-routes 留守 ppb-base（P2/P4/P8 裁决）；原仓移除与部署引用切换未做（P8 序）。P1 独立评审已收口：**APPROVE_WITH_NITS**——垫片保真（逐字迁移/AddCallerSkip 口径/ctxKey 同一性/errors.Is 同值/文案逐字节）、模块边界、死代码退役、五服务零 diff、GOWORK=off 独立重跑全过；M1（internalauth 垫片 gofmt）已修 `8f85abe`；N1 idstr/requestid 存量 gofmt、N2 kafka 品牌串 ppbchat-bus- 参数化、N3 03 文档模块表补 gormx/messaging-kafka 两行（已补）、N4/N5 记录性修正——除 N3 外挂 P2 发布批。可继续：P2 契约/SDK、前端构建产物链验证（npm run build 未跑，仅 typecheck/vitest）。
 - 回退依据与下一步：三新仓为独立目录，删除即回退；ppb-base 主检出/运行态零改动；P1 线独立 worktree 可整线 revert。下一步：P1 评审收口 → P2（grpc_gen/user-compat/refaccess 契约 + platform-sdk/iam、file 客户端）→ tag 发布与 replace 切换 → 远端建仓推送（G7 解除后）。
