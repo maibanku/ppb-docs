@@ -169,3 +169,8 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 - 验证（含协调方抽验）：19 模块 **69 ok/0 FAIL 不回退**；零漏切（五服务 server-pkg 残留恰=留守集合 envelope/servicehttp/svcauth 装配面/obs/rtc/friendevent）；im 16 ok 与 iam 残留四件抽验吻合；树净。
 - 技术登记：离线 tidy 需临时挂本地 replace 后撤（go1.26 tidy 不认 use 解析）；server-iam 外科式 8 条直增 require（otel 链离线不可拉）；golang/protobuf v1.5.4 锚定于 server-im（server-pkg servicehttp APIv1 未列根因，根治待其本体收口）；go.work.sum 净收敛（gateway -21/im +7）。
 - **至此，迁移改造在无远端/无运行时授权条件下可执行的工作全部完成**。剩余全过闸门：G7 推送（六仓分支+13 tag+远程读取验证+13 模块 tidy 收尾）→ P1/P2 线合 ppb-base main（授权）→ 三新仓切 maibanku 模块（post-merge）→ P8 主批（镜像切换/旧家移除/rtc 收敛/验收矩阵）→ P4b 第三波（registry 接入+运行时 specifier 收口）。G4 RabbitMQ 决策待用户。
+
+### G7 部分解除（2026-11-19）
+
+- 用户建仓并显式授权推送：**ppb-iam、ppb-file 已推 GitHub（maibanku，HTTPS origin，分支改 main，upstream 已设）**——含各自全部迁移历史与 P4b1/P4b2 提交。
+- 仍待：① ppb-gateway 远端仓不存在（ls-remote Repository not found）；② ppb-base refactor 分支 + 13 枚 v0.1.0 tag 未推送（tag 推送=正式发布，待用户确认）；③ 由此远程依赖读取验证与三新仓消费切换仍挂起。
