@@ -174,3 +174,11 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 
 - 用户建仓并显式授权推送：**ppb-iam、ppb-file 已推 GitHub（maibanku，HTTPS origin，分支改 main，upstream 已设）**——含各自全部迁移历史与 P4b1/P4b2 提交。
 - 仍待：① ppb-gateway 远端仓不存在（ls-remote Repository not found）；② ppb-base refactor 分支 + 13 枚 v0.1.0 tag 未推送（tag 推送=正式发布，待用户确认）；③ 由此远程依赖读取验证与三新仓消费切换仍挂起。
+
+### v0.1.0 正式发布 + 终波启动（2026-11-19）
+
+- **三新仓上线**：用户建仓并授权——ppb-iam、ppb-file、ppb-gateway 均已推 GitHub（HTTPS origin，分支改 main，upstream 设定）。
+- **ppb-base**：refactor/ppb-repository-layout 分支已推（cb3047f→6170350）。
+- **14 枚 tag 已发布**：13 公共模块 v0.1.0 + **server-pkg/v0.1.0 过渡发布**（占位→v0.1.0、撤 12 条家族 replace；envelope/servicehttp/obs/svcauth 装配面暂驻其内作远程桥，最终归位裁决在册）。
+- **远程解析实证**：13 模块 GOWORK=off tidy/build/test 13/13、19 ok/0 fail（GOPRIVATE=github.com/maibanku/*,github.com/ppbchat/*；go 下载日志可见 maibanku 拉取）。
+- **终波在途**：五业务仓（ppb-iam/ppb-gateway/ppb-file/ppb-chat-wt/ppb-camera-wt）消费切换全远程化——撤本地 replace、require v0.1.0、GOWORK=off 独立构建验收（gateway 线另做 GOMODCACHE 全冷下载面实证）。此波过后「新电脑只检出业务仓即可构建」验收成立。
