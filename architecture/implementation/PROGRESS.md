@@ -161,3 +161,11 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 - **base 依赖打包裁决**：file: 相对路径随 tarball manifest 必炸消费 install → peerDeps "*"（同时满足本仓 v0.1.0 与消费侧 base v0.2.0）+ devDep 本地桥接（npm 不解析已装依赖 devDeps，惰性无害，四仓实测）。
 - 第三波遗留（各仓 docs）：JS 运行时 'base-manage-web/exports' specifier 经 base 包 exports 映射解析到 exports.ts（TS 源，vite 宿主可编译）——接 registry 后切真实 JS 产物，两代门面一并退役；lib 门面双同步漂移窗口随之根治。
 - 构建残留两枚（22:26 误落 ppb-base 主检出 src 旁 .d.ts）已由协调方核实未跟踪后清除。
+
+### 消费方切换波（2026-11-18 23:0x）——本地迁移面穷尽
+
+- 提交（59fb6d0 之上，每服务一提交）：724f0ea gateway、0e351ae iam（59 文件）、735852c file（36 文件）、70d71a2 camera（24 文件）、4383dd1 im（115 文件）。
+- 映射落地：logx/requestid/idstr/health/snowflake→go-framework；grpcrid→rpcx、recovery/internalauth→rpcx/interceptor、database→gormx、eventmq→mq/rabbitmq、event→messaging/kafka；grpc_gen 六域→contracts（refaccess 归 file、user 归 user-compat）；authzport/authzguard/edgeauth→platform-sdk/iam；errcode 双段拆分（BizError→contracts/common、机制段→go-framework，混合文件 gferrcode 并存）；svcauth 核心件切 SDK、装配面 svcauthmw 并驻。
+- 验证（含协调方抽验）：19 模块 **69 ok/0 FAIL 不回退**；零漏切（五服务 server-pkg 残留恰=留守集合 envelope/servicehttp/svcauth 装配面/obs/rtc/friendevent）；im 16 ok 与 iam 残留四件抽验吻合；树净。
+- 技术登记：离线 tidy 需临时挂本地 replace 后撤（go1.26 tidy 不认 use 解析）；server-iam 外科式 8 条直增 require（otel 链离线不可拉）；golang/protobuf v1.5.4 锚定于 server-im（server-pkg servicehttp APIv1 未列根因，根治待其本体收口）；go.work.sum 净收敛（gateway -21/im +7）。
+- **至此，迁移改造在无远端/无运行时授权条件下可执行的工作全部完成**。剩余全过闸门：G7 推送（六仓分支+13 tag+远程读取验证+13 模块 tidy 收尾）→ P1/P2 线合 ppb-base main（授权）→ 三新仓切 maibanku 模块（post-merge）→ P8 主批（镜像切换/旧家移除/rtc 收敛/验收矩阵）→ P4b 第三波（registry 接入+运行时 specifier 收口）。G4 RabbitMQ 决策待用户。
