@@ -182,3 +182,11 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 - **14 枚 tag 已发布**：13 公共模块 v0.1.0 + **server-pkg/v0.1.0 过渡发布**（占位→v0.1.0、撤 12 条家族 replace；envelope/servicehttp/obs/svcauth 装配面暂驻其内作远程桥，最终归位裁决在册）。
 - **远程解析实证**：13 模块 GOWORK=off tidy/build/test 13/13、19 ok/0 fail（GOPRIVATE=github.com/maibanku/*,github.com/ppbchat/*；go 下载日志可见 maibanku 拉取）。
 - **终波在途**：五业务仓（ppb-iam/ppb-gateway/ppb-file/ppb-chat-wt/ppb-camera-wt）消费切换全远程化——撤本地 replace、require v0.1.0、GOWORK=off 独立构建验收（gateway 线另做 GOMODCACHE 全冷下载面实证）。此波过后「新电脑只检出业务仓即可构建」验收成立。
+
+### ppb-base main 对齐迁移成果（2026-11-19，用户指令"迁移之后全部测试、ppb-base 调整为迁移后代码"）
+
+- 三线合入 main（零冲突）：b2b7689（迁移主体：14 模块+垫片+五服务消费切换+发布）、624fa5a（P4a base-manage-web 双产物）、4599213（P8 前置）。交叉文件 gateway-governance.yml 双意并存核实（I1 contracts 漂移门禁 + P8 清单/对拍门禁）。
+- **合并树全量测试矩阵（全绿）**：Go 工作区 19 模块 build+test **69 ok/0 FAIL**；gen-routes 16 测试 + 清单==scan==已提交三方等价（1 前缀+147 路由，CI 姿势 -root ../..）；buf generate contracts 零漂移；前端四件——base-manage-web typecheck/163 tests/build、iam-web 31、iam-manage-web 283、file-manage-web 12（typecheck 全 OK）。
+- main 已推 origin（97dd8b0..4599213）。本地 main 此前仅多 2ad1e37（menuKey 跨线修复）一并上线。
+- 至此形态：ppb-base main = 平台底座（go-framework/contracts/platform-sdk 14 模块 + server-pkg 过渡桥 + 五服务消费切换 v0.1.0 + 前端底座双产物 + 清单化路由生成 + P8 方案）；六业务仓各自独立（iam/gateway/file 已上远端 main，chat/camera 在 worktree 分支待终波收口后推）。
+- 待续：终波（五仓依赖全远程化）在途；旧家移除（server-*/旧前端副本）按 P8-SWITCH §6 三门执行（各仓独立回归+部署切换后）；G4 RabbitMQ 决策。
