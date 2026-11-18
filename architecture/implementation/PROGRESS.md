@@ -9,7 +9,7 @@
 | 文档与静态分析 | 文档已编写 | architecture 目录及现有入口更新 |
 | P0 本地工具／运行基线 | 已执行 | [P0 证据](p0-evidence.md)：工具/五仓 SHA/六模块/15:39 运行态实测 |
 | P1 框架与适配 | 完成（评审 APPROVE_WITH_NITS） | worktree p1-framework：925fd32（P1b）+ 9e9c478..ff88bbe（P1c）+ 8f85abe（M1 gofmt）；11 模块 66 ok/0 fail |
-| P2 契约与 SDK | P2a 完成（评审在途）；P2b 实施中 | contracts/{common,iam,file,im,camera,user-compat} 六模块 @ 093928f，buf 真重生成零漂移，17 模块 66 ok；platform-sdk 两模块在途 |
+| P2 契约与 SDK | P2a 完成（评审 APPROVE_WITH_NITS）；P2b 实施中 | contracts/{common,iam,file,im,camera,user-compat} 六模块 @ 093928f，buf 真重生成零漂移，17 模块 66 ok；platform-sdk 两模块在途 |
 
 并行波次登记（2026-11-18 17:50 起，四线六 agent）：A=P2a 完成→评审+P2b 接续（p1-framework worktree）；B=P7 IM 迁入 ppb-chat（vscode/ppb-chat-wt，分支 refactor/ppb-repository-layout-im）；C=P6 Camera 迁入 ppb-camera（vscode/ppb-camera-wt）；D=P4a base-manage-web 双产物（p4-frontend worktree）。IM/Camera 拆仓统一自冻结基点 97dd8b0；其 worktree 置于 vscode 层使 ../../ppb-base 桥接路径与主检出同深度可验证。
 
@@ -88,3 +88,5 @@ P1 评审收口后进入 P2：grpc_gen/user-compat/refaccess 契约拆分与 pla
 - 数据、协议、权限与旧路径兼容：wire 面零改动——.go 变更逐 hunk 验收为**纯 import 行**（非 import 行 0）；protobuf package／字段编号／数据库／配置文件路径全保持；运行态进程与数据库零触碰。
 - 已知缺口、阻塞与可继续工作：**G7** gh CLI 已装未登录（token 认证需用户 `gh auth login`，或网页建私有空仓 maibanku/ppb-{iam,gateway,file}），三新仓未设远端未推送；G4 RabbitMQ 未部署沿用；前端 typecheck 须 **node 24.x**（homebrew node 25.2.1 下 vue-tsc 出 33+47 条伪影错误，24.21.0 下零诊断——CI 应锁版本）；ppb_user*.sql／seed_menus.sql／00-create-databases.sql／deploy/docker/Dockerfile.service／tools/gen-routes 留守 ppb-base（P2/P4/P8 裁决）；原仓移除与部署引用切换未做（P8 序）。P1 独立评审已收口：**APPROVE_WITH_NITS**——垫片保真（逐字迁移/AddCallerSkip 口径/ctxKey 同一性/errors.Is 同值/文案逐字节）、模块边界、死代码退役、五服务零 diff、GOWORK=off 独立重跑全过；M1（internalauth 垫片 gofmt）已修 `8f85abe`；N1 idstr/requestid 存量 gofmt、N2 kafka 品牌串 ppbchat-bus- 参数化、N3 03 文档模块表补 gormx/messaging-kafka 两行（已补）、N4/N5 记录性修正——除 N3 外挂 P2 发布批。可继续：P2 契约/SDK。**完整性审计补强（17:45）**：三仓文件平价与源路径集合精确吻合（iam 279-2二进制+3根文件=280、gw 20-1+3=22、file 107-1+3=109）；三前端 `npm run build` 全过（vite 构建期别名解析实证）+ `npm test` **31/283/12 全过**（node 24.21.0），构建后三仓树仍干净；残留旧兄弟路径引用扫描=0（唯一命中为 MIGRATION.md 历史值记载，文档性）。三仓调整就本机可验证口径**已完成**。
 - 回退依据与下一步：三新仓为独立目录，删除即回退；ppb-base 主检出/运行态零改动；P1 线独立 worktree 可整线 revert。下一步：P1 评审收口 → P2（grpc_gen/user-compat/refaccess 契约 + platform-sdk/iam、file 客户端）→ tag 发布与 replace 切换 → 远端建仓推送（G7 解除后）。
+
+P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git archive 副本进行（未碰实施 worktree）。线面零变化升级为**全 8 域 FileDescriptorSet 级证明**（基线/终态两状态 buf build 描述符剥 options 后全等，唯一差异 goPackage）；单注册/垫片完备（FullMethodName 257/257 零缺、导出符号集合全等）/模块自洽/消费方零改动/endpoint-audit 相对路径全 PASS。**I1（Important）**：CI gateway-governance 的 buf 漂移门禁仍守 server-pkg/grpc_gen 旧路径→空转，需一行改 `-- contracts server-pkg/grpc_gen`——已转 P2b 批顺带独立提交。M1/M2（报告措辞与中间提交幂等性）、N1-N3（措辞/func→var 固有代价/buf-lint-baseline 格式无法 key 匹配——范围外建议另行修）登记在案。未核对项五条明示（01 文档本体、66 测试未全量重跑、运行期反射、gen-routes CI 步、三新仓构建实测）。
