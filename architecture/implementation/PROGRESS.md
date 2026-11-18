@@ -105,3 +105,8 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 - 遗留登记：server-im 私有 rpcclient 副本仍带原缺陷（im 切 SDK 消费时修复，p2b-notes）；envelope 归位裁决；三新仓 post-merge 需补 platform-sdk/iam replace；四态 taxonomy 两 SDK 各自同形（有意独立）。
 
 第二波并行登记（19:3x 起）：P2b 评审（归档副本）∥ P7b rtc/friendevent 迁 ppb-chat（ppb-chat-wt，P2 杂项分仓避免双写者）∥ P2 杂项（idl proto 迁 contracts、errcode BizError 归位、lint-baseline 修，p1-framework）∥ P4b 三线（iam+file/chat/camera manage-web 插件化）∥ P8 前置（gen-routes 清单化、每服务 Dockerfile、P8-SWITCH 方案，p8-deploy worktree）。
+
+### P7b + P2b 评审（2026-11-18 20:0x）
+
+- **P7b**（ppb-chat-wt，ec59a45b+912dbf12）：rtc/friendevent 经 filter-repo 历史迁入 service-im/pkg/（4 条触达提交保留；迁入包源码零改动——两包不依赖 server-pkg 其它件）；service-im 消费切换 10 行 import；**17 ok/0 FAIL**（基线 16+rtc 自带测试）；守卫 0。登记：与 ppb-base server-pkg 原件双份并存至 P8 统一退役（退役前避免两仓并行改同名包）。
+- **P2b 评审收口：APPROVE_WITH_NITS，零阻塞**。四态互斥结构性成立（ErrIdentityInvalid 仅 KindBiz 装载；err≠nil 时 gRPC 恒 resp==nil，击穿不可能）；RegisterFileMeta 修复经 server-file 源码核实回执前提、16 路真并发（srv.calls==16 断言+-race）；svcauth 半拆分 forward 纯别名+导出面 100% 全等（76 符号探测）；19 模块 69 ok 独立复现精确相符。Minor×2（SDK 测试钉子三条、依赖文档漏 jwt/v5）已作 rider 转 P2 杂项批顺带；Info×2 登记不处理。refType=2 mail 域为真实活契约非 YAGNI。
