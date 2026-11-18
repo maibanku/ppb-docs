@@ -152,3 +152,12 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 | v0.1.0 发布准备 + 13 tag | 完成（本地） | 依赖 G7 远程验证 |
 
 未完清单：G7 推送（用户 gh auth/建仓）→ tag 推送+tidy+远程验证 → 消费方切换波（五服务+三新仓 import 切 maibanku 模块、撤 server-pkg replace）→ P1/P2 线合 ppb-base main（征授权）→ 三新仓补 contracts/platform-sdk replace 或直切远程 → P8 主批（镜像切换/旧家移除/ rtc 收敛/验收矩阵）→ P4b 第二波（发布链/portal 消费）。G4 RabbitMQ 部署决策仍待用户。
+
+### P4b 第二波（2026-11-18 22:3x，四仓发布链形态完成）
+
+- 提交：ppb-iam 3a07044+a8ec90f、ppb-file 6d69ea9+5243320、ppb-chat-wt 371958c0+3fe917c9、ppb-camera-wt 2e24436+7383aac。
+- 每仓同构：vite.lib.config.ts（库模式，vue/EP/icons/base 全外置 peer）+ tsconfig.lib.json（d.ts 发射）+ rewrite-dts-alias.mjs（'@/' 相对化+base specifier 重写，残留即失败）+ lib 专用类型门面 + package.json（exports 三条件双入口、files 白名单、deps→peerDeps）。
+- 验证：四仓 typecheck/test/build/build:lib 全绿（**287/16/90/21 用例不回退**）；npm pack 消费实证——插件+base 双 tarball 安装、"."与"./plugin"双入口、Equal 非 any 断言+负向对照（报错带真实类型名）、style.css/SFC，vue-tsc skipLibCheck:false 零输出；tarball 零 src/dist/lockfile。
+- **base 依赖打包裁决**：file: 相对路径随 tarball manifest 必炸消费 install → peerDeps "*"（同时满足本仓 v0.1.0 与消费侧 base v0.2.0）+ devDep 本地桥接（npm 不解析已装依赖 devDeps，惰性无害，四仓实测）。
+- 第三波遗留（各仓 docs）：JS 运行时 'base-manage-web/exports' specifier 经 base 包 exports 映射解析到 exports.ts（TS 源，vite 宿主可编译）——接 registry 后切真实 JS 产物，两代门面一并退役；lib 门面双同步漂移窗口随之根治。
+- 构建残留两枚（22:26 误落 ppb-base 主检出 src 旁 .d.ts）已由协调方核实未跟踪后清除。
