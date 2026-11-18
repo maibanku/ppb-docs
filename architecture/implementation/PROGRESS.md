@@ -9,7 +9,20 @@
 | 文档与静态分析 | 文档已编写 | architecture 目录及现有入口更新 |
 | P0 本地工具／运行基线 | 已执行 | [P0 证据](p0-evidence.md)：工具/五仓 SHA/六模块/15:39 运行态实测 |
 | P1 框架与适配 | 完成（评审 APPROVE_WITH_NITS） | worktree p1-framework：925fd32（P1b）+ 9e9c478..ff88bbe（P1c）+ 8f85abe（M1 gofmt）；11 模块 66 ok/0 fail |
-| P2 契约与 SDK | 待执行 | 远程版本尚未发布（前置：go-framework 打 tag） |
+| P2 契约与 SDK | P2a 完成（评审在途）；P2b 实施中 | contracts/{common,iam,file,im,camera,user-compat} 六模块 @ 093928f，buf 真重生成零漂移，17 模块 66 ok；platform-sdk 两模块在途 |
+
+并行波次登记（2026-11-18 17:50 起，四线六 agent）：A=P2a 完成→评审+P2b 接续（p1-framework worktree）；B=P7 IM 迁入 ppb-chat（vscode/ppb-chat-wt，分支 refactor/ppb-repository-layout-im）；C=P6 Camera 迁入 ppb-camera（vscode/ppb-camera-wt）；D=P4a base-manage-web 双产物（p4-frontend worktree）。IM/Camera 拆仓统一自冻结基点 97dd8b0；其 worktree 置于 vscode 层使 ../../ppb-base 桥接路径与主检出同深度可验证。
+
+### P2a 契约模块（2026-11-18，worktree p1-framework 8f85abe..093928f）
+
+- 目标：grpc_gen 各域 + user-compat + refaccess → contracts/* 嵌套 module，server-pkg 垫片，descriptor 单注册权威。
+- 提交：2247e13/8a5206e/e584677/ba5c9a2/9d3f08e（五域）、8e63584（四域 *_FullMethodName 直通补丁）、7443086（user-compat + buf.gen.yaml 新布局 + endpoint-audit replace 收口）、093928f（p2a-notes + README 生成链路）。
+- 证据：**buf v1.74.0 + protoc-gen-go v1.34.2 真工具链重生成**——改 go_package 前基线重生成与库内 15 个 pb.go 逐字节一致；终态全量 buf generate git diff 为空。protobuf package/RPC 全名/字段编号零变化。单注册：全仓显式 Register*=0（隐式注册），rawDesc 仅存 contracts；server-pkg/grpc_gen 七包纯垫片。六模块 GOWORK=off 自洽全过；工作区 17 模块 build+vet 全绿、test 66 ok/0 FAIL（=基线）；五服务零改动。
+- 裁决与登记：user-compat 落 contracts 下独立 module（01 目录树与盘点为准，非任务文「iam 下」——兼容模块需可独立移除）。common.proto 24 类型中仅 3 真公共，21 个 IM 线面类型暂驻（明细 docs/p2a-notes.md，归 contracts/im 待后续批）。遗留五项：idl/ proto 文件本体迁 contracts、Mtodo 映射、iamx/user-compat owner 逐项核对、errcode BizError 归位、contracts 发版去 replace。
+- 前瞻（P1/P2 线合入 ppb-base main 后）：三新仓需补 contracts 六条 replace（非主模块 replace 不传导，同 endpoint-audit 收口模式）。
+- P8 切换面预查：服务编排全在 ppb-base/deploy/docker-compose.yml（MODULE 构建参数），vscode/infra compose 零服务引用（纯底座）。
+
+
 | P3 网关独立仓 | 目标仓已建（本地） | ppb-gateway/service-gateway 独立构建全绿；原仓移除与部署切换未做 |
 | P4 前端公共包 | 待执行 | 新仓前端经 file:／相对路径桥接至 ppb-base（临时，见各仓 MIGRATION.md） |
 | P5 IAM 独立仓 | 目标仓已建（本地） | ppb-iam/service-iam 独立构建全绿；原仓移除与部署切换未做 |
