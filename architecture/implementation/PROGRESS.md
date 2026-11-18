@@ -120,3 +120,9 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
   - ppb-camera-wt/camera-manager-web（两提交）：cameraManagePlugin+清单；三件套绿。
 - 契约类型全部 import 自 base-manage-web/exports（零复制）；registerPlugin 仅函数体内调用（无顶层副作用，不破坏 tree-shaking）。各仓 package.json 落 exports map（./、./exports、./plugin——后者为 platform-manage-web 现行 vite alias 深路径的切换预留，验收实证 portal 今日仍绕过包解析直连 src/plugin.ts）。
 - 第二波遗留（各仓 docs/p4b-notes.md 登记）：发布链（dist-lib/files 白名单/peerDeps/npm pack 实证，对齐 P4a 形态）、vendor 门面收编、file 仓 vitest resolve 口径统一、portal 消费切换、chatMenuPermManifest 门户装配自检/种子 SQL 对账。
+
+### P8 前置批（2026-11-18 20:5x，worktree p8-deploy，评审 APPROVE_WITH_NITS 后 L1/L2 已修）
+
+- 提交：2dd5d77（**gen-routes 清单输入化**——deploy/route-manifest.yaml 六服务各一条；model/manifest/scan 三分；硬校验：缺清单（go.work 交叉核对）、未知上游三态、方法路径归属/前缀冲突→生成失败；-scan 旧模式保留；CI 扩 test+清单漂移+对拍）、46ecf68（per-service Dockerfile×5，buildx --check 全过；mail 无件=外部独立部署本仓无源码）、249e83d（**deploy/P8-SWITCH.md**——现状基线/前置/四步切换/旧制品保留/回退/移除三门/rtc 双副本收敛/mail 口径/检查表）、402987a（评审 L1/L2 修正）。
+- 评审证据：**四方逐字节等价独立复现**（新清单模式/-scan/base 旧工具/已提交 gateway-routes.yaml，147 路由+1 前缀 cmp 全 0）；16/16 测试复跑；HEALTHCHECK 五端点与实码逐一核对；compose 六项/路由三副本/rtc 双副本事实核对。L1（6fc8c39 悬空→真实 4cbee90，三处+compose）、L2（replace 形态改写提示，五件）已修。N3/N4（前缀遮蔽/specials key 拼错不检测）入 P8 主批可选加固清单。
+- 门前裁决登记：gateway-routes 第三副本（ppb-gateway 仓）收敛两案——倾向镜像兜底+CI 对拍（P8-SWITCH §3 Step 4），主批定案；「清单版本+校验摘要」记录未实现（可选后续）。
