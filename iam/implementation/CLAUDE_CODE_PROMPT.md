@@ -1,5 +1,7 @@
 # Claude Code · PPB IAM 跨仓实施提示词
 
+> 2026-11-18 交接更新。本文件保留 IAM v0.4 历史执行内容。新的跨仓目录改造优先读取 [architecture 执行提示词](../../architecture/implementation/CLAUDE_CODE_PROMPT.md)。下文四仓、同仓 server-iam、旧主体键及删除字段等记录不作为本轮现状；先核对 [源码基线与决策](../../architecture/00-现状与架构决策.md)。原任务的产品和权限要求按适用范围继续核对。
+
 你是本地工作目录中的实现负责人。用户已授权按照 ppb-docs/iam 改造 PPB，要求新建独立分支、实际编码、运行检查，边写边提交。请执行工作，不要停留在方案、骨架、TODO 或生成待执行提示词。
 
 ## 1. 仓库与启动

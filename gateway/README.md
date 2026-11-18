@@ -1,10 +1,12 @@
 # PPB 网关接口治理改造
 
+> 2026-11-18 仓库归属更新。目标迁入 ppb-gateway/service-gateway，代码尚未搬迁。保持现有透明 HTTP／WS 代理；目录、版本和后续实施优先阅读 [跨仓架构](../architecture/README.md) 与 [Claude Code 提示词](../architecture/implementation/CLAUDE_CODE_PROMPT.md)。
+
 > **2026-11-13 最新执行目标已变更为“网关只做 HTTP/WS 透明转发”**。请优先阅读 [全量改造与 Claude Lead 交接](http-only-2026-11-13/README.md)。下文 2026-11-06 目标为历史版本，不再作为最终架构要求。
 
 日期：2026-11-06。状态：设计与执行任务已编写，尚未实施或验收。
 
-代码仓库：`ppb-base`；实际服务目录：`server-gateway`。不另建同名网关服务。
+2026-11-06 历史落点为 ppb-base/server-gateway。本轮将该实现迁入 ppb-gateway/service-gateway，维护同一套代理行为和接口基线。
 
 ## 阅读顺序
 
@@ -23,4 +25,5 @@
 
 | 版本 | 日期 | 说明 |
 |---|---|---|
+| v0.2 | 2026-11-18 | 新增独立网关仓目标及跨仓迁移入口 |
 | v0.1 | 2026-11-06 | 基于当前代码形成治理设计、实施任务与验收门槛 |
