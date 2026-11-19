@@ -77,7 +77,7 @@
 - `selectable` 布尔 → `selectionMode` 映射（true→multiple），显式 selectionMode 优先；`format(row)` 旧格式化与新 `formatter(value,...)` 并存，渲染优先级 cell 插槽 > formatter > format。
 - 旧 `col-{key}` 插槽继续可用；与 `cell-{key}` 同时存在仅渲染 cell-（DEV 警告提示迁移）。
 - 旧 `SearchField` 静态 `options`、`startKey`/`endKey` 拆键照旧支持；旧 keyword 独立输入并入字段流首位（key 仍为 `keyword`，请求参数名不变）。
-- el-table 原生属性（border/stripe/height 等）与事件经白名单透传，未新造语义。
+- el-table **事件**经白名单透传（row-click/row-dblclick/expand-change 等原生事件原样转发，未新造语义）；**属性侧如实**：border 为组件内硬编码 true（细边线设计令牌）、stripe 为既有行为，height/maxHeight/fill **未透传**（fixedFoot 覆盖 fill 场景，height/maxHeight 透传为 §10 后续增强）。
 - 偏好/列设置为**增量开关**（columnSettings 默认 false），既有消费者零视觉零行为变化。
 
 ## 5. 行为变更清单（有意为之）
@@ -105,6 +105,9 @@
 10. **密度 comfortable 分页控件未达 40px**（Task 1 遗留，GUI 校准项）；**行高 22px 基线 vs EP 23px line-height 系统性 +1px**（37/45/53 实际值）。
 11. **本地排序回首页由调用方接线**（useProtableLocal 注释明确；showcase block-local 已示范 sort-change→置排序 ref+resetToFirstPage）。
 12. （Task 12 补充）**筛选草稿同一 tick 连发曾丢值，已修复**：`ff23ce3` 前 setField 以 props.modelValue 展开，父级重渲染未回流时第二次同步 emit 覆盖第一次的值（iam UsersView 既有交互口径暴露）；现本地镜像即时先行、父级回流后重同步。消费者无感知，回归测试 `pro-table-filters.test.ts` 在库。
+13. （终审补录）**验收页路由为顶层公开 DEV-only**（计划原定 admin 锚点子级）：偏差动因是 dev server 无后端时 admin 锚点守卫（iam context）拦截直开；测试在案（`table-showcase.test.ts`：顶层 `meta.public`/仅 DEV 注册，见 §8.3/§9）。
+14. （终审修复波 M1）**reset 与 dependsOn 联动曾致草稿≠已生效，已修复**：defaults 回填会触发子组件 dependsOn watcher 迟到清空下级（请求带 dept='rd' 而草稿被清空）；现 reset 提交前逐轮重放 defaults 平息联动（settleResetDraft），重置仍恰一次请求且草稿=已生效。测试：`pro-table.test.ts「reset 回填 defaults 与 dependsOn 联动：重置后草稿与请求参数一致（子级清空被回填覆盖）」`。
+15. （终审修复波 M2）**异步校验窗口内二次回车曾可重复提交，已修复**：submitSearch 入口 validating 守卫——校验在途时二次回车/二次点击查询静默忽略（不排队二次校验/提交）。测试：`pro-table.test.ts「异步校验在途时二次回车/二次点击查询静默忽略：校验通过后仅首次提交生效」`。
 
 ## 7. 环境限制（非本轮引入，已留证）
 
@@ -149,6 +152,8 @@
 - 通用编辑表（表单↔表格联动）；summary 合计行插槽与 loading 骨架插槽（spec 05 低频项，九宫格无该组合，列后续）。
 - 服务端偏好同步（当前仅本地 storage 注入）；权限列过滤（列无 perm 概念，收口点 useColumnPreferences allowedLeaf）。
 - badge 纯空格边缘（§6.5 口径统一）；密度 comfortable 分页控件 40px 校准（§6.10）；行高 +1px 系统性偏差与 EP 对齐评估。
+- height/maxHeight 透传为后续增强（当前未透传，fixedFoot 覆盖 fill 场景，见 §4 如实表述）。
+- `useColumnPreferences.visibleKeys` 接口债：钩子未暴露该派生接口——当前无消费者，需要时在返回对象一行补齐（resolvedColumns 已含显隐，派生即可）。
 - Enter 双路径 GUI 冒烟核查（§6.6）——本轮截图为静态快照未驱动键盘，遗留人工核查；jsdom 已测 keyup.enter 路径且中止逻辑兜底竞态。
 
 ## 11. 截图
