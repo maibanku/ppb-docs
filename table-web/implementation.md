@@ -154,6 +154,7 @@
 - badge 纯空格边缘（§6.5 口径统一）；密度 comfortable 分页控件 40px 校准（§6.10）；行高 +1px 系统性偏差与 EP 对齐评估。
 - height/maxHeight 透传为后续增强（当前未透传，fixedFoot 覆盖 fill 场景，见 §4 如实表述）。
 - `useColumnPreferences.visibleKeys` 接口债：钩子未暴露该派生接口——当前无消费者，需要时在返回对象一行补齐（resolvedColumns 已含显隐，派生即可）。
+- `SearchField.defaultValue` 接口债：类型已声明但未接线——草稿初值唯一来源是 `searchDefaults`（表级）；字段级默认需要时在草稿初始化处一行合入。spec 04 列有该键，下一个按字段设默认的消费者会静默无效，先在此在册。
 - Enter 双路径 GUI 冒烟核查（§6.6）——本轮截图为静态快照未驱动键盘，遗留人工核查；jsdom 已测 keyup.enter 路径且中止逻辑兜底竞态。
 
 ## 11. 截图
