@@ -210,3 +210,10 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 - **验证器实证（iam 线）**：go.sum 哈希=tag 树基哈希（VCS zip 时间戳归一），v0.1.1 发布后无需 re-tidy 自然一致。
 - **至此验收闭环**：任一业务仓单仓检出 + GOPRIVATE=github.com/maibanku/* 即可 GOWORK=off 独立构建测试（ppb-base 检出不再必需）。ppb-base main@3891495 为权威底座（14 公共模块 tag + 垫片 + 五服务 v0.1.0 家族消费 + 配置卫生批 + 全链路 E2E 14/14）。
 - 尾款登记（非阻塞）：ppb-iam go.mod 头注释与 README/MIGRATION 旧路径叙述（注释卫生批）；endpoint-audit 独立构建 tidy 诉求（基线既有）；ppb-gateway 仓 gateway-routes.yaml 静态副本（P8-SWITCH §3 收敛案待定）；五服务自身 module 路径仍 ppbchat/server-*（ppb-base 内部残留，P8 旧家移除时一并消亡）。
+
+### P8 旧家移除批（2026-11-19，用户指令"ppb-base 迁移过的进行清除"，main@3891495..a55ab5b 已推）
+
+- 六提交保序：dda5af0（start/stop 切各仓构建——PPB_*_DIR 可覆盖，chat/camera 缺省 worktree）→ a640f48（**BREAKING 删 693 文件**：五服务源树+三旧前端+已迁 SQL，各仓 tag/SHA 锚点在提交信息）→ c320afc（路由清单指各仓+go.work 收缩 911→9 行+gen-routes 退役 -scan）→ 71b0891（CI/ci.sh/生成链新布局）→ 6b68795（两管理台跨仓源别名切各仓）→ a55ab5b（compose 构件标停+Dockerfile.service 退役）。
+- 终验（含协调方抽查）：**两轮** stop→start 全绿（5 服务+migrate×2+verify 14/14）；契约 JSON 迁仓前后逐字节同、gen-routes 清单模式产物与已提交 gateway-routes.yaml **cmp 一致（147+1）**；剩余模块 31 ok/0 FAIL（server-pkg 7+go-framework 系 12+contracts 1+platform-sdk 6+tools 5）；platform/base 管理台 typecheck+vitest+build 过（base 163/163）；功能性引用零残留（白名单匹配列全）；运行时 gw 200+登录 200；git status 干净。
+- **ppb-base 终态**：平台底座仓（14 公共模块 tag + server-pkg v0.1.1 过渡桥 + base/platform 管理台 + deploy 编排切各仓源 + 清单化路由）。旧家清除完成，各仓为唯一权威。
+- 遗留跟进（登记）：① **CI 门禁空窗**——A01/网关测试/四服务测试等门禁已从 ppb-base 删除但各仓尚无 workflow，需在各仓建 CI（下一批）；② chat/camera 分支合 main 后 start-all 五处源指针改回主检出（已注释标记）；③ 8240 旧 iam-web vite 退化为仅 [::1]（从 ppb-iam/iam-web 重起）；④ P8-SWITCH 待决：gateway 路由副本收敛、rtc 双副本、Dockerfile 草稿注释更新。
