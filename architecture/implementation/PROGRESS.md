@@ -217,3 +217,11 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 - 终验（含协调方抽查）：**两轮** stop→start 全绿（5 服务+migrate×2+verify 14/14）；契约 JSON 迁仓前后逐字节同、gen-routes 清单模式产物与已提交 gateway-routes.yaml **cmp 一致（147+1）**；剩余模块 31 ok/0 FAIL（server-pkg 7+go-framework 系 12+contracts 1+platform-sdk 6+tools 5）；platform/base 管理台 typecheck+vitest+build 过（base 163/163）；功能性引用零残留（白名单匹配列全）；运行时 gw 200+登录 200；git status 干净。
 - **ppb-base 终态**：平台底座仓（14 公共模块 tag + server-pkg v0.1.1 过渡桥 + base/platform 管理台 + deploy 编排切各仓源 + 清单化路由）。旧家清除完成，各仓为唯一权威。
 - 遗留跟进（登记）：① **CI 门禁空窗**——A01/网关测试/四服务测试等门禁已从 ppb-base 删除但各仓尚无 workflow，需在各仓建 CI（下一批）；② chat/camera 分支合 main 后 start-all 五处源指针改回主检出（已注释标记）；③ 8240 旧 iam-web vite 退化为仅 [::1]（从 ppb-iam/iam-web 重起）；④ P8-SWITCH 待决：gateway 路由副本收敛、rtc 双副本、Dockerfile 草稿注释更新。
+
+### 桌面客户端 GUI 级 E2E（2026-11-19，mac-gui-drive 驱动打包产物 ppbChat.app 0.1.0）
+
+- **完整 OIDC 登录链 GUI 打通**：app 登录面（密码链正确拒签 USER-9501=退役语义负控过）→「使用 IAM 账号登录」拉起 Chrome → ppb ID 表单填写（demo@ppb.local）→ 选组织（含一次误触背景关框后经「去登录 ppbChat」恢复——异常路径亦验证）→ Enter 确认 → 授权确认页 4 权限 →「授权」→ localhost:1420/callback「登录成功」→ 深链回 app。
+- **登录态渲染**：组织（migrated-tenant-1/T38实测/后端组）、会话列表（音视频验收B/交互验收/系统通知）、群公告（11-19 当日发布——W7 公告时刻特性线上可见）、成员 4/4 含 owner 标记。
+- **消息收发**：打开会话（历史消息双端渲染：昨天 20:34×2+今天 09:07/09:08）→ 发送 "migration e2e gui ok 1119" → **发送成功并回显**（09:56）——client→gateway→IM→存储→回流全管道 GUI 级实证。
+- 证据：gui-e2e-2026-11-19/ 九帧（launch/负控/OIDC 四步/登录态/会话/发送回显）。
+- 结论：迁移后全栈（ppb-base 底座 + 各仓服务 + IAM OIDC + 网关 + IM 实时/存储 + 桌面客户端）**GUI 端到端可用**。
