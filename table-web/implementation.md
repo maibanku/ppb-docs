@@ -149,8 +149,20 @@
 - 通用编辑表（表单↔表格联动）；summary 合计行插槽与 loading 骨架插槽（spec 05 低频项，九宫格无该组合，列后续）。
 - 服务端偏好同步（当前仅本地 storage 注入）；权限列过滤（列无 perm 概念，收口点 useColumnPreferences allowedLeaf）。
 - badge 纯空格边缘（§6.5 口径统一）；密度 comfortable 分页控件 40px 校准（§6.10）；行高 +1px 系统性偏差与 EP 对齐评估。
-- Enter 双路径 GUI 冒烟核查（§6.6，截图轮）。
+- Enter 双路径 GUI 冒烟核查（§6.6）——本轮截图为静态快照未驱动键盘，遗留人工核查；jsdom 已测 keyup.enter 路径且中止逻辑兜底竞态。
 
 ## 11. 截图
 
-（占位：由控制器在截图轮补 combo 1–9、窄容器 768/375、筛选展开态、fixedFoot 滚动、固定列、错误/空态、密度切换、暗色主题；存 `ppb-docs/table-web/screenshots/`。）
+已存 `ppb-docs/table-web/screenshots/`（2026-11-20，无头 Chrome `--headless=new` 实拍，dev server :8210）：
+
+| 文件 | 内容 |
+| --- | --- |
+| `width-1440.png` | 整页 1440px：九组合（combo-1..9）+ 本地全集 + 游标区块全量 |
+| `width-1024.png` / `width-768.png` / `width-375.png` | 同页 1024/768/375px 窄容器（筛选折叠/操作区换行为重点） |
+
+**取证方式与验证范围（如实声明）**：
+
+- 截图环境：`PPB_CHAT_DIR=../../ppb-chat PPB_CAMERA_DIR=../../ppb-camera npm run dev`——平台 vite 配置中 chat/camera 插件源缺省指向**已删除的 worktree**（`../../ppb-chat-wt`），不带覆盖变量时 standalone 入口解析失败（vite-error-overlay、`npm run build` 同源既有失败，见 §7）。此为启动环境问题，非本轮代码缺陷。
+- 页面挂载与渲染以 `--dump-dom` 客观核验：1.1MB DOM、combo-1..9/block-local/block-cursor 各 1、`el-table__row` 数据行、20 个筛选同框字段、12 个 `el-table--border` 表格、时间快捷项/列设置/批量操作/展开入口均在 DOM，vite-error-overlay=0；5 处 `pro-table--fixed-foot` 区块入画。
+- **未捕获的交互态截图**：筛选展开态、列设置浮层、密度切换、暗色主题、错误/空态特写——无头 CLI 截图为静态快照，无法驱动点击；相应能力由 jsdom 组件测试背书（见 §8 各专题用例），如需补交互态截图可在 dev server 手工展开后补拍。
+- 宽度类截图不能替代状态测试（spec 11 口径），仅作视觉取证。
