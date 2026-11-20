@@ -225,3 +225,12 @@ P2a 评审收口（同日）：**APPROVE_WITH_NITS**。活体验证全部在 git
 - **消息收发**：打开会话（历史消息双端渲染：昨天 20:34×2+今天 09:07/09:08）→ 发送 "migration e2e gui ok 1119" → **发送成功并回显**（09:56）——client→gateway→IM→存储→回流全管道 GUI 级实证。
 - 证据：gui-e2e-2026-11-19/ 九帧（launch/负控/OIDC 四步/登录态/会话/发送回显）。
 - 结论：迁移后全栈（ppb-base 底座 + 各仓服务 + IAM OIDC + 网关 + IM 实时/存储 + 桌面客户端）**GUI 端到端可用**。
+
+## 2026-11-20 server-pkg 物理收敛（方案 C，多 agent 七波）
+
+- **T1 base**（main 43a9ecd→ad842ad，已推 origin）：envelope/obs→go-framework（v0.1.1）；servicehttp→platform-sdk/servicehttp 新模块（v0.1.0）；svcauth 桥退役（装配面并入 platform-sdk/iam/svcauth，iam v0.1.1 含 qatokens/probe 迁入）；server-pkg v0.2.0=纯 type-alias 转发壳（42 符号双射，混用编译实证）；README 重写+EOL 声明。49 包 GOWORK=off 全绿。verify-p2-manage.sh qatokens 相对路径随迁修正（评审 Important 1 轮返修）。
+- **T2-T6 五仓切换**（四映射 sed，53 处 import）：gateway@b7f3448 已合 main；camera@383ef70 / file@b015b27 / iam@140af57 / chat@6078ccdc 四分支 BLOCKED-pending-merge——主检出被并行 campaign（PATHFINDER-2026-11-20/boot-starter 在途）占用，worktree 协议隔离完成、各波 build+test+grep 零残留全绿、逐波独立评审 Approved。
+- **推送**：ppb-base main+4 tag 已上 origin；五业务仓均未推（四分支待合并后再推）。
+- **留后续**：四分支 pending-merge（在途落地后 `git merge feat/server-pkg-direct`，若其在途版含 server-pkg import 需重跑四映射）；E2E start-all 5/5+verify 14/14 待在途框架落地补跑；server-pkg v0.2.0 壳保留一个发布周期后 EOL 删除；.dockerignore `!server-pkg` 白名单行；svcauthmw 双名 import 去重。
+- 情报偏差在案：file 任务头 15 处系笔误（实测 9）；chat 无 go.work 单模块。
+- 留后续补录（收口评审）：chat 仓 ~10 处 .go 注释与 docs/ 的 server-pkg 短名残留→并入 EOL/文档波；仓库根 .dockerignore 白名单整列为迁移前 server-* 死路径→EOL 波顺带清。
