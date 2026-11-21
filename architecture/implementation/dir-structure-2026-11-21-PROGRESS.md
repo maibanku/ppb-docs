@@ -95,6 +95,13 @@
 
 ## Rulings（补）
 
+## CFG 批次执行记录（2026-11-21 晚）
+
+- **CFG-1 ✅ iam@888abf4**：LoadConfig 收口一条链（默认值→严格 yaml 未知字段拒→IAM_* env 覆盖含 IAM_DB_DSN→最终校验）；显式 -config 缺文件=拒起（原静默回落收口）；APP_ENV=prod 三门禁（MySQL DSN 禁 SQLite 回落/https issuer/开发默认 code_hmac_secret 不认 allowlist；internal_token 同口径在 cmd 闸门）；`-check-config` 早于 db.Open/migrate/密钥/监听=结构保证零副作用。cmd/server 与 cmd/migrate 的 -config 缺省值 "config.yaml"→""（dev 裸启动行为不变，start-all migrate 用显式 -dsn 不受影响）
+- **CFG-2 ✅ base start-all**：iam start_svc 前插 `"$BIN/iam" -check-config || die`；prod 分支 die 清单补 IAM_DB_DSN（原漏项）；bash -n 过
+- **验收**：config/cmd 单测绿 + 全量 20 包绿；二进制级六场景（dev 双放行 exit 0 零副作用[临时目录无 data/ 无密钥]、prod 缺 DSN 点名"MySQL DSN...不得回落 SQLite"、prod 全合法 exit 0 db=mysql、显式缺文件拒、未知字段点名 rpc_prot、默认凭据未放行拒）；E2E stop→start 6/6 健康且启动日志实证 `config check ok: env=dev ... db=mysql` 先于起服；verify-p2-manage 14/14
+- **CFG-3 待做**：file/im/camera/gateway/wardrobe 各自接入 `-check-config`（各服务切换实际 env/ 部署路径时逐仓做，按自身依赖定校验项）
+
 ## W2 ppb-base 收口清单（全部代理回报后执行）
 
 1. `tools/gen_error_codes.py:25-27` 硬编码扫描路径：FILE 段 `service-file/internal/service`→`service-file/internal/file/service`；IM 段 `service-im/internal/service/imdef`→`service-im/internal/imdef`（im 报告§32 行）；`service-im/internal/service/todo` 在现树无此目录（陈旧死路径，先例在案——改时一并处理或注记）；GATEWAY 根路径递归覆盖可不动——改后实跑一次自证
