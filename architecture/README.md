@@ -13,6 +13,7 @@ PPB 的公共 Go 代码、协议、SDK 和后台底座由 ppb-base 发布。IAM�
 5. [验收标准](04-验收标准.md)，逐项保存真实结果。
 6. [Claude Code 执行提示词](implementation/CLAUDE_CODE_PROMPT.md)，作为后续本地实施入口。
 7. [实施进度](implementation/PROGRESS.md)，记录各仓 SHA、命令结果、阻塞和下一步。
+8. [后端服务内部目录规范](05-后端服务内部目录规范.md)，查 IAM、IM、File、Camera、Gateway、Wardrobe 的目标文件落点、迁移批次和验收门禁。它补充的是分仓后的服务内部布局；下方的仓库存在状态为原方案的历史快照。
 
 ## 目标仓库
 
