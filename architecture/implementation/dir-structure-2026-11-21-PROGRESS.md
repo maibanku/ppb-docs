@@ -82,9 +82,18 @@
 - 追加定性证据：qatokens 五参手动复跑成功（迁移后 iam 内部 RPC IssueMemberSession + 签发链正常）
 
 **W3 收口**：
-- 六仓 `main` ff-merge：iam→06cb4fc / im→250e2d3a / file→4643731 / camera→ae41ca3 / gateway→9bdf7de / wardrobe→d2e6aa4；feat 分支删除；**未推送**（等用户指令）
+- 六仓 `main` ff-merge：iam→06cb4fc / im→250e2d3a / file→4643731 / camera→ae41ca3 / gateway→9bdf7de / wardrobe→d2e6aa4；feat 分支删除
 - ppb-base 仅 partial-stage 提交 tools/gen_error_codes.py（并行会话的 21 条 docs 删除与 .claude/wt-policies/ 不碰）
 - E2E 栈保持运行（pid 在 deploy/run/）
+
+**推送（用户授权"开发完成直接推送"）**：八仓 `git push origin main` 全部成功且 ls-remote 实证一致——iam@06cb4fc / chat@250e2d3a / file@4643731 / camera@ae41ca3 / gateway@9bdf7de / wardrobe@d2e6aa4 / base@d196611 / docs@46c6159。
+
+**推送后全量测试（main 状态）**：
+- 六套并行首轮：camera 15 ok / file 11 ok / gateway 4 ok / iam 20 ok / wardrobe 5 ok 全绿；im 19 ok/3 FAIL（TestCoalesceSecondWindow 合流窗口计时测试）
+- im 失败定性：**六套并行抢 CPU 的计时抖动，非回归**——串行复跑 `go test -count=1 ./...` **exit=0 ok=20 FAIL=0**（realtime/ws 转绿）
+- 注：/tmp 下 test-p456.log 等为各代理自身早期测试日志，与本轮无关
+
+## Rulings（补）
 
 ## W2 ppb-base 收口清单（全部代理回报后执行）
 
