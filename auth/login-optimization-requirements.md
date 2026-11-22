@@ -1,230 +1,174 @@
-# ppbChat 登录认证优化需求文档
+# ppbChat 登录认证优化需求文档（修订版 v2）
 
-> 版本：v1.0 · 日期：2026-11-22 · 基于现有 OIDC 认证链路的全面优化设计
-> 范围：桌面端（Tauri）+ 手机端（React Native）+ IAM 门户 + 网关
-
----
-
-## 一、现状与问题
-
-### 1.1 现有基础设施（已存在但未充分利用）
-
-| 组件 | 文件 | 能力 | 利用程度 |
-|---|---|---|---|
-| 桌面 Keychain 存储 | `authstore.rs` | token 安全存取（keyring v4） | ✅ 已用 |
-| 桌面自动登录逻辑 | `session.rs::try_autologin` | 重启后读 Keychain 验活 | ⚠️ 部分（OIDC token 过期即失效） |
-| 桌面登录偏好 | `login_preferences.rs` | auto_login/remember_password 标志 | ⚠️ OIDC 路径未写入 |
-| OIDC refresh_token | `iam_oidc.rs:135` | IAM 返回 refresh_token | ❌ **未使用**——收到后丢弃 |
-| IAM 刷新端点 | `iam_http.go:603` | TokenRequestByRefreshToken | ❌ 客户端未调用 |
-| 手机 SecureStore | `secureStore.ts` | token 持久化 | ✅ 已用 |
-| 手机自动登录 | `LoginScreen.tsx` | 启动时尝试恢复 | ⚠️ 同桌面——token 过期即失败 |
-
-### 1.2 核心问题链
-
-```
-用户登录 → OIDC → 获得 access_token（短有效期）+ refresh_token（未使用）
-                                    ↓
-              access_token 过期（约 1 小时）
-                                    ↓
-              try_autologin 调 /me → 401
-                                    ↓
-              降级登录页 → 用户重新走完整 OIDC → 体验断裂
-```
-
-### 1.3 用户旅程对比
-
-| 场景 | 当前 | 主流产品 | 差距 |
-|---|---|---|---|
-| 首次登录 | ~15 秒（浏览器跳转+输入凭据+回跳） | ~5 秒 | 3 倍慢 |
-| **重启客户端** | **~15 秒（重新走 OIDC）** | **0 秒（自动登录）** | **∞ 倍差** |
-| Token 过期后 | ~15 秒（重新走 OIDC） | 0 秒（静默刷新） | 同上 |
-| 体验上下文切换 | 桌面→浏览器→桌面（认知断崖） | 内嵌 WebView 或零跳转 | 体验差 |
+> 版本：v2.0 · 日期：2026-11-22 · 范围收缩：砍掉手机号/生物识别/扫码/魔法链接/企业 SSO
+> 原则：基于现有 OIDC 链路 + 现有设置面板做增量，不新建页面不新加依赖
 
 ---
 
-## 二、优化方案
+## 一、现有基础（不改动的部分）
 
-### P0：自动登录（Token 持久化 + 静默刷新）
+这些**已经在生产运行**，本方案在此之上做接线：
 
-#### 需求 AUTH-01：OIDC Refresh Token 持久化
-
-**目标**：OIDC 登录成功后，将 refresh_token 与 access_token 一并存入 Keychain/SecureStore。
-
-**改动点**：
-
-| 端 | 文件 | 改动 |
+| 组件 | 状态 | 说明 |
 |---|---|---|
-| 桌面 Rust | `iam_oidc.rs` | OIDC 兑换成功后，将 `refresh_token` 传入 `establish_persistence` |
-| 桌面 Rust | `session.rs::login_with_oidc` | `establish_persistence` 增写入 `refresh:{scope}:{memberId}` 键 |
-| 桌面 Rust | `authstore.rs` | 新增 `save_refresh/load_refresh/delete_refresh` 三方法 |
-| 手机端 | `rnApi/iamChannelRn.ts` | OIDC 回调后提取 refresh_token 传入 secureStore |
-| 手机端 | `rnApi/secureStore.ts` | StoredCredentials 结构体加 `refreshToken?: string` |
+| OIDC 认证链 | ✅ 稳定运行 | 桌面环回 / 手机深链，唯一登录通道 |
+| 桌面 Keychain（`authstore.rs`） | ✅ 已实现 | keyring v4，service=`ppbchat-desktop` |
+| 手机 SecureStore（`secureStore.ts`） | ✅ 已实现 | expo-secure-store，版本化 JSON blob |
+| IAM refresh 端点 | ✅ 已实现 | `POST /iam/api/v1/token`（grant_type=refresh_token） |
+| 桌面 try_autologin | ✅ 已实现 | 读 Keychain → /me 验活 → 成功恢复 |
+| 桌面设置面板 | ✅ 已实现 | 六个 tab（账户/外观/通知/快捷键/存储/关于） |
+| IAM session 模型 | ✅ 已实现 | 含 device_label 字段 |
 
-**验收**：
-- [ ] OIDC 登录后 Keychain 中可查到 `refresh:{scope}:{memberId}` 键
-- [ ] 手机端 SecureStore JSON blob 含 `refreshToken` 字段
-- [ ] 登出时 refresh_token 同步清除
+## 二、问题（只修一个断裂点）
 
-#### 需求 AUTH-02：静默 Token 刷新
+```
+OIDC 登录成功
+  → IAM 返回 access_token + refresh_token
+  → access_token 存入 Keychain/SecureStore ✅
+  → refresh_token 丢弃 ❌  ← 唯一的断裂点
+  ...
+  1 小时后 access_token 过期
+  → try_autologin 调 /me → 401
+  → 没有刷新手段 → 降级登录页 → 用户重新走浏览器 OIDC
+```
 
-**目标**：access_token 过期时，用 refresh_token 向 IAM 换新 token，用户零感知。
+**修复这一个断裂点（存 refresh_token + 过期时刷新）= 自动登录从 0% 到 99%。**
 
-**流程**：
+---
+
+## 三、必要工作（必须做，缺一不可）
+
+### AUTH-01：Refresh Token 持久化
+
+**做什么**：OIDC 兑换成功后，将 refresh_token 与 access_token 一并存入安全存储。
+
+| 端 | 文件 | 具体改动 |
+|---|---|---|
+| 桌面 Rust | `iam_oidc.rs` | `exchange_code_for_tokens()` 返回值中 refresh_token 不丢弃 |
+| 桌面 Rust | `session.rs` → `login_with_oidc` | 调 `secrets.save("refresh:{scope}:{memberId}", refresh_token)` |
+| 手机端 | `iamChannelRn.ts` | OIDC 回调后提取 refresh_token 传入 `saveCredentials` |
+| 手机端 | `secureStore.ts` | `StoredCredentials` 接口加 `refreshToken?: string` |
+
+**不做什么**：
+- 不改 `authstore.rs`（现有的 `save/load/delete` 方法已够用，只是多存一个键）
+- 不改 IAM（refresh_token 生成和返回逻辑已有）
+- 不改前端 UI（用户无感知）
+
+### AUTH-02：静默 Token 刷新
+
+**做什么**：`try_autologin` 遇到 401 时，用 refresh_token 向 IAM 换新 token。
+
+| 端 | 文件 | 具体改动 |
+|---|---|---|
+| 桌面 Rust | `httpapi.rs` | 新增 `refresh_token()` 方法（POST /iam/api/v1/token） |
+| 桌面 Rust | `session.rs` → `try_autologin_with_startup` | 401 分支：读 refresh → 调刷新 → 成功则重试 /me |
+| 桌面 Rust | `login_preferences.rs` | OIDC 登录成功后置 `auto_login = true` |
+| 手机端 | `rnApi/index.ts` | 同桌面的 401 → refresh → retry 逻辑 |
+
+**降级链**（三层兜底）：
 ```
 try_autologin
-  → /me 返回 401（token 过期）
-  → 读 Keychain refresh_token
-  → POST /iam/api/v1/token (grant_type=refresh_token)
-  → 成功：新 token 写入 Keychain → 重试 /me → 登录恢复
-  → 失败（refresh_token 也过期/被撤销）：降级登录页
+  → /me 200 → 直接恢复 ✅
+  → /me 401 → 读 refresh_token
+      → 刷新成功 → 新 token 写 Keychain → /me 200 → 恢复 ✅
+      → 刷新失败（过期/撤销）→ 清凭证 → 登录页 ✅（现状行为）
 ```
 
-**改动点**：
+### AUTH-03：等待页进度反馈
 
-| 端 | 文件 | 改动 |
-|---|---|---|
-| 桌面 Rust | `session.rs` | `try_autologin` 中 401 分支加入 refresh 逻辑 |
-| 桌面 Rust | `httpapi.rs` | 新增 `refresh_iam_token()` 方法 |
-| 桌面 Rust | `login_preferences.rs` | OIDC 登录成功后置 `auto_login = true` |
-| 手机端 | `rnApi/iamChannelRn.ts` | 自动登录路径加 refresh 分支 |
+**做什么**：OIDC 等待期间桌面端显示步骤进度，替代当前的黑盒等待。
 
-**IAM 无需改动**——`/iam/api/v1/token` 的 `grant_type=refresh_token` 已支持。
+**改动仅两个文件**：
 
-**验收**：
-- [ ] 桌面端：登录 → 关闭 → 重启 → 自动进入主界面（不弹浏览器）
-- [ ] 手机端：同上
-- [ ] refresh_token 撤销后（登出/管理员踢）：降级登录页
-- [ ] 刷新过程中 UI 无闪白（静默完成）
+| 文件 | 改动 |
+|---|---|
+| `LoginOverlay.vue` | 等待卡片内容改为四步指示器（当前步高亮） |
+| `auth/iamChannel.ts` | 监听 Rust emit 的 `iam://progress` 事件 |
 
-#### 需求 AUTH-03：等待页实时进度反馈
+**Rust 侧不需要新文件**——`iam.rs` 已有 `emit_callback_event`，加一个进度阶段参数即可。
 
-**目标**：OIDC 等待期间，桌面端显示四态进度而非黑盒。
-
-**状态机**：
+四步状态：
 ```
-[●]──→[●]──→[●]──→[●]──→ 登录成功
-打开   等待   收到   正在
-浏览器  授权   回调   登录
+① 已打开浏览器   → 用户看到浏览器弹出
+② 等待授权       → 用户在浏览器输入凭据
+③ 已收到回调     → 浏览器完成，环回监听器收到
+④ 正在登录       → Rust 在兑换 token / 建立会话
 ```
-
-**改动点**：
-
-| 端 | 文件 | 改动 |
-|---|---|---|
-| 桌面 Rust | `iam_loopback.rs` | 回调到达时 emit `iam://progress` 事件（阶段=3） |
-| 桌面 Vue | `LoginOverlay.vue` | 等待卡片改为四步进度条（当前步高亮） |
-| 桌面 Vue | `auth/iamChannel.ts` | 监听进度事件更新 UI |
-
-**验收**：
-- [ ] 点击登录后可见四步进度指示器
-- [ ] 浏览器授权完成时进度自动推进
-- [ ] 各步骤有对应文案
 
 ---
 
-### P1：体验跃升
+## 四、值得做（第二优先，P0 稳定后）
 
-#### 需求 AUTH-04：生物识别快捷登录
+### AUTH-04：已登录设备管理
 
-**目标**：重启后 token 有效时，用 Face ID / Touch ID / Windows Hello 解锁而非直接进入。
+**做什么**：在现有设置面板「账户」tab 内新增「已登录设备」区块。
 
-**交互流程**：
-```
-客户端启动 → try_autologin 成功（token 有效）
-  → 检查「生物识别锁」开关（默认关）
-  → 开关开 → 弹生物识别 → 通过 → 进入主界面
-  → 开关关 → 直接进入主界面（现状）
-```
-
-**改动点**：
-
-| 端 | 文件 | 改动 |
-|---|---|---|
-| 桌面 Rust | `commands.rs` | 新增 `desktop_biometric_available/desktop_biometric_prompt` |
-| 桌面 Vue | `App.vue` | auto-login 成功后调生物识别 |
-| 手机端 | `LoginScreen.tsx` | `expo-local-authentication` 集成 |
-| 设置 | `SettingsScreen.vue` | 新增「生物识别锁」开关 |
-
-#### 需求 AUTH-05：手机扫码登录桌面端
-
-**目标**：桌面端显示二维码 → 手机扫码确认 → 桌面自动登录（微信范式）。
-
-**交互流程**：
-```
-桌面端登录页
-  ├── [使用 IAM 账号登录] （现有 OIDC）
-  └── [手机扫码登录] ← 新增
-        ↓
-    显示二维码（WebSocket 实时待确认）
-        ↓
-    手机端扫码 → 弹确认「是否在桌面端登录？」
-        ↓              ↓
-      [确认]          [拒绝]
-        ↓              ↓
-    桌面收到 token    桌面显示「已拒绝」
-    自动登录
-```
-
-**改动点**：
-
-| 层 | 改动 |
-|---|---|
-| IAM | 新增 `POST /iam/api/v1/qrcode/create`（生成一次性 QR token） |
-| IAM | 新增 `POST /iam/api/v1/qrcode/confirm`（手机端确认，返回授权码） |
-| WS | 新增 `qr.login` 推送类型（桌面端监听） |
-| 桌面 | `LoginOverlay.vue` 加扫码 tab + 二维码渲染 + WS 监听 |
-| 桌面 | `session.rs` 新增 `qr_login_wait` 方法 |
-| 手机 | 联系人页或设置加「扫一扫」入口 → `expo-camera` 扫码 → 确认弹窗 |
-
-#### 需求 AUTH-06：IAM SSO Cookie 持久化
-
-**目标**：浏览器 IAM 会话持久化，二次 OIDC 跳转后免输凭据直接回调。
-
-**改动点**：
+**不新建页面**——挂在 `SettingsPanel.vue` 的 account tab 下。
 
 | 层 | 文件 | 改动 |
 |---|---|---|
-| IAM | `iam_http.go` | 登录成功后 Set-Cookie 加 `Persistent-Authorization`（HttpOnly，MaxAge=7 天） |
-| IAM | session 校验逻辑 | 优先查持久 Cookie，回退短期会话 |
-| IAM | `LoginView.vue` | 登录页加「记住我 7 天」复选框 |
+| IAM | `iam_http.go` | 新增 `GET /iam/api/v1/sessions`（当前用户全部活跃会话列表） |
+| IAM | `iam_http.go` | 新增 `DELETE /iam/api/v1/sessions/{id}`（踢出指定会话） |
+| 桌面 Rust | `session.rs` | 新增 `list_sessions` / `revoke_session` 两个方法 |
+| 桌面 Vue | `SettingsPanel.vue` | account tab 内加设备列表 + 踢出按钮 |
+| 手机端 | `SettingsScreen.tsx` | 同桌面加设备列表 |
 
----
+**展示信息**（利用 IAM 已有的 `device_label` 字段）：
+```
+┌─ 已登录设备 ──────────────────────┐
+│ 🖥 Mac Desktop · 当前设备         │
+│    2026-11-22 15:30 · Chrome     │
+│                                   │
+│ 📱 iPhone · 2 小时前              │
+│                     [踢出]        │
+└───────────────────────────────────┘
+```
 
-### P2：长期竞争力（概述，后续详设）
+### AUTH-05：IAM SSO Cookie 持久化
 
-#### 需求 AUTH-07：邮箱魔法链接（无密码登录）
-#### 需求 AUTH-08：多设备同步登录确认
-#### 需求 AUTH-09：设备管理面板（已登录设备列表+远程踢出）
-#### 需求 AUTH-10：企业 SSO（SAML/OIDC 联邦）
+**做什么**：浏览器 IAM 会话 7 天有效，二次 OIDC 跳转后免输凭据。
 
----
-
-## 三、安全红线（所有优化不得突破）
-
-1. **refresh_token 不出 Rust/原生层**——与 access_token 同等保护级别
-2. **Keychain/SecureStore 是唯一持久化面**——不进 SQLite/localStorage/IPC
-3. **refresh_token 轮换**——每次使用后 IAM 返回新 refresh_token，旧的立即失效
-4. **设备指纹绑定**（P1+）——refresh_token 与设备标识绑定，异地使用触发重新认证
-5. **登出即撤销**——客户端登出时调 IAM revoke，服务端销毁 refresh_token 链
-
-## 四、非功能需求
-
-| 指标 | 目标 |
+| 文件 | 改动 |
 |---|---|
-| 自动登录成功率 | > 99%（refresh_token 有效期内） |
-| 静默刷新延迟 | < 500ms |
-| 重启到主界面 | < 1.5 秒（含 token 验证） |
-| 扫码登录全流程 | < 5 秒 |
+| IAM `iam_http.go` | 登录成功后 `Set-Cookie: iam_session=...; Max-Age=604800; HttpOnly; SameSite=Lax` |
+| IAM `LoginView.vue` | 登录表单加「7 天内免登录」复选框（默认勾选） |
 
-## 五、实施排期建议
-
-| 批次 | 需求 | 预估 |
-|---|---|---|
-| 第 1 批 | AUTH-01 + AUTH-02 + AUTH-03（P0 全部） | 2 天 |
-| 第 2 批 | AUTH-04 + AUTH-06 | 3 天 |
-| 第 3 批 | AUTH-05（扫码） | 3 天 |
-| 第 4 批 | P2 按需 | — |
+**效果**：用户第二次点桌面端「登录」→ 浏览器打开 IAM 页 → Cookie 有效 → **0 秒自动跳回**（不显示登录表单）。
 
 ---
 
-*本文档基于 2026-11-22 全面分析产出，基于现有 OIDC 链路基础设施，不推翻现有安全架构。*
+## 五、明确不做（当前版本排除）
+
+| 功能 | 排除原因 |
+|---|---|
+| ~~手机号登录~~ | 不接入手机号体系，当前邮箱+密码够用 |
+| ~~生物识别（指纹/Face ID）~~ | 不引入新原生依赖；自动登录已解决重启痛点 |
+| ~~扫码登录桌面~~ | 需手机端加相机权限+扫码 UI+WS 推送，工程量大收益边际 |
+| ~~魔法链接~~ | 需邮件服务+异步流程，当前密码登录无障碍 |
+| ~~企业 SSO（SAML）~~ | 无企业客户需求 |
+| ~~社交登录（微信/Google）~~ | 无第三方 OAuth 应用注册 |
+
+## 六、工作量与排期
+
+| 需求 | 改动文件数 | 新文件 | 预估 |
+|---|---|---|---|
+| AUTH-01 Refresh 持久化 | 4 改 | 0 | **0.5 天** |
+| AUTH-02 静默刷新 | 4 改 | 0 | **0.5 天** |
+| AUTH-03 等待页进度 | 2 改 | 0 | **0.5 天** |
+| **P0 小计** | **~8 改** | **0** | **1.5 天** |
+| AUTH-04 设备管理 | 5 改 | 0 | 1 天 |
+| AUTH-05 SSO Cookie | 2 改 | 0 | 0.5 天 |
+| **P1 小计** | **~7 改** | **0** | **1.5 天** |
+| **总计** | **~15 文件改动** | **0 新文件** | **3 天** |
+
+## 七、安全红线
+
+1. refresh_token 与 access_token **同级别保护**——只进 Keychain/SecureStore
+2. 每次刷新后 **refresh_token 轮换**（IAM 已实现，旧 token 用后即毁）
+3. 登出时**同步清除** refresh_token（`logout` 方法追加一行 `secrets.delete("refresh:...")`）
+4. IAM 管理员可**批量撤销**某用户全部会话（已有 `revoke_all_sessions`，设备管理面板调用）
+5. 不在 UI/IPC/日志中暴露任何 token 值（现有红线不变）
+
+---
+
+*v2.0 修订：砍掉 6 项非必要功能，保留 5 项高 ROI 改动；全部在现有文件上做增量，零新文件零新依赖。*
