@@ -5,6 +5,29 @@
 
 ---
 
+## 执行实录（2026-11-23，P1-P4 全部落地 + 四服务联合验收）
+
+四服务服务端 Kitex 化全部完成并推送：
+
+| 服务 | 提交 | 测试 | 注册服务 |
+|---|---|---|---|
+| camera（P1 试点） | ppb-camera@c4f0dce | 15 包 ok/0 FAIL | CameraService + AdminService |
+| iam（P2） | ppb-iam@a744e70 | 20 包 ok/0 FAIL | IamService + IamAccountBridge + AdminCompatService |
+| file（P3） | ppb-file@e97464c | 11 包 ok/0 FAIL | FileService（19 方法） |
+| im（P4） | ppb-chat@c11bd540 | 24 包 ok/0 FAIL | IMService + ChatOrg + OrgCompat + RefAccess + GroupFileAuth（五组一 server） |
+
+**联合验收（2026-11-23，四进程同机并发）**：etcd 四键注册（`kitex/registry-etcd/ppbchat-{camera,iam,file,im}/<ip>:<rpc-port>`）；四健康口全 200；跨服务 RPC 连接层证实——camera/im/file 三进程对 IAM（grpc-go 出站 × IAM Kitex 服务端）TCP ESTABLISHED（grpc 惰性建连，真实调用才拨号）；camera 管理面断言链路差分语义正确（虚构 actor → 权威回源空快照 → fail-closed 403 MANAGE-0004）。
+
+**各服务落地要点与 camera 模式的偏差**（详各自提交）：
+- iam：ErrBiz 壳剥除保真中间件（Kitex 包壳会给 handler 错误文案追加 " [biz error]"，破坏 "IAM-xxxx: 文案" 契约）；legacy `x-ppb-actor` 桥（nphttp2→grpc-go 入站 metadata）；InProcessIamClient 进程内编排 4 方法字段平移。
+- file：管理面双通道授权（IAM 断言 + legacy 无断言回源 Port，构造参数注入）；中间件序 requestid 最内层（保原 gRPC 链序）。
+- im：**kitex_gen pb 改 contracts 类型别名层**（业务层 34 文件直消费 proto 类型，别名层使 handler/回环客户端/服务组共享同一 Go 类型，方法体逐字不动；prutal 反射序列化 protoc-gen-go 结构体实测与官方字节一致）；同名方法冲突经 WithFallbackService 消解（nphttp2 按 :path 严格路由，线缆行为不变）；RefAccessService 桩自 file 仓同版拷入（契约权威在 ppb-file，未发 tag 不宜为依赖）。
+- contracts-camera 脚手架清理（ppb-camera@2f728a4+8b31753）：误提交的 kitex_gen/handler/main.go 等全删，contracts 回归纯净。
+
+**环境注记**：deploy/bin 已投放 *.kitex 四二进制（与旧版并存，下次重启即切换）；常驻旧 im/file 旧二进制仍在跑（与 Kitex IAM 线缆互通正常）。
+
+---
+
 ## 执行实录（2026-11-23，P1 camera 试点落地）
 
 P1 已按下述**落地修正方案**完成并验证（ppb-camera@c4f0dce），后续服务同模式复制：
