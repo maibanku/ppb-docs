@@ -5,6 +5,27 @@
 
 ---
 
+## 执行实录（2026-11-23，P1 camera 试点落地）
+
+P1 已按下述**落地修正方案**完成并验证（ppb-camera@c4f0dce），后续服务同模式复制：
+
+| 项 | 实际落地 | 与上文原步骤的差异 |
+|---|---|---|
+| 服务端 | `server.NewServer` 默认传输（netpoll + **detection 协议探测**），同口继续承载**标准 gRPC 线缆** | 无需 `WithTransportProtocol`——Kitex v0.16 服务端按连接自动识别 gRPC（HTTP/2 前缀探测后交 nphttp2 处理器） |
+| 类型面 | 处理器签名切 `kitex_gen/`（**prutal** 类型）；prutal 为反射式 protobuf 序列化，对内嵌 gen/go `common.BaseResp` 混生树兼容 | 原文「签名不变仅换 import」成立；`Unimplemented*Server` 内嵌删除 |
+| 互通 | **grpc-go 客户端 × Kitex 服务端线缆级互通**（HTTP 面回环 LocalConn、未迁移直连方零改动）：metadata（HTTP/2 头 → `nphttp2/metadata.FromIncomingContext`）、gRPC 状态码（`nphttp2/status.Err` 保真 Unauthenticated/PermissionDenied）、grpc-timeout 透传 | 迁移可**逐服务独立进行**，不要求两端同时切换 |
+| 中间件 | ppb-base `rpcx/kitexmw`（Recovery/RequestID/InternalAuth + FullMethodFromContext）与 `rpcx/kitexstarter`（boot 组件，组件名沿用 "grpc" 保停机序口径），tag `go-framework/rpcx/v0.2.0` | 拦截器判定逻辑零复制（复用 interceptor.Token/Exempt、requestid 本体） |
+| 注册 | `kitex-contrib/registry-etcd`：config `registry.etcd.endpoints` 非空才注册（发现名 `ppbchat-<svc>`，etcd key `kitex/registry-etcd/<svc>/<lan-ip>:<rpc-port>`，lease keepalive + 停机反注册实测通过） | etcd 以二进制常驻 127.0.0.1:2379（Docker 镜像源不可达，见 infra 记录） |
+| 验证 | 全量测试 15 包 ok/0 FAIL；**测试装配用真实 127.0.0.1:0 回环 TCP**（bufconn 不可用：gonet 传输与 nphttp2 处理器不兼容——serveConn 循环 nil-deref，且 detection 探测依赖 netpoll.Reader）；实机冒烟 templates API 全链路 + etcd 注册/摘除 | 原 1.7 验收口径全部命中 |
+
+**有意差异**：gRPC reflection 随 server 替换退役（grpcurl 内省改走 proto 契约文件）。
+
+**后续阶段**（本文 Phase 2-5 的服务端部分同模式复制后）：
+- Phase C（未做）：出站内部调用 Kitex 客户端化（etcd resolver + 客户端负载均衡/重试/熔断替代 RETRY_CONFIG 静态 JSON）；当前出站仍为 grpc-go 直连（已带 retry/round_robin）。
+- 网关维持 HTTP 反代不变（见「总体策略修正」）。
+
+---
+
 ## 总体策略修正
 
 经深度分析，**网关暂不重写**（136 条路由风险太高），采用分层改造：
