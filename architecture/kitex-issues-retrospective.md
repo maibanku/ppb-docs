@@ -91,22 +91,30 @@
    双会话独立复现）。结论：生成器与运行时无实际 codegen 差异，版本串
    差异为上游滞后，风险关闭。
 
-### P1（架构完整度——迁移既定未完项）
+### P1（架构完整度—— ✅ 2026-11-23 同日第四轮全部落地）
 
-4. **Phase C：出站内部调用 Kitex 客户端化（etcd 消费侧）**
-   - 现状：etcd 只有注册没有发现消费；出站仍 grpc-go 直连 + RETRY_CONFIG 静态 JSON（有重试/轮询但无熔断、无实例摘除）。
-   - 方案：camera→iam 先行试点（单依赖最薄）：grpc_dependencies 增 `service_name` 双写模式（有 service_name 走 kitex client + etcd resolver，否则回退 address 直连——灰度开关）；验证 LB/重试/熔断语义后推 file/im/iam。iam 侧注意 A2 保真件与 A4 actor 桥在 kitex 客户端下的等价物（metainfo→HTTP/2 头与 grpc-go metadata 的互通已验证，出站侧需同样核验）。
-   - 工作量：试点 1 天 + 全量 2 天。
+4. ~~Phase C：出站内部调用 Kitex 客户端化~~ **已完成（四站全量）**：camera 试点
+   （ppb-camera@65c33b2）验证 service_name 灰度双路（etcd resolver + GRPC 传输 +
+   重试含首调 3 次 + 内建熔断 + 出站三中间件 requestid/internalauth/断言按方法重签）
+   后，子代理并行推全量——file@4bdf722（iam+im/refaccess 双出站；mail 留 grpc 双
+   理由在册）、im@3bf2579c（iam 四面 17 法+file 双路，灰度保守关）、iam@98e2179
+   （im 出站，灰度开；contracts-im 顺带升 v0.2.0）。新共享件 tag：rpcx v0.2.1
+   （kitexmw/clientmw）、platform-sdk/iam v0.2.2（authzport.IAMAssertionClientMiddleware）。
+   联合验收过：start-all 全栈换新、etcd 四键、camera 冒烟 ALL PASS（回源经 etcd
+   发现打真 iam）、网关链路绿。im 出站灰度未开为裁量项（保守观察，开阀只改
+   deploy yaml service_name 键）。A2/A4 等价物已核验（客户端中间件头注入 =
+   nphttp2/metadata.AppendToOutgoingContext，集成测试锁头到服务端读值一致）。
 
-5. **冒烟工具只覆盖 im 主链**
-   - 现状：smoke（ALL PASS 口径）只测 im；file/camera/iam 无同级闭环工具，检查手册 §3.4 对这三家只能用负例探针。
-   - 方案：按 smoke 模式补三家冒烟（file：上传→登记→配额→回收站；camera：guest session→templates→quota；iam：qatokens 已具雏形，纳入工具化），统一 `cmd/smoke` 惯例与种子前置。
-   - 工作量：每家 0.5 天。
+5. ~~冒烟工具只覆盖 im 主链~~ **已完成（四家全覆盖）**：im 十步（复跑 PASS）、
+   file 十四步（免种子时间戳 operator）、camera 五步（含 Phase C 回源 HTTP 断言
+   探针）、iam 双路（含 ErrBiz 保真核验）——统一 cmd/smoke 惯例，种子/前置记
+   各自文件头。
 
-6. **新旧二进制并存切换无 runbook**
-   - 现状：`deploy/bin/*.kitex` 与旧版并存，常驻旧 im/file 仍跑旧 gRPC 二进制（与 Kitex IAM 互通正常，无功能故障）；切换靠手工。
-   - 方案：写切换 runbook（停旧→起 *.kitex，env 集清单：PPB_INTERNAL_RPC_TOKEN/PPB_ALLOW_DEV_JWT/DSN/Redis）；`start-all.sh` 更新为 kitex 二进制；建议一次性切换后删旧 bin。
-   - 工作量：0.5 天。
+6. ~~新旧二进制并存切换无 runbook~~ **已完成并执行切换**：ppb-docs
+   `kitex-switch-runbook.md`@9ef99dd——start-all.sh 即切换器（源码构建 + mtime
+   判旧自动换新），实跑完成运行态全面 Kitex（etcd 四键标准口、网关链路通）；
+   deploy/bin/*.kitex 过渡副本已删。验收揪出 start-all 的 iam 裸启动漏 -config
+   → etcd 无 ppbchat-iam 注册 → 修复@3859287。
 
 ### P2（工程质量，不阻塞）
 
