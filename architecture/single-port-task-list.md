@@ -41,14 +41,18 @@
 
 ### D 线：S2 网关翻译化（核心——「HTTP 都在网关」）
 
-- [ ] **D1 契约上收 contracts 仓**（camera 试点先行）：7 份 `api/*-http.json` 迁
-  `contracts-*/api/`（纯数据 embed，零依赖，纯净铁律不破）；服务侧改薄引用；
-  route-manifest 路径更新；同步门禁
+- [x] **D1 契约上收 contracts 仓**（camera 试点先行）——`ppb-camera@feat/
+  contracts-api-home 3690b2b`：subject/admin 迁 contracts-camera/api/（纯数据
+  embed 零依赖）；service-camera 薄装载层；route-manifest 跨仓 ../ 路径；
+  gateway-routes 再生零漂移（139 条恒等实证）；其余三服务待复制
 - [ ] **D2 契约 v2 schema**（ParseV2 + security 块 + policy 仅 manage + 匿名六纪律校验器）——
   演进项，可与 D1 并行设计、延后实施
-- [ ] **D3 网关翻译模式**：`service-gateway/internal/translate/`——契约装载（contracts api/
-  JSON）+ servicehttp 引擎 + svcauth 四面链 + Invoker（回环 grpc-go 腿起步，kitex client
-  演进）+ internalauth；config 门控缺省关（透明模式不变）
+- [x] **D3 网关翻译模式**（subject 面试点）——`ppb-gateway@feat/translate-mode
+  1e56722`：internal/translate（契约 + servicehttp + CameraSubjectAuth 链 +
+  SMS 两阶段/主体注入上收 + grpc 回环腿）；路由粒度灰度（BuildTransparentMux
+  override）；config 门控缺省关 + 三要素 fail-fast；端到端测试实证（匿名
+  templates 200 / 非白名单 401 / 未知 401）。**manage 面翻译待 D4 续**（guard/
+  iamCompat 出站装配）
 - [ ] **D4 camera 试点切换**：subject 面（10 条）先行——CameraSubjectAuth 链 + 匿名白名单
   （网关 config 化）+ SMS 两阶段 handler 上收；manage 面（19 条）随 guard/iamCompat 出站
   装配；网关路由表按配置改指翻译面
@@ -60,8 +64,8 @@
 ### E 线：演进与阀
 
 - [ ] **E1 proto `google.api.http` 注解生成器**（`make gen-api`：注解 → 契约 JSON，手写归零）
-- [ ] **E2 im 出站灰度开阀**：deploy im.yaml `iam_service.service_name`/`file_service?
-  service_name` 填 ppbchat-iam/…（Phase C 已验证，两行）
+- [x] **E2 im 出站灰度开阀**——`ppb-base@bb5d151`：im.yaml iam/file service_name
+  填 ppbchat-iam/ppbchat-file（Phase C 已验证；重启生效，兼容门禁过）
 
 ### F 线：观测与收口
 
@@ -78,8 +82,10 @@
 3. 灰度与回退：D 线全部 config 门控（缺省透明模式 = 现状），单服务粒度可回退
 4. 状态更新：完成即打勾 + 提交号；半成品标 ⏳ 并注明断点
 
-## 状态快照（2026-11-23 本清单建立时）
+## 状态快照（2026-11-23 本批执行后）
 
-- 已完成：A1、B1、全服务通道审计（`ppb-docs@be19bed`）
-- 本批执行中：D1（camera 契约上收）→ D3（网关翻译模式）→ E2（im 开阀）
-- 阻塞项：A2/B3 需前端/客户端仓配合；B2 需发布授权
+- 已完成：A1、B1、**D1、D3（subject 面试点）、E2**、全服务通道审计
+  （提交链：camera 3690b2b / gateway 1e56722 / deploy 4e3091a·bb5d151）
+- 下一批：D4 manage 面翻译（guard/iamCompat 出站装配进网关）→ D5 camera
+  HTTP 口退役；A2/B3 客户端项独立排期
+- 阻塞项：A2/B3 需前端/客户端仓配合；B2/D1 tag 发布需授权
