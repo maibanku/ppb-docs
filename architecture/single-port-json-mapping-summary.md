@@ -42,15 +42,17 @@ servicehttp 契约 JSON（或 proto 注解生成）做 HTTP↔RPC 翻译——�
 | **S2 网关契约化** | 网关加载 7 份契约 + servicehttp 引擎 + svcauth 链 + kitex client；灰度按服务切换（先 camera 29 条试面） | 服务去 HTTP 口，端口 8→4；网关获契约视图（统一限流/审计） ≈3-4 天 |
 | **S3（演进）注解生成** | proto `google.api.http` 注解 → 生成契约 JSON（`make gen-api`） | 手写契约归零 ≈1 天 |
 
-## 三点五、内部 HTTP 通道盘点（代码实证修正）
+## 三点五、内部 HTTP 通道盘点（代码实证修正，2026-11-23 全服务审计复核）
 
-「内部调用只有 RPC」在主干上成立（四服务出站拨号点全为 kitex/grpc-go，
-零服务间 HTTP 互调），但存在**一条设计内的服务间 HTTP 通道**与两类边界调用：
+「内部调用只有 RPC」在主干上成立（**四服务出站 HTTP 客户端逐仓 grep 实证：
+im/file 零命中；camera 命中仅 Apple JWKS 外部端点；iam 命中仅 GitHub OAuth
+外部端点**——出站拨号点全为 kitex/grpc-go），但存在**一条设计内的服务间
+HTTP 通道**与两类边界调用：
 
 | 通道 | 性质 | 单端口目标下的去处 |
 |---|---|---|
-| **IAM 业务桥**（`service-iam/internal/bridge`）：`/iam/api/v1/business/manage/**` 按 path 前转到 im/file/camera 的 HTTP 契约面（携带 X-Ppb-Iam-Assertion） | 设计内：管理台 Cookie 会话的承接路径（P3 设计） | **S2 需处理**：桥随契约面一并上收网关（Cookie→断言转换在网关侧完成），或桥改走 kitex RPC——两者取一，写进 S2 设计前置 |
-| LiveKit Twirp API（im→SFU 基础设施）、GitHub OAuth（iam→外部） | mesh 外部端点，非服务互调 | 不受影响（与 file→mail 同类） |
+| **IAM 业务桥**（`service-iam/internal/bridge`）：`/iam/api/v1/business/manage/**` 按 path 前转到 im/file/camera 的 HTTP 契约面（携带 X-Ppb-Iam-Assertion） | 设计内：管理台 Cookie 会话的承接路径（P3 设计） | **B 案执行中**：服务半已落地（manage-token 换发端点 @0ab2a30，见 iam-bridge-rpc-only-plan.md 执行状态）——前端换 Bearer + 双跑后删桥 |
+| LiveKit Twirp API（im→SFU 基础设施）、GitHub OAuth（iam→外部）、Apple JWKS（camera→外部） | mesh 外部端点，非服务互调 | 不受影响（与 file→mail 同类） |
 | smoke/e2e 工具的 HTTP 客户端 | 验证资产 | 探针地址改网关 |
 
 ## 四、不变清单（搬迁安全性的根据）

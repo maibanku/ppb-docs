@@ -4,6 +4,12 @@
 > 东西向流量 100% 走 RPC（gRPC 线缆：kitex/grpc-go）
 > 前置核实：bridge 路径映射（`/iam/api/v1/business/**`→`/api/v1/manage/**`）、
 > svcauth `typ=manage` claims 形态、网关 `/api/v1/manage/**` 车道全量在役
+>
+> **执行状态（2026-11-23）**：方案 B 六步之第 1 步（服务半）已落地——
+> `ppb-iam@feat/bridge-retire-manage-token 0ab2a30`：换发端点 + 测试 +
+> 配置（deploy iam.yaml `jwt.manage_jwt_secret`）。token 经承接服务同款
+> svcauth.Validator 验签通过（线缆兼容实证）。剩余：第 2 步 iam-web 前端
+> 拦截器（Bearer）→ 双跑观察 → 第 5 步删桥。
 
 ## 一、两案对比
 
