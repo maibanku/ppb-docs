@@ -56,9 +56,11 @@
   **manage 面（19 条）**：guard 回源（AdminAuthz/RbacVersion 经 IAM grpc 直连试点路）+
   manageAssertionInvoker 断言补签 + 断言即凭据分派 + ManageAuth 直验（D4 密钥门控）；
   双面独立开关互不串面；端到端双 TCP 桩实证全链路（token 直验→guard→断言→回环→200）
-- [ ] **D5 camera HTTP 口退役**：`http_enabled` 开关（业务面退出口、健康探针保留）——
-  **前置=活灰度双跑观察**（gateway.yaml translate.camera 切 enabled=true 实环境验证，
-  回退路径=切回 false）
+- [x] **D5 camera HTTP 口退役开关**——`ppb-camera@60e0d9b`：`server.http_enabled`
+  （缺省 true 双跑；false=业务面退出口仅留健康探针，回环/面装配/iamCompat 一并跳过）；
+  **活灰度已实证**（旁路 18080 实例 × 真实 camera/IAM：匿名 templates/写库
+  guest-sessions/带凭据 quota 三类路由新旧路径**逐字节同响应**，无凭据 401）——
+  正式切换=部署侧 gateway translate.camera.enabled=true + camera http_enabled=false
 - [ ] **D6 im/file/iam 逐家切换**（依赖 A/B/C 完成度，同 D4 模式复制）
 - [ ] **D7 安全复审（S2 前置专项）**：member/manage secret 进网关进程的密钥面扩大评审
   （分发、轮换、网关妥协半径）——书面前置，D4 灰度开前完成
@@ -88,6 +90,7 @@
 
 - 已完成：A1、B1、**D1、D3（subject 面试点）、E2**、全服务通道审计
   （提交链：camera 3690b2b / gateway 1e56722 / deploy 4e3091a·bb5d151）
-- 下一批：**活灰度**（部署侧切 translate.camera.enabled=true，观察后 D5）→ D5 camera
-  HTTP 口退役（首服务单端口达成）；A2/B3 客户端项独立排期
+- 下一批：部署侧正式切灰（subject 面先行：gateway enabled=true 观察 →
+  manage 面补 manage_secret 双侧 → camera http_enabled=false **首服务单端口达成**）；
+  A2/B3 客户端项独立排期；D6 im/file/iam 复制 D4/D5 模式
 - 阻塞项：A2/B3 需前端/客户端仓配合；B2/D1 tag 发布需授权
