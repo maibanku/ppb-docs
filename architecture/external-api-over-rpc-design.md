@@ -83,3 +83,60 @@
 的 JSON 上收到网关（翻译引擎与鉴权中间件都是 ppb-base 共享件，随迁即可），
 长期演进方向是 proto 注解生成契约（grpc-gateway 模式）。当前两端口架构下，
 这套写法已经在运行——每份 `api/*-http.json` 就是一条外部接口的全部定义。
+
+
+## 七、grpc-gateway 机制深析：如何做到 HTTP 层零 DTO/VO、零重复方法
+
+> 触发问题：不想在 HTTP 层再写一层 DTO/VO 和方法（重复定义）。grpc-gateway 的
+> 答案：**proto 是唯一事实源，HTTP 层的一切都是生成物**。
+
+### 7.1 类型零重复——HTTP JSON 就是 proto 消息的规范投影
+
+请求进来按注解填充**proto request 类型本身**，响应直接 protojson 序列化
+**proto response 类型本身**。没有 HTTP DTO/VO——因为不存在第二种类型定义：
+JSON 字段名（camelCase）、int64 字符串化、bytes base64、oneof 形状全部由
+protojson 规范决定。校验也归一（`field_behavior=REQUIRED` / buf validate 注解）。
+
+### 7.2 方法零重复——handler 是生成的反向代理
+
+proto 方法上打注解，生成器产出 handler，而非手写：
+
+```proto
+rpc GetAnalysis(GetAnalysisReq) returns (GetAnalysisResp) {
+  option (google.api.http) = {
+    get: "/api/v1/camera/analysis/{task_id}"
+  };
+}
+```
+
+生成物的四步固定逻辑：解析 path/query/body → `PopulateFieldFromPath/JSON`
+填充 proto req → 经 gRPC client 调**同一方法** → `ForwardResponseMessage`
+（protojson 回写 + gRPC 状态码→HTTP 状态映射）。OpenAPI 文档也从同一注解
+生成——**一次定义，RPC/HTTP/文档三处受益**。
+
+### 7.3 对照我们：零重复诉求已满足，剩余差距只有「手写 vs 生成」
+
+| 维度 | grpc-gateway | 我们现状 |
+|---|---|---|
+| 类型重复 | 无（protojson 直投） | **无**——servicehttp.Bind/Reply 直接操作 contracts proto 类型，从未有过 DTO/VO 层 |
+| 方法重复 | 无（生成 handler） | 无（NewHandler 按契约 JSON 装配，无手写 handler） |
+| 路由定义 | proto 注解（编译期生成） | **手写契约 JSON**——`bindings:{taskId:{field:task_id}}` 即 `{task_id}` 路径模板的等价物 |
+| 翻译引擎位置 | 网关/独立进程 | 各服务 HTTP 面（路径 A 上收前的现状） |
+
+即：重复定义的问题我们**从未发生**；与 grpc-gateway 的差距只在契约是手写
+JSON（有漂移空间，目前由严格解析门禁 + contracts review 兜底）。
+
+### 7.4 诚实边界：grpc-gateway 模式做不到的事
+
+- JSON 形状不可任意定制（客户端适配 protojson 规范形状，不能自定义 VO 命名/
+  投影——要 VO 就是 BFF 的活）；可经 `response_body` 做顶层裁剪
+- 错误形状默认 gRPC status JSON；我们用 BaseResp 信封，若切换需自定义 error
+  handler 映射（或客户端改契约——不建议）
+- multipart/流式/WS 不在注解体系内（file_transfer 车道即此类，永远直转）
+
+### 7.5 行动项（消最后的手写）
+
+写小型生成器：读 proto 的 `google.api.http` 注解 → 生成 `api/*-http.json`
+（servicehttp 引擎不变）→ 手写契约归零，实现「内部 RPC 定义 = 外部 HTTP 接口」
+完全同源。工作量约 1 天；可与 contracts review 流程衔接（注解变更即接口变更，
+评审可见）。
