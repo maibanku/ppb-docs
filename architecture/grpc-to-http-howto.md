@@ -128,3 +128,48 @@ external-api-over-rpc-design.md §7.5）。
 | HTTP 路由 | api/*-http.json 一条 | 声明 |
 | 网关分流 | gateway-routes.yaml 一行 | 声明 |
 | DTO/VO/HTTP handler | —— | **不存在** |
+
+
+## 附：转换引擎处理管线（servicehttp 内部机制深析）
+
+一个 HTTP 请求进入服务 HTTP 面后的完整处理链（源码实证，
+`platform-sdk/servicehttp/handler.go`）：
+
+```
+HTTP 请求
+  │ ①面级鉴权中间件（装配层包裹，先于引擎）
+  │   member 面：svcauth 直验 claims（P1 主路径）→ 回退 edgeauth 断言 → 401 USER-0001
+  │   subject 面：CameraSubjectAuth 独立链（匿名白名单 4 条精确键）
+  │   manage 面：ManageAuth 直验 / X-Ppb-Iam-Assertion 断言承接分派
+  ▼
+②路由分派（契约路由表 → stdlib mux "METHOD path" 精确注册）
+  │   未命中 → 501 信封（IM-5001/USER-5001）fail-closed——不暴露 404/405/私有端点
+  ▼
+③请求装配（Bind）
+  │   body：encoding/json → proto.Message（protoc json 标签，camelCase 线形）
+  │   path/query：契约 bindings 映射（path 优先于 query；positive32/64 正数校验）
+  │   身份注入（防伪造核心）：Operator 字段 = 认证主体覆盖式写入——
+  │     客户端 body/query 自带值一律不存活；Session 锚同口径覆盖（无锚=清空）
+  ▼
+④RPC 调用（Invoker 抽象）
+  │   ctx：10s 超时 + X-Request-ID 透传
+  │   通道：回环 grpc-go LocalConn（→ Kitex 服务端，gRPC 线缆 + 内部凭据）
+  │   失败 → 503 SYSTEM-503（不泄露上游细节）
+  ▼
+⑤服务端（Kitex）：中间件链（InternalAuth→断言/权限→RequestID）→ handler → 信封
+  ▼
+⑥响应回写（Reply）
+  │   BaseResp.BizCode 非空 → HTTP=BaseResp.HttpStatus + envelope.Fail(code,message)
+  │   成功 → 剥离 base 字段 → envelope.OK(data)：{data, code:0, success:true}
+```
+
+### 关键设计决策（源码可证）
+
+| 决策 | 实现 | 动机 |
+|---|---|---|
+| **身份字段不可伪造** | Operator/Session 认证后**覆盖式**注入（非合并） | 杜绝客户端自带 operatorId/sessionId 伪造 |
+| **未知路由 = 501 非 404** | 信封化 fail-closed + 不暴露 stdlib 行为 | 契约外路径不泄露端点存在性；与「下游未实现」同口径 |
+| **双信封映射** | BizCode→HTTP=HttpStatus；成功剥 base 投影 data | 内外错误一次映射，客户端只见 {data,code,success,message} |
+| **JSON 编码 = std json** | encoding/json + protoc json 标签（非 protojson） | 保持既有线形契约（legacy encoding/json 口径）——新增接口字段命名以 proto json 标签为准 |
+| **超时/请求 ID 在引擎层** | 10s ctx + X-Request-ID 透传 | 每路由零样板 |
+| **内部凭据只在私有腿** | LocalConn 拦截器注入（带 grpcrid+internalauth） | 外部面永不携带内部凭据 |
