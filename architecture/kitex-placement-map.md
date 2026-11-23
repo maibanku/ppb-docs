@@ -3,6 +3,68 @@
 > 日期：2026-11-23 · 范围：Kitex 相关代码/依赖/生成物/运行态在六仓的完整落位
 > 关联：`kitex-migration-plan.md`（方案）、`adr-gateway-http-proxy.md`（网关定案）
 
+## 〇、树形总图
+
+```text
+vscode/                                        # 六仓工作区
+├── ppb-base/                                  # 框架仓 —— 共享件层（仅 rpcx 与 iam SDK 沾 kitex）
+│   ├── go-framework/rpcx/                     #   独立模块 tag v0.2.x（网关/根模块因此不沾）
+│   │   ├── kitexmw/
+│   │   │   ├── kitexmw.go                     #     服务端 Recovery/RequestID/InternalAuth/FullMethod
+│   │   │   └── clientmw.go                    #     出站三中间件（requestid/internalauth/断言）
+│   │   └── kitexstarter/server.go             #   Kitex server → boot.Component（组件名 "grpc"）
+│   ├── platform-sdk/iam/authzport/            #   tag v0.2.2
+│   │   └── iamassert_kitex.go                 #     客户端 IAM 断言按方法重签
+│   └── deploy/config/*.yaml                   #   registry.etcd 段 + service_name 灰度键
+│
+├── ppb-chat/service-im/                       # @9102 —— serving 5 组 + 消费 iam/file
+│   ├── kitex_gen/
+│   │   ├── im/                                #   自 serving（别名层类型）
+│   │   │   ├── imservice/ · chatorgservice/ · orgcompatservice/ · groupfileauthservice/
+│   │   │   └── {im,orgcompat,chatorg,group_file_auth}.pb.go
+│   │   ├── iam/                               #   消费（出站 kitex client）
+│   │   │   ├── iamservice/ · iamaccountbridge/ · admincompatservice/
+│   │   │   └── {iam,iamx,admincompat}.pb.go + alias_sync_test.go
+│   │   ├── go/refaccess/refaccessservice/     #   自 serving（file 回调裁决）
+│   │   ├── go/file/fileservice/               #   消费（smoke 桩）
+│   │   ├── go/sync_test.go                    #   拷贝件 ↔ ppb-file 上游文件级对拍门禁
+│   │   └── alias_parity_test.go               #   接口级 ↔ contracts 反射对拍门禁
+│   ├── internal/transport/
+│   │   ├── im/{im,chat_org,call,org_compat,org_compat_contacts,org_compat_profile,admin_authz}_kitex.go
+│   │   ├── refaccess/ref_access_kitex.go
+│   │   └── groupfileauth/group_file_auth_kitex.go
+│   ├── cmd/server/boot_wire.go                #   kitexserver.NewServer 五组同注册 + kitexstarter
+│   ├── cmd/smoke/main.go                      #   十步冒烟（Kitex 桩）
+│   └── internal/config/im_config.go           #   registry.etcd + service_name 灰度
+│
+├── ppb-iam/service-iam/                       # @9107 —— serving 3 组 + 消费 im
+│   ├── kitex_gen/iam/{iamservice,iamaccountbridge,admincompatservice}/   # 自 serving
+│   ├── kitex_gen/im/{chatorgservice,orgcompatservice}/ + alias_sync_test.go  # 消费
+│   ├── internal/transport/iam/
+│   │   ├── {iam,account_bridge,admin_compat}_kitex.go
+│   │   ├── iam_assertion_kitex.go             #   断言中间件 + legacy actor 桥
+│   │   └── kitex_status_fidelity.go           #   ErrBiz 壳剥除（码/文案保真）
+│   └── cmd/{server,smoke}/
+│
+├── ppb-file/service-file/                     # @9104 —— serving 2 组 + 消费 iam
+│   ├── kitex_gen/go/{file,refaccess}/         #   自 serving（prutal 类型）
+│   ├── kitex_gen/go/iam/admincompatservice/ + alias_sync_test.go            # 消费
+│   ├── internal/transport/file/{file,file_upload,file_download,file_meta,file_manage}_kitex.go
+│   └── cmd/{file,smoke}/
+│
+├── ppb-camera/service-camera/                # @9106 —— serving 2 组 + 消费 iam
+│   ├── kitex_gen/camera/{cameraservice,adminservice}/   # 自 serving（prutal）
+│   ├── kitex_gen/iam/admincompatservice/ + alias_sync_test.go              # 消费
+│   ├── internal/transport/camera/{camera,camera_admin}_kitex.go
+│   ├── cmd/server/{boot_wire,service_http_wire}.go     # kitex server + HTTP 契约面
+│   └── cmd/smoke/main.go                      #   五步冒烟（含 Phase C 回源探针）
+│
+├── ppb-gateway/service-gateway/              # ✗ 无 kitex（ADR 定案：HTTP 反代）
+└── contracts-{im,file,iam,camera}/           # ✗ 无 kitex（纯净铁律：仅 proto + gen/go）
+```
+
+运行态（非文件系统）：etcd `kitex/registry-etcd/ppbchat-<svc>/<ip>:<rpc-port>` ×4。
+
 ## 一、依赖落位（go.mod 层）——仅 6 个模块沾 kitex
 
 | 模块 | 角色 | 发版 tag |
