@@ -1,0 +1,85 @@
+# 单端口改造剩余任务清单（逐项执行跟踪）
+
+> 日期：2026-11-23 · 目标终态：**每服务单 Kitex RPC 口 + 网关统一翻译 HTTP + 东西向 100% RPC**
+> 用法：Claude Code 逐项实现，每项完成即更新状态并提交；测试门禁全绿才算完成；
+> 未跑的验证显式标 NOT_RUN。关联分析：`single-port-json-mapping-summary.md`（总纲）、
+> `iam-bridge-rpc-only-plan.md`（桥退役）、`external-api-over-rpc-design.md`（外部接口设计）。
+
+## 验收口径（全部完成时成立）
+
+1. 服务进程内只剩一个监听口（Kitex 910x，或含本地 healthz 探针）
+2. 出站服务间调用零 HTTP（grep `http.Client` 仅剩 mesh 外部端点）
+3. 客户端只见网关 8080，URL/JSON 形状/错误码零变化
+4. 回退路径：按服务灰度，一行 upstream/契约装载选择切换
+
+## 任务清单
+
+### A 线：IAM 业务桥退役（东西向 100% RPC 收口）
+
+- [x] **A1 manage-token 换发端点**（服务半）——`ppb-iam@feat/bridge-retire-manage-token 0ab2a30`；
+  token 经承接服务同款 svcauth.Validator 验签实证；deploy 密钥登记 `ppb-base@c13690d`
+- [ ] **A2 iam-web 前端拦截器换 Bearer**：manage 调用前确保 token（401 触发重取），
+  路径改经网关 `/api/v1/manage/**`（依赖 A1；前端仓）
+- [ ] **A3 双跑观察 → 删桥**：`internal/bridge` 前转段 + boot_wire 挂载删除；
+  `iamOwnedExact`（audit/iam、email-log）迁 token 车道或 iam 自有面；治理拒绝段口径随删
+  （依赖 A2 上线观察期）
+
+### B 线：S0 文件直传收尾（file 去 HTTP 口前置）
+
+- [x] **B1 预签名凭证面**（服务半）——`ppb-file@feat/presign-direct-upload 5bdf3e4`；
+  proto v9 三方法 + 会话复用 + member 契约 3 条 + 真实 MinIO SigV4 回环实证
+- [ ] **B2 contracts-file tag v0.1.2 发布** + service-file go.mod replace 桥撤除（发布授权项）
+- [ ] **B3 客户端切换 presign 直传**（desktop ppb-chat Rust `httpapi.rs` upload_file 族 +
+  mobile chat-mobile；跨仓）
+- [ ] **B4 file_transfer 车道退役**：网关 special 移除 + 服务传输 handler 删除（依赖 B3 放量）
+
+### C 线：特殊车道独立（im/iam 去 HTTP 口前置）
+
+- [ ] **C1 im `/ws` 独立接入**（独立进程或网关长连接能力；im 收敛纯 RPC）
+- [ ] **C2 iam OIDC 随门户独立**（认证门户承载 `/authorize` `/token` `/jwks` 重定向语义）
+- [ ] **C3 im `/im/rtc/webhook` 安置**（LiveKit 回调：网关 special 显式化或保留 im 专口，小项）
+
+### D 线：S2 网关翻译化（核心——「HTTP 都在网关」）
+
+- [ ] **D1 契约上收 contracts 仓**（camera 试点先行）：7 份 `api/*-http.json` 迁
+  `contracts-*/api/`（纯数据 embed，零依赖，纯净铁律不破）；服务侧改薄引用；
+  route-manifest 路径更新；同步门禁
+- [ ] **D2 契约 v2 schema**（ParseV2 + security 块 + policy 仅 manage + 匿名六纪律校验器）——
+  演进项，可与 D1 并行设计、延后实施
+- [ ] **D3 网关翻译模式**：`service-gateway/internal/translate/`——契约装载（contracts api/
+  JSON）+ servicehttp 引擎 + svcauth 四面链 + Invoker（回环 grpc-go 腿起步，kitex client
+  演进）+ internalauth；config 门控缺省关（透明模式不变）
+- [ ] **D4 camera 试点切换**：subject 面（10 条）先行——CameraSubjectAuth 链 + 匿名白名单
+  （网关 config 化）+ SMS 两阶段 handler 上收；manage 面（19 条）随 guard/iamCompat 出站
+  装配；网关路由表按配置改指翻译面
+- [ ] **D5 camera HTTP 口退役**：`http_port=0` 开关（或删装配），服务仅剩 Kitex 9106
+- [ ] **D6 im/file/iam 逐家切换**（依赖 A/B/C 完成度，同 D4 模式复制）
+- [ ] **D7 安全复审（S2 前置专项）**：member/manage secret 进网关进程的密钥面扩大评审
+  （分发、轮换、网关妥协半径）——书面前置，D4 灰度开前完成
+
+### E 线：演进与阀
+
+- [ ] **E1 proto `google.api.http` 注解生成器**（`make gen-api`：注解 → 契约 JSON，手写归零）
+- [ ] **E2 im 出站灰度开阀**：deploy im.yaml `iam_service.service_name`/`file_service?
+  service_name` 填 ppbchat-iam/…（Phase C 已验证，两行）
+
+### F 线：观测与收口
+
+- [ ] **F1 smoke 探针地址改网关**（四服务 smoke 的 HTTP 探针统一打 8080）
+- [ ] **F2 文档收口**：kitex-placement-map（契约落位更新）、internal-rpc-howto（桥例外
+  条目撤销）、kitex-replacement-checklist 增补本清单链接
+
+## 执行纪律
+
+1. 顺序建议：**D1 → D3 → D4（试点闭环）** 与 **E2（两行开阀）** 本批推进；A2/B3 客户端项
+   与 C 线独立排期；D2/D7/E1 随 S2 批
+2. 每项门禁：所在仓 `go build ./... && go test ./...` 全绿 + 相关 deploy 兼容门禁；
+   跨仓项跑联动测试
+3. 灰度与回退：D 线全部 config 门控（缺省透明模式 = 现状），单服务粒度可回退
+4. 状态更新：完成即打勾 + 提交号；半成品标 ⏳ 并注明断点
+
+## 状态快照（2026-11-23 本清单建立时）
+
+- 已完成：A1、B1、全服务通道审计（`ppb-docs@be19bed`）
+- 本批执行中：D1（camera 契约上收）→ D3（网关翻译模式）→ E2（im 开阀）
+- 阻塞项：A2/B3 需前端/客户端仓配合；B2 需发布授权
