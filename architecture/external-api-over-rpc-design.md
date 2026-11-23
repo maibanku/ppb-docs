@@ -140,3 +140,71 @@ JSON（有漂移空间，目前由严格解析门禁 + contracts review 兜底�
 （servicehttp 引擎不变）→ 手写契约归零，实现「内部 RPC 定义 = 外部 HTTP 接口」
 完全同源。工作量约 1 天；可与 contracts review 流程衔接（注解变更即接口变更，
 评审可见）。
+
+
+## 八、契约统一后的两个关键设计：前台/后台区分 与 匿名放行
+
+### 8.1 前台 vs 后台的区分——三层机制（从粗到细）
+
+**第一层：面文件**（contracts 仓 api/ 目录内物理分文件）
+
+| 面 | 文件 | 面向 | 鉴权语义 |
+|---|---|---|---|
+| 前台-member | `member-http.json` | 桌面/移动端登录用户 | 验「你是谁」（member JWT → operator 注入） |
+| 前台-public/subject | `public-http.json` / `subject-http.json` | 未登录引导/设备主体 | 匿名白名单或独立主体链 |
+| 后台-manage | `manage-http.json` | 管理台运营人员 | 验「你是谁 **+ 你有什么权限**」（manage JWT + guard 逐方法 RBAC） |
+
+**第二层：URL 前缀**（网空间物理分区）
+
+```
+前台：/api/v1/<service>/**          （member/public/subject 三面）
+后台：/api/v1/manage/<service>/**   （manage 面，独立前缀独立挂载）
+```
+网关按前缀分流；后台前缀可加部署级约束（仅内网段/管理台域名来源）。
+
+**第三层：v2 security 块**（引擎按声明挂链，路由级精确）
+
+```json
+"security": {
+  "identity": "member"                        // 前台用户面
+}
+"security": {
+  "identity": "manage",                       // 后台管理面
+  "policy": { "app": "camera", "perm": "camera.overview.read" }  // 仅后台有 policy
+}
+```
+结构性差异固化在 schema：**policy 字段只允许出现在 identity=manage 的路由上**
+（校验器强约束——前台永不携带权限码声明）。
+
+### 8.2 无需认证的接口怎么放行
+
+**现状机制盘点**：三种已验证形态——
+1. 整面匿名：`public-http.json`（identity=anonymous，登录/发码 4 条）
+2. 面内白名单：camera subject 面的 `cameraAnonWhitelist`——**method+path 精确键**
+   （`"POST /api/v1/camera/guest-sessions"` 等 4 条），白名单外必须带主体 token
+3. manage 面治理拒绝段（governanceDenied）——后台的反向例外
+
+**v2 统一设计**（匿名是显式声明而非缺省）：
+
+```json
+"security": {
+  "identity": "anonymous",          // 形态 1：整面匿名
+  "anonymous": true                  // 形态 2：面内路由级放行（等价 camera 白名单）
+}
+```
+
+**放行的六条设计纪律（思考结论）**：
+
+1. **默认拒绝，匿名必须显式声明**——`anonymous: true` 落在契约里，评审可见可追溯；
+   不写就是必须认证（fail-closed 方向）
+2. **精确键不放通配**——放行匹配 method+path 精确等值；带路径参数的路由
+   （`/analysis/{taskId}`）禁止整段放行，防参数绕过
+3. **匿名必须有安全补偿三件套**：网关限流（per-IP/per-path）＋服务端业务频控
+   （如 CAM-4290 发码冷却）＋更高强度输入校验（无身份可追责 → 预检更严）
+4. **匿名 ≠ 无鉴权，而是鉴权语义下放**——如 guest-sessions 是「签发凭据」的接口
+   （产物是 token），templates 是公共内容；下游按方法语义裁决（camera 契约
+   约定：白名单请求无 claims 不注入主体）
+5. **后台匿名 = 结构性禁止**——v2 校验器强约束：identity=manage 的路由出现
+   anonymous 即解析失败（防线写进 schema，不靠自觉）
+6. **可观测补偿**——匿名接口审计记录 IP/UA/设备摘要（camera 的 client_hint
+   即此用途），补偿身份缺失的追责能力
