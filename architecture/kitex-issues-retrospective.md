@@ -116,12 +116,24 @@
    deploy/bin/*.kitex 过渡副本已删。验收揪出 start-all 的 iam 裸启动漏 -config
    → etcd 无 ppbchat-iam 注册 → 修复@3859287。
 
-### P2（工程质量，不阻塞）
+### P2（工程质量 —— 2026-11-23 末批：7/8/9 已收口，10 留决策）
 
-7. **config 键形不统一**：camera `rpc_port` vs file `grpc_port`；im 从 yaml 读 internal_token 而 camera 走 env。方案：config v2 规范一次清理批次（键名对齐 + env 优先级统一），随 P0-1 deploy 对拍门禁一起做。
-8. **dynamicgo 警告刷屏**（darwin/arm64 性能降级提示）：反射路径正确性已验，接受；如需降噪可构建标签关闭。
-9. **计时不稳测试**（多仓并行验证时 im 偶发抖动）：并行验证错峰或 `go test -p 1`；手册已写"先重跑再判"。
-10. **gateway 维持 HTTP 反代的长期决策**：迁移设计即如此（136 路由风险）；若未来要收 RPC 跳数，重开决策评审，不默认执行。
+7. ~~config 键形不统一~~ **已统一（门禁护航）**：file `grpc_port`→`rpc_port`
+   （孤例对齐 im/iam/camera）；camera 顶层扁平 `jwt_secret`/`manage_jwt_secret`→
+   `jwt: {secret, manage_secret}` 嵌套段（对齐 im/iam/file）——deploy/模板/
+   本地 config/测试全量跟进，严格解析 + deploy 兼容门禁护航验证。裁定保留项：
+   iam 的 yaml `internal_token`（env 优先回填）与其它三家 env-only 行为等价
+   （最终都读 PPB_INTERNAL_RPC_TOKEN），纯形式统一收益近零，文档化维持现状。
+8. ~~dynamicgo 警告刷屏~~ **已定案（无上游开关，接受）**：实查 dynamicgo
+   v0.9.2 `conv/j2t/impl_fallback.go`（`//go:build !amd64 || go1.27`）在
+   arm64 必然链入、`internal/warning` init 无条件打印、kitex/dynamicgo 均无
+   禁用标签——一行/进程的 stderr 提示，反射路径正确性已验，接受不改。
+9. ~~计时不稳测试~~ **已健壮化**：两大真凶改轮询断言——im
+   `contact_coalescer_test`（窗口 flush 200/80ms 固定睡眠 → waitForCond 轮询
+   +2s 死线）与 `route_table_test` TTL 到期（200ms 固定 → 3s 死线轮询）；
+   语义不变（异步时序不绑绝对时长），3× 连跑稳定。
+10. **gateway 维持 HTTP 反代的长期决策**（留决策项）：迁移设计即如此（136
+    路由风险）；若未来要收 RPC 跳数，重开决策评审，不默认执行。
 
 ---
 
