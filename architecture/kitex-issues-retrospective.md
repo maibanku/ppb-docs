@@ -132,8 +132,11 @@
    `contact_coalescer_test`（窗口 flush 200/80ms 固定睡眠 → waitForCond 轮询
    +2s 死线）与 `route_table_test` TTL 到期（200ms 固定 → 3s 死线轮询）；
    语义不变（异步时序不绑绝对时长），3× 连跑稳定。
-10. **gateway 维持 HTTP 反代的长期决策**（留决策项）：迁移设计即如此（136
-    路由风险）；若未来要收 RPC 跳数，重开决策评审，不默认执行。
+10. ~~gateway 维持 HTTP 反代的长期决策~~ **已评审定案（2026-11-23，
+    ADR 见 `adr-gateway-http-proxy.md`）**：实测额外跳数 < 1ms p50（面
+    1.58ms − ping 基线 0.73ms；网关跳 +0.35ms）vs 136 路由契约面重写，
+    维持 HTTP 反代为长期架构；HTTP 面定位为平台契约层而非代理遗留物。
+    重开触发条件量化在案（P99 预算占比>30%/跨机房/非 HTTP 客户端规模化）。
 
 ---
 
