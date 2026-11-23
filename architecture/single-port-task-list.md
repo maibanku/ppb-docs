@@ -51,12 +51,14 @@
   1e56722`：internal/translate（契约 + servicehttp + CameraSubjectAuth 链 +
   SMS 两阶段/主体注入上收 + grpc 回环腿）；路由粒度灰度（BuildTransparentMux
   override）；config 门控缺省关 + 三要素 fail-fast；端到端测试实证（匿名
-  templates 200 / 非白名单 401 / 未知 401）。**manage 面翻译待 D4 续**（guard/
-  iamCompat 出站装配）
-- [ ] **D4 camera 试点切换**：subject 面（10 条）先行——CameraSubjectAuth 链 + 匿名白名单
-  （网关 config 化）+ SMS 两阶段 handler 上收；manage 面（19 条）随 guard/iamCompat 出站
-  装配；网关路由表按配置改指翻译面
-- [ ] **D5 camera HTTP 口退役**：`http_port=0` 开关（或删装配），服务仅剩 Kitex 9106
+  templates 200 / 非白名单 401 / 未知 401）
+- [x] **D4 camera 试点切换（双面全量）**——`ppb-gateway@7b4bc36`：subject 面（D3）+
+  **manage 面（19 条）**：guard 回源（AdminAuthz/RbacVersion 经 IAM grpc 直连试点路）+
+  manageAssertionInvoker 断言补签 + 断言即凭据分派 + ManageAuth 直验（D4 密钥门控）；
+  双面独立开关互不串面；端到端双 TCP 桩实证全链路（token 直验→guard→断言→回环→200）
+- [ ] **D5 camera HTTP 口退役**：`http_enabled` 开关（业务面退出口、健康探针保留）——
+  **前置=活灰度双跑观察**（gateway.yaml translate.camera 切 enabled=true 实环境验证，
+  回退路径=切回 false）
 - [ ] **D6 im/file/iam 逐家切换**（依赖 A/B/C 完成度，同 D4 模式复制）
 - [ ] **D7 安全复审（S2 前置专项）**：member/manage secret 进网关进程的密钥面扩大评审
   （分发、轮换、网关妥协半径）——书面前置，D4 灰度开前完成
@@ -86,6 +88,6 @@
 
 - 已完成：A1、B1、**D1、D3（subject 面试点）、E2**、全服务通道审计
   （提交链：camera 3690b2b / gateway 1e56722 / deploy 4e3091a·bb5d151）
-- 下一批：D4 manage 面翻译（guard/iamCompat 出站装配进网关）→ D5 camera
-  HTTP 口退役；A2/B3 客户端项独立排期
+- 下一批：**活灰度**（部署侧切 translate.camera.enabled=true，观察后 D5）→ D5 camera
+  HTTP 口退役（首服务单端口达成）；A2/B3 客户端项独立排期
 - 阻塞项：A2/B3 需前端/客户端仓配合；B2/D1 tag 发布需授权
