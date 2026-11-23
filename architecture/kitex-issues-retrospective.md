@@ -66,23 +66,30 @@
    `redis.address`→`addr`（原被静默吞掉回落默认值）、im ws 段 snake_case
    键全错（schema 为 camelCase）、camera `jwt:`/`business:` 分层键（扁平
    schema）、iam `oidc:`/`log:` 段（严格拒起元凶）；另抓到 im 自身测试
-   夹具 camelCase 化石。修后四服务全量测试绿（25/20/11/15 包 0 FAIL）。
+   夹具 camelCase 化石。修后四服务全量测试绿（26/20/11/15 包 0 FAIL，
+   含别名层对等与拷贝同步两个 kitex_gen 门禁包）。
 
 2. ~~别名层/跨仓拷贝的同步债务~~ **已修复**：落地 `service-im/kitex_gen/go/
    sync_test.go` 同步门禁——**Go 测试形态**（随 `go test ./...` 天然进既有
-   门禁，无需单独 CI 接线），归一化（剥拷贝头注释块 + import 路径改写）后
+   门禁，无需单独 CI 接线；脚本版 verify-kitex-copy-sync.sh 因职能重复已撤），
+   归一化（剥拷贝头注释块 + import 路径改写）后
    与 ppb-file 上游逐字对拍，双向文件集差异均报红；上游不可达跳过（独立
-   检出场景）。别名层本身无需检查的论证：`type X = contracts.X` 的目标是
-   编译期实体，contracts 删改直接编译失败、字段演进经别名自动透传——残余
-   风险仅"proto 加方法后拷贝件缺方法"，恰被本测试捕获。实测当前同步 ✓。
+   检出场景）。另配 `kitex_gen/alias_parity_test.go` **接口级**互补门禁：
+   六个跨服务接口（IMService/ChatOrg/OrgCompat/GroupFileAuth/RefAccess/
+   FileService）方法集与 contracts 权威反射对拍——文件级 sync 抓生成件
+   漂移，接口级 parity 抓"contracts 加方法而别名层/拷贝件缺方法"（该路径
+   编译期无感）。别名层本身无需类型级检查的论证：`type X = contracts.X`
+   的目标是编译期实体，contracts 删改直接编译失败、字段演进经别名自动
+   透传。实测当前两层门禁全绿 ✓。
 
 3. ~~生成器/运行时版本混用~~ **实证关闭，无需重生成**：两步证据——
-   ① `kitex@v0.16.4` 模块源码 `version.go:22` 的 `Version = "v0.16.3"`
-   （上游发版忘 bump 版本串，CLI 自报 0.16.3 属上游 bug；`go version -m`
+   ① `kitex@v0.16.4` 模块根 `version.go:22` 的 `Version = "v0.16.3"`
+   （上游发版忘 bump 版本串，CLI 自报 0.16.3 属上游滞后；`go version -m`
    证明二进制为 v0.16.4 构建）；② v0.16.4 构建 CLI 重生成 camera stub
-   与已提交生成物**逐字节一致**（内容 diff=0，仅新产物文件名
-   camera.pb.go vs 原 camera_kitex.pb.go 差异，内容同）。结论：生成器与
-   运行时无实际 codegen 差异，版本串差异为上游滞后，风险关闭。
+   与已提交生成物**逐字节一致**（六个服务组文件 diff=0；camera.pb.go 唯一
+   差异行为比对环境 common.proto go_package 指向，非版本差异；本条经
+   双会话独立复现）。结论：生成器与运行时无实际 codegen 差异，版本串
+   差异为上游滞后，风险关闭。
 
 ### P1（架构完整度——迁移既定未完项）
 
