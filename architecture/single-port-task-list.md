@@ -90,7 +90,9 @@
 
 - 已完成：A1、B1、**D1、D3（subject 面试点）、E2**、全服务通道审计
   （提交链：camera 3690b2b / gateway 1e56722 / deploy 4e3091a·bb5d151）
-- 下一批：部署侧正式切灰（subject 面先行：gateway enabled=true 观察 →
-  manage 面补 manage_secret 双侧 → camera http_enabled=false **首服务单端口达成**）；
-  A2/B3 客户端项独立排期；D6 im/file/iam 复制 D4/D5 模式
+- **D6-file 已落地**（契约上收 86e2695 + 网关双面 61560c3 + 端到端实证）；
+  **正式灰度已开**（2026-11-24：translate.camera.enabled=true，主网关换新
+  重启四项验证全绿；file 面开关待密钥填值后开）
+- 下一批：灰度观察期 → manage 面补 manage_secret 双侧 → camera
+  http_enabled=false **首服务单端口达成**；D6-im/iam 翻译面复制；A2/B3 客户端项
 - 阻塞项：A2/B3 需前端/客户端仓配合；B2/D1 tag 发布需授权
