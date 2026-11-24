@@ -82,6 +82,14 @@
    的目标是编译期实体，contracts 删改直接编译失败、字段演进经别名自动
    透传。实测当前两层门禁全绿 ✓。
 
+   **2026-11-24 后续（落位地图方案 B）**：同步债务的终局解不是门禁而是
+   结构——跨仓拷贝件随 kitex 服务组收口到 `contracts-{im,iam,file}/kitexstubs`
+   旁挂模块而消失，拷贝级 `sync_test`/`alias_sync_test` 失去对拍对象，退役。
+   接口级对等锁曾随 `service-im/kitex_gen/` 整目录删除而丢失（教训：删整目录
+   会附带删其中的门禁），已复归为 `service-im/cmd/server/kitex_parity_test.go`
+   （九组全对拍 kitexstubs——守「消费方解析到的 kitexstubs 版本覆盖所用
+   contracts 版本的全部方法」）。详见 `kitex-placement-map.md` §六。
+
 3. ~~生成器/运行时版本混用~~ **实证关闭，无需重生成**：两步证据——
    ① `kitex@v0.16.4` 模块根 `version.go:22` 的 `Version = "v0.16.3"`
    （上游发版忘 bump 版本串，CLI 自报 0.16.3 属上游滞后；`go version -m`

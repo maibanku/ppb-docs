@@ -52,10 +52,13 @@ message CheckRefAccessResp {
 
 ## 三、生成链（定义完成后）
 
-1. contracts 仓 `buf generate` → `gen/go/<pkg>`（proto.Message 类型 + gRPC
+1. contracts 根模块 `buf generate` → `gen/go/<pkg>`（proto.Message 类型 + gRPC
    客户端桩——HTTP 面与 grpc-go 回退路径共用）
-2. 服务仓生成 kitex 服务组（`kitex_gen/`，自足式：serving 方 + 消费方各带）
-3. im 系用别名层（`type X = contracts.X`）共享同一 Go 类型
+2. 契约仓旁挂模块 `contracts-X/kitexstubs` 生成 kitex 服务组——**单一生成点**，
+   与 `gen/go` 同仓同节奏发 tag；服务仓按需 `require`，不再各自持有 kitex_gen
+   拷贝（2026-11-24 落位地图方案 B 起，原「自足式 kitex_gen」已取代）
+3. kitexstubs 一律用别名层（`type X = contracts.X`）共享同一 Go 类型——handler /
+   客户端签名与 gRPC 版同形，业务层零改动
 
 ## 四、实现方怎么写（service-im）
 
@@ -99,17 +102,19 @@ func (h *RefAccessHandler) CheckRefAccess(ctx context.Context, req *refaccess.Ch
 
 ## 六、接口演进流程
 
-proto 变更（加方法/加字段，禁止破坏性变更）→ contracts 仓 review + 发 tag →
-实现方升级（handler + 编译期断言自动点名缺失方法）→ 调用方按需升级
-（窄口不变则零改动）。同步门禁（alias_sync / alias_parity / sync_test）兜住
-kitex 生成物与契约的漂移。
+proto 变更（加方法/加字段，禁止破坏性变更）→ contracts 仓 review + **根模块与
+kitexstubs 成对发 tag** → 实现方升级（handler + 编译期断言自动点名缺失方法）
+→ 调用方按需升级（窄口不变则零改动）。两模块须成对抬版：只升根模块、不升
+kitexstubs 时，新方法不被 Kitex 服务组伺服且**编译期无感**——由接口级对等锁
+`service-im/cmd/server/kitex_parity_test.go`（九组方法集 ↔ contracts 权威反射
+对拍）兜住。拷贝级同步门禁（alias_sync / sync_test）已随拷贝件退役。
 
 ## 速查
 
 | 物 | 位置 | 谁 |
 |---|---|---|
 | 接口定义 | contracts proto（头注释=契约正文） | 域权威方 |
-| Go 类型 | contracts gen/go + 服务仓 kitex_gen | 生成 |
+| Go 类型 | contracts gen/go + `contracts-X/kitexstubs`（别名层，单一生成点） | 生成 |
 | 实现 | transport *_kitex.go + 编译期断言 | 服务方 |
 | 调用 | 窄口接口 → 薄适配 → 灰度装配 | 消费方 |
 | 鉴权 | 中间件链（凭据/断言/权限表） | 装配层，双方零代码 |

@@ -13,6 +13,14 @@
 > 网关（ppb-gateway）为 HTTP 反代，按设计不迁移，仅确认无 RPC 服务端代码。
 > 出站 grpc-go 客户端（internal/client/grpc/*）属 Phase C 范围，**不算残留**；
 > contracts 仓的 gen/go gRPC codegen 是回环/出站客户端的类型源，**保留**。
+>
+> **2026-11-24 修订（落位地图方案 B）**：im/iam/file 的 kitex 服务组已收口到
+> `contracts-{im,iam,file}/kitexstubs` 旁挂模块，三仓服务目录下**不再有
+> `kitex_gen/`**（kitex 服务组不在 `<SVC>` 内，§1.1/1.2/1.5 的排除模式不受影响）；
+> camera 自 serving 仍在 `service-camera/kitex_gen/camera`。§1.7、§1.8 已按此修订。
+> §2 预期包数相应 −1（kitex_gen 测试包随拷贝退役）：im 24 / iam 19 / file 10 /
+> camera 14；其中 iam/file/camera 各有 1 条 deploy 配置兼容门禁的预存红
+> （跨仓时序倒置，非 Kitex 遗留，见落位地图 §六）。
 
 ## §1 静态检查（每服务同口径，任一命中即 FAIL）
 
@@ -34,7 +42,7 @@ grep -rn "Register.*Server(s,\|Register.*Server(gs,\|Register.*Server(svr," --in
 # 预期：无输出
 ```
 
-### 1.3 处理器已切 kitex_gen（无残留 *_grpc.go 传输层文件）
+### 1.3 处理器已切 Kitex（无残留 *_grpc.go 传输层文件）
 
 ```bash
 find <SVC>/internal/transport -name "*_grpc.go" 2>/dev/null
@@ -63,20 +71,23 @@ ls <SVC> | grep -E "^(handler\.go|build\.sh|kitex_info\.yaml|main\.go|script)$"
 # 预期：无输出
 ```
 
-### 1.7 kitex_gen 在位 + registry 配置在位
+### 1.7 kitex 服务组在位（kitexstubs require）+ registry 配置在位
 
 ```bash
-ls <SVC>/kitex_gen/
+grep -n "kitexstubs" <SVC>/go.mod
+find <SVC> -type d -name kitex_gen
 grep -rn "registry" <SVC>/config.yaml <SVC>/internal/config/*.yaml 2>/dev/null | grep -c etcd
-# 预期：kitex_gen 有服务组目录；etcd 配置 ≥1 处
+# 预期：kitexstubs require ≥1 处；kitex_gen 目录仅 camera 命中（自 serving 的 camera/ 服务组）；
+#       etcd 配置 ≥1 处
 ```
 
 ### 1.8 contracts 仓纯净（无 kitex 脚手架）
 
 ```bash
 ls ppb-chat/contracts-im ppb-file/contracts-file ppb-iam/contracts-iam ppb-camera/contracts-camera \
-  | grep -iE "kitex|handler\.go|build\.sh|script"
-# 预期：无输出
+  | grep -iE "kitex|handler\.go|build\.sh|script" | grep -vx "kitexstubs"
+# 预期：无输出（kitexstubs/ 旁挂模块是方案 B 的单一生成点，属预期；
+#       根模块其余位置仍不得沾 kitex 脚手架——kitex 只进旁挂子模块）
 ```
 
 ## §2 构建与测试（每服务）
