@@ -85,3 +85,37 @@ camera sms 探针、WS payload。
 
 完成后「HTTP 层零 DTO/VO、零重复方法」从主体事实变为**全量事实**（例外=
 multipart/流式车道与响应改写钩子等登记在册的 HTTP 原生语义）。
+
+
+## 八、可行性核验补记（2026-11-24，代码实证）
+
+### 关键新发现：iam 手写层是「裸 JSON 契约」，与引擎信封不同族
+
+iam 手写层成功响应 = `writeJSON(map[string]any{...})` **裸 JSON**（如
+`{items, next_cursor}`、`{ok:true}`、`{admin, menus}`），错误 =
+`{code, message}`——**不是** servicehttp 的 `{data,code,success,message}`
+信封。前端 iam-web（经 base-manage-web `createIamFetch`）按裸契约消费。
+
+**后果**：iam 契约化 ≠ 纯平移，存在线缆形状差异，三选项：
+
+| 选项 | 内容 | 判定 |
+|---|---|---|
+| 1. 前端跟改统一信封 | iam-web + base-manage-web 共享 request 层改信封解包 | ✅ 推荐（管理台自用，前端面收敛在共享层；换来全平台统一信封） |
+| 2. 引擎加裸投影模式 | Reply 支持 per-contract 非信封输出 | ❌ 引擎复杂化，违背统一信封平台契约 |
+| 3. iam 保留手写 | 只做 file 契约化 | 备选（偏差区少消一大块） |
+
+### 体量实测与工作量修订
+
+| 项 | 实测 | 修订工作量 |
+|---|---|---|
+| iam 手写层 | **2035 行**（manage 1457 + security 578），27 端点，响应裸 JSON | 3-5 批次（含前端信封跟改 +1） |
+| file 群文件 | 265 行，5 JSON 端点（信封一致✓） | 1 批次 |
+| 阶段1 直传 | minio-go v7.3.0 **已在 go.mod** + objectstore 平台层已存在（预签名 API 现成）；桌面调用面仅 4 处；chunk 自研协议 334 行/涉 11 文件 | 2-3 批次（客户端改造占大头） |
+| 阶段4 网关 | proxy 层仅 **664 行**（transparent 181），共享件随迁即可 | 2-3 批次 |
+| 单端口 L2/L1 | — | 7-9 / 10-12 批次（与原估一致，置信度提升） |
+
+### 可行性结论
+
+全部阶段技术可行、无阻断项：阶段 1 依赖（MinIO SDK/存储层）已就位；阶段 4
+网关体量小；唯一升风险项 = iam 前端信封跟改（选项 1），属可控前端改造
+（共享 request 层一处 + api 函数类型调整）。
