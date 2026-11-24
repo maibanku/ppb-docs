@@ -74,11 +74,14 @@ camera sms 探针、WS payload。
 
 ## 六、验收标准与回退
 
-- [ ] 审计 grep 全绿：transport/cmd 层无 `type.*Req|Resp|Request|Response struct`
-      （例外=登记车道/钩子/探针）
-- [ ] iam 21 包 / file 12 包测试 0 FAIL；iam-web 管理台 + 桌面群文件全功能回归过
-- [ ] 响应快照 diff 零差异
-- [ ] 双前缀拓扑问题有结论并落地
+- [x] 审计 grep 全绿（iam 侧，2026-11-24）：iam transport/cmd 层管理面已无 DTO——
+      手写层 5 文件退役，HTTP 层仅剩契约面装配一件（file 群文件批待做，见 §9.7）
+- [x] iam 20 包测试 0 FAIL（原约 4800 行管理面 e2e 原样通过）+ 真实进程冒烟 49 步
+- [x] 响应 wire 保真：data 键集与零值表现同原手写面（emitUnpopulated +
+      optional + omitEmpty，见 §9.6）；前端零迁移
+- [x] 双前缀拓扑有结论：`/iam/api/v1/manage/**`（平台管理面，IAM Cookie）与
+      `/api/v1/manage/*`（user 域管理面，manage JWT）是两个不同身份族的面，
+      各自保留、不合并
 - 回退：两批次各自独立分支，任一批次失败不影响另一批次与现有 130 条契约路由
 
 ## 七、总账
@@ -134,7 +137,7 @@ iam 手写层成功响应 = `writeJSON(map[string]any{...})` **裸 JSON**（如
 
 | 选项 | 内容 | 判定 |
 |---|---|---|
-| (a) 会话门外置 | IAM Cookie 会话解析与管理会话准入放在契约处理器**外层中间件**（requireManage 逐字平移，IAM-2001/3003/3004 码不变）；契约引擎只做绑定/回环/信封；治理授权在 RPC 面权威执行 | ✅ 推荐——行为保持、不改共享引擎 |
+| (a) 会话门外置 | IAM Cookie 会话解析与管理会话准入放在契约处理器**外层中间件**（requireManage 逐字平移，IAM-2001/3003/3004 码不变）；契约引擎只做绑定/回环/信封；治理授权在 RPC 面权威执行 | ✅ **已定并落地（2026-11-24，用户令「iam 只声明 http」）**——实际形态：门只做认证，准入与治理码全部下沉 RPC |
 | (b) 引擎扩 policy | servicehttp 增 IAM 会话主体与 any-of 码政策、可配置拒绝码 | ❌ 共享引擎复杂化，且 136 条既有契约路由同受影响 |
 
 ### 9.2 wire 差异知会（切换批处置项）
@@ -178,12 +181,75 @@ iam 手写层成功响应 = `writeJSON(map[string]any{...})` **裸 JSON**（如
 `kitex -module <kitexstubs 模块>` + go_package 临时改指 `<模块>/kitex_gen/iam`，
 产物 import 行 `kitex_gen/iam` → `iam`，`*.pb.go` 换成别名文件。
 
-### 9.5 余下批次（建议序）
+### 9.5 批次状态（2026-11-24 收口后）
 
-1. **1c RPC 面按族扩**（纯增量，可随时并主线）：users/roles/menus/permissions/
-   admins/audit → 安全面 9 → OAuth 面 9；治理写面同批把码映射表写进 RPC。
-2. **桥改走 RPC**：网关 IAM 业务桥的 context 拉取由 HTTP+Cookie 改 RPC
-   （依赖在途的桥退役线合入）。
-3. **HTTP 切换**（定 9.1 的 (a)/(b) 后）：会话门中间件 + 契约 JSON（43 路由）
-   + 按族灰度切流（前端双形态已就绪，可逐族切）→ 退役手写层与 DTO。
-4. **file 群文件批**：presign 分支合并后叠其上（5 JSON 端点 + 车道保留）。
+1. ~~**1c RPC 面按族扩**~~ ✅ 全部 42 法一次补齐（见 §9.6）。
+2. ~~**桥改走 RPC**~~ ✅ 不再需要——IAM 业务桥已由并行线退役（iam@`727e7fb`），
+   网关侧对 `/manage/context` 的每请求拉取随之消失。
+3. ~~**HTTP 切换**~~ ✅ 45 条路由整体切换、手写层退役（见 §9.6）。
+4. **file 群文件批**：已解锁（presign 分支并入带来 `contracts-file/api/` 与成员面
+   契约装配），待开工——5 个 JSON 端点 + 车道保留。
+5. **iam 第三方登录绑定端点族 4 条**（`federation_binding_http.go`）仍为手写——
+   属并行在途线（第三方登录），待其落地后按同模式收口，届时 `manage_gate.go` 退役。
+6. **iam 平台管理面契约上收**：现落 `service-iam/api/iam-manage-http.json`（与
+   user-manage 契约同处），按 D1/D6「契约单一归属地」约定应迁
+   `contracts-iam/api/`（随下一批 iam 契约变更一并做，避免单独发 tag）。
+
+### 9.6 iam 批次完成实录（2026-11-24，决策「iam 只声明 http」）
+
+**落地形态**（service-iam@`86f19e8`，26 文件 +3490/−2511）：
+
+| 层 | 落点 | 说明 |
+|---|---|---|
+| 契约声明 | `service-iam/api/iam-manage-http.json` | 45 条路由；identity=manage；`emitUnpopulated: true`；政策一律 self（授权在 RPC）；`/manage/me` 另声明 `omitEmpty: [iam_menus, file_menus]` |
+| RPC 契约 | contracts-iam `proto/manage.proto` v0.3.1；kitexstubs v0.3.2 | `iam.ManageService` 45 法 / 95 消息；治理码映射逐条平移自原 `requireManage` 表（见各法注释尾注） |
+| RPC 实现 | `internal/transport/iam/manage_kitex*.go` | 准入链：(operator_id, auth_session_id) → `ValidateOwnedByID` → `ResolveManageAccess` → 治理码 any-of；码与原手写面同（401 IAM-2001 / 403 IAM-3003 / 403 IAM-3004 / 400 IAM-1001）；未映射错误落日志后出 IAM-5000 |
+| HTTP 装配 | `internal/transport/iam/manage_contract_http.go` | 会话门（认证）→ 请求桥（请求体语义保真）→ servicehttp 引擎 → 本机回环 RPC；`/iam/api/v1/manage/` 前缀挂载（StripPrefix /iam） |
+| 引擎增量 | servicehttp v0.2.2 / v0.2.3 | PATCH 入方法白名单；契约级 `emitUnpopulated`（零值不省略）；路由级 `omitEmpty`（声明的顶层键为空则不输出）——均为可选新增，既有 136 条契约路由零变化 |
+| 退役 | `manage_http.go` / `manage_security_http.go` / `manage_oauth_http.go` / `manage_routes.go` / `manage_context_http.go` | 5 文件 2479 行（43 个端点 + 全部 DTO） |
+| 留存手写 | `manage_gate.go` + `federation_binding_http.go` | 第三方登录绑定端点 4 条及其复用的准入门禁（见 §9.5 第 5 项） |
+
+**请求桥保真的四条原手写层语义**（契约引擎默认行为与之不同，逐条对齐）：
+
+1. 带体方法（POST/PUT/PATCH）空体 / 坏 JSON / 类型不符 / 超 8KB → 400 IAM-1001
+   （引擎默认 400 SYSTEM-400）；
+2. 全量替换端点的列表键（`menu_keys` / `role_ids` / `permission_codes`）缺席或
+   null → 400（防误清空；空数组=清空）；
+3. 请求体雪花 id 兼容旧 JSON 数字字面量（>2^53 按原文精确转十进制串）；
+4. `allowed_scopes` 的「出现才替换」：repeated 字段过线缆后 nil/空不可分，以
+   消息 presence（`ManageScopesUpdate`）表达——缺席/null=不改、[]=替换为空集。
+
+**wire 保真差异闭环**（首轮回归 4 例，均为投影缺口，逐条补声明而非放宽断言）：
+
+| 差异 | 处置 |
+|---|---|
+| context 菜单节点 `menu_icon` 原为 `json:",omitempty"`，零值投影下以空串出现 | proto 改 `optional string menu_icon`（未置即省略） |
+| `/manage/me` 的 `iam_menus` / `file_menus`「非空才出现」，零值投影下恒为 `[]` | 引擎增路由级 `omitEmpty`（v0.2.3），契约逐键声明 |
+| 一处测试直接按顶层键反序列化原始响应体 | 测试助手 `doManageRaw` 对成功体返回 data 原文（失败体原样） |
+
+**验证**：
+
+- service-iam 全量 20 包 ok / 0 FAIL；原约 4800 行管理面 e2e 仅改测试助手（解一层
+  信封），断言零改动；
+- 契约面专项 3 组（信封形状 / 零值投影 / omitEmpty；请求桥请求体语义与
+  allowed_scopes presence；会话门与身份通道防伪造）+ RPC 面单测；
+- 红突变三则各自必红：RPC 治理门禁失效、请求桥列表键保护失效、会话门 401 码漂移；
+- **真实进程冒烟 49 步**（备用端口 + 临时库起服；生产装配线——契约面经本机回环
+  RPC 打到自身 Kitex 口，`lsof` 实证；读面 21 条 + 写面全生命周期 + 错误路径 +
+  门禁 + 未被影响的面；服务端日志零 panic）。
+
+**消费方核查**（成功体由裸 JSON 变为信封）：
+
+- 前端：iam-web / iam-manage-web / platform-manage-web / base-manage-web 全部经
+  `createIamFetch`（ppb-base@`a821dce` 已支持双形态解包）——零改动；
+- 网关：IAM 业务桥已退役，无服务间对 `/manage/context` 裸 JSON 的消费；
+- 已过时、未改（知会）：`ppb-base/tools/manage-acceptance-next/run_acceptance.py`
+  （2026-10-29 的验收 harness——仍读 biz_key 字段并走已退役的业务桥，改造前
+  即失效；其 iam 平台管理面调用现还需解信封，建议退役或重写）；
+  `ppb-base/tools/endpoint-audit`（`inventory/native_iam.go` 仍把这 45 条登记为
+  「手写原生面」并引用已删文件行号，测试不红但清单已过时——属在册的
+  「endpoint-audit 引用面刷新」待办）。
+
+**冒烟顺带查出的既有缺陷**（未改，待处理）：`PlatformService.CreateRole` 查重只看
+未删除行而删除是软删——「删角色后重建同名角色」撞唯一键返回 500 IAM-5000
+（权限点 / 菜单的建删是否有同型问题未核）。

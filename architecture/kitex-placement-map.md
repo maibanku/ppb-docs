@@ -1,6 +1,6 @@
 # Kitex 落位地图（迁移终局盘点 · 方案 B 终态）
 
-> 日期：2026-11-23 · 更新：2026-11-24（方案 B：kitexstubs 旁挂模块收口）
+> 日期：2026-11-23 · 更新：2026-11-24（方案 B：kitexstubs 旁挂模块收口；四条在途分支并入后的终态）
 > 范围：Kitex 相关代码/依赖/生成物/运行态在六仓的完整落位
 > 关联：`kitex-migration-plan.md`（方案）、`adr-gateway-http-proxy.md`（网关定案）
 > 沿革：方案 B 之前的「自足式 kitex_gen」落位见本文件 git 历史（ppb-docs `d7b60c2` 及之前）
@@ -17,6 +17,8 @@ vscode/                                          # 六仓工作区
 │   │   └── kitexstarter/server.go               #   Kitex server → boot.Component（组件名 "grpc"）
 │   ├── platform-sdk/iam/authzport/              #   tag v0.2.2
 │   │   └── iamassert_kitex.go                   #     客户端 IAM 断言按方法重签
+│   ├── platform-sdk/servicehttp/                #   tag v0.2.3（契约引擎；不沾 kitex）
+│   │   └── {contracts,handler,manage_handler}.go  #   v0.2.2/v0.2.3 增量：PATCH、emitUnpopulated、omitEmpty
 │   └── deploy/config/*.yaml                     #   registry.etcd 段 + service_name 灰度键
 │
 ├── ppb-chat/
@@ -38,40 +40,49 @@ vscode/                                          # 六仓工作区
 │       └── internal/config/im_config.go         #   registry.etcd + service_name 灰度
 │
 ├── ppb-iam/
-│   ├── contracts-iam/                           # 契约根模块 v0.1.2（✗ 不沾 kitex）
-│   │   ├── gen/go/iam/
-│   │   └── kitexstubs/                          # ★ 旁挂模块 tag contracts-iam/kitexstubs/v0.1.0
-│   │       └── iam/                             #     别名层 67 类型
-│   │           ├── {iam,iamx,admincompat}.pb.go
-│   │           └── iamservice/ · iamaccountbridge/ · admincompatservice/
-│   └── service-iam/                             # @9107 —— serving 3 组 + 消费 im 2 组（✗ 无 kitex_gen）
+│   ├── contracts-iam/                           # 契约根模块 v0.3.1（✗ 不沾 kitex）
+│   │   └── gen/go/iam/                          #   iam / iamx / admincompat / manage 四份 proto 的消息
+│   │       └── kitexstubs/                      # ★ 旁挂模块 tag contracts-iam/kitexstubs/v0.3.2
+│   │           ├── iam/                         #     别名层：iam 67 + admincompat 24 + manage 95 类型
+│   │           │   └── iamservice/ · iamaccountbridge/ · admincompatservice/ · manageservice/（45 法）
+│   └── service-iam/                             # @9107 —— serving 4 组（iam/accountbridge/admincompat/manage）
+│       ├── api/                                 #   HTTP 契约声明（「iam 只声明 http」）
+│       │   ├── iam-manage-http.json             #     平台管理面 45 条（manage + emitUnpopulated）
+│   │   └── user-manage-http.json                #     user 域 manage 面 4 条（manage JWT）
 │       ├── internal/transport/iam/
-│       │   ├── {iam,account_bridge,admin_compat}_kitex.go
-│       │   ├── iam_assertion_kitex.go           #   断言中间件 + legacy actor 桥
+│       │   ├── {iam,account_bridge,admin_compat,manage}*_kitex.go   # RPC handler（manage*: 45 法）
+│       │   ├── manage_contract_http.go          #   契约面装配：会话门 → 请求桥 → 引擎（HTTP 层仅此一件）
+│       │   ├── manage_gate.go                  #   第三方登录绑定手写端点（4 条）复用的准入门禁
+│       │   ├── iam_assertion_kitex.go          #   断言中间件 + legacy actor 桥
 │       │   └── kitex_status_fidelity.go         #   ErrBiz 壳剥除（码/文案保真）
-│       └── cmd/{server,smoke}/
+│       ├── cmd/server/{boot_wire,service_http_wire}.go
+│       └── cmd/{migrate,qatokens,server,smoke}/
 │
 ├── ppb-file/
-│   ├── contracts-file/                          # 契约根模块 v0.1.1（✗ 不沾 kitex）
-│   │   ├── gen/go/{file,refaccess}/
-│   │   └── kitexstubs/                          # ★ 旁挂模块 tag contracts-file/kitexstubs/v0.1.1
-│   │       ├── file/                            #     别名层 47 类型 + file.pb.go + fileservice/
-│   │       └── refaccess/                       #     别名层 2 类型 + refaccess.pb.go + refaccessservice/
+│   ├── contracts-file/                          # 契约根模块 v0.2.0（✗ 不沾 kitex）
+│   │   ├── gen/go/{file,refaccess}/             #   FileService 22 法（含 S0 直传 3 法）
+│   │   ├── api/                                #   HTTP 契约声明（D6 上收：manage 12 条 + member 3 条）
+│   │   └── kitexstubs/                          # ★ 旁挂模块 tag contracts-file/kitexstubs/v0.2.0
+│   │       ├── file/                            #     别名层 54 类型 + fileservice/
+│   │       └── refaccess/                       #     别名层 2 类型 + refaccessservice/
 │   └── service-file/                            # @9104 —— serving 2 组 + 消费 iam（✗ 无 kitex_gen）
-│       ├── internal/transport/file/{file,file_upload,file_download,file_meta,file_manage}_kitex.go
+│       ├── internal/transport/file/{file,file_upload,file_download,file_meta,file_manage,file_presign}_kitex.go
+│       ├── internal/transport/file/group_file_http.go   # 群文件 HTTP 面（手写，契约化待办）
 │       └── cmd/{file,migrate,smoke}/
 │
 ├── ppb-camera/
-│   ├── contracts-camera/                        # 契约根模块 v0.1.1（✗ 不沾 kitex；暂无 kitexstubs）
+│   ├── contracts-camera/                        # 契约根模块 v0.1.2（✗ 不沾 kitex）
+│   │   ├── gen/go/camera/
+│   │   └── api/                                #   HTTP 契约声明（D1 上收：subject 10 条 + admin 19 条）
 │   └── service-camera/                          # @9106 —— serving 2 组 + 消费 iam
 │       ├── kitex_gen/camera/                    # 自 serving（prutal 自有类型）——唯一存留的 kitex_gen
 │       │   ├── camera_kitex.pb.go
 │       │   └── {cameraservice,adminservice}/{…,client,server}.go
 │       ├── internal/transport/camera/{camera,camera_admin}_kitex.go
-│       ├── cmd/server/{boot_wire,service_http_wire}.go     # kitex server + HTTP 契约面
-│       └── cmd/smoke/main.go                    #   五步冒烟（含 Phase C 回源探针）
+│       ├── cmd/server/{boot_wire,service_http_wire}.go   # kitex server + HTTP 契约面
+│       └── cmd/{server,migrate,smoke}/
 │
-└── ppb-gateway/service-gateway/                # ✗ 无 kitex（ADR 定案：HTTP 反代）
+└── ppb-gateway/service-gateway/                # ✗ 无 kitex（HTTP 反代 + 翻译模式：servicehttp over grpc-go）
 ```
 
 运行态（非文件系统）：etcd `kitex/registry-etcd/ppbchat-<svc>/<ip>:<rpc-port>` ×4。
@@ -83,15 +94,20 @@ vscode/                                          # 六仓工作区
 | `ppb-base/go-framework/rpcx` | 共享中间件 + boot 组件（`kitexmw/`：Recovery/RequestID/InternalAuth/FullMethodFromContext + `clientmw/` 出站三件；`kitexstarter/`） | `go-framework/rpcx/v0.2.x` |
 | `ppb-base/platform-sdk/iam` | IAM 断言协议权威件（`authzport/iamassert_kitex.go`：客户端断言按方法重签中间件） | `platform-sdk/iam/v0.2.2` |
 | `contracts-im/kitexstubs` | IMService / ChatOrgService / OrgCompatService / GroupFileAuthService 服务组 + 别名层 258 类型 | `contracts-im/kitexstubs/v0.1.0` |
-| `contracts-iam/kitexstubs` | IamService / IamAccountBridge / AdminCompatService 服务组 + 别名层 67 类型 | `contracts-iam/kitexstubs/v0.1.0` |
-| `contracts-file/kitexstubs` | FileService / RefAccessService 服务组 + 别名层 47 + 2 类型 | `contracts-file/kitexstubs/v0.1.1` |
+| `contracts-iam/kitexstubs` | IamService / IamAccountBridge / AdminCompatService / **ManageService（45 法）** 服务组 + 别名层 186 类型 | `contracts-iam/kitexstubs/v0.3.2`（根模块 v0.3.1） |
+| `contracts-file/kitexstubs` | FileService（22 法，含 S0 直传）/ RefAccessService 服务组 + 别名层 54 + 2 类型 | `contracts-file/kitexstubs/v0.2.0`（根模块 v0.2.0） |
 | `service-im` / `service-iam` / `service-file` / `service-camera` | 服务端 + 出站消费 | 随各仓 |
 
 **不沾 kitex 的**（有意设计）：contracts **根**模块 ×4（纯净铁律不变——重依赖
-禁入，全端消费方免拉；kitex 只进旁挂的 kitexstubs 子模块）；gateway（ADR 定案
-HTTP 反代）；`go-framework` 根模块（logx/boot/requestid 等被网关与工具消费，
-不能被 kitex 污染——rpcx 独立模块即为此隔离，先例是 requestid 当年拆 grpc
-依赖）；桌面/移动端（不感知 RPC 框架）。
+禁入，全端消费方免拉；kitex 只进旁挂的 kitexstubs 子模块；HTTP 契约声明
+`contracts-X/api/` 同样是纯数据 embed 包）；`platform-sdk/servicehttp`
+（契约引擎——网关翻译模式经 grpc-go 连接，不依赖 kitex）；gateway；`go-framework`
+根模块（logx/boot/requestid 等被网关与工具消费，不能被 kitex 污染——rpcx
+独立模块即为此隔离，先例是 requestid 当年拆 grpc 依赖）；桌面/移动端（不感知
+RPC 框架）。
+
+**main 上的 replace 开发桥：零**（2026-11-24 四条在途分支并入时，分支带入的
+发布前本地桥 file 1 / camera 1 / gateway 7 全部撤除，require 直连已发 tag）。
 
 ## 二、生成物落位——kitexstubs 旁挂模块（方案 B）
 
@@ -104,8 +120,8 @@ HTTP 反代）；`go-framework` 根模块（logx/boot/requestid 等被网关与�
 | kitexstubs 模块 | 服务组 | serving 方 | 消费方（出站/桩） |
 |---|---|---|---|
 | `contracts-im/kitexstubs` | imservice / chatorgservice / orgcompatservice / groupfileauthservice | service-im（与 refaccess 五组一 server @9102） | service-iam（chatorg / orgcompat） |
-| `contracts-iam/kitexstubs` | iamservice / iamaccountbridge / admincompatservice | service-iam（@9107） | service-im、service-file、service-camera |
-| `contracts-file/kitexstubs` | fileservice / refaccessservice | service-file（fileservice @9104）；service-im（refaccessservice†） | service-im（fileservice 冒烟桩） |
+| `contracts-iam/kitexstubs` | iamservice / iamaccountbridge / admincompatservice / **manageservice** | service-iam（@9107；manage 组是平台管理面 HTTP 契约面的回环 RPC 承接） | service-im、service-file、service-camera |
+| `contracts-file/kitexstubs` | fileservice（22 法）/ refaccessservice | service-file（fileservice @9104）；service-im（refaccessservice†） | service-im（fileservice 冒烟桩） |
 | （暂无） | cameraservice / adminservice | service-camera（@9106，`service-camera/kitex_gen/camera` 自足） | — |
 
 † refaccess 契约权威在 contracts-file、服务端实现归 im（file 回调裁决）。
@@ -122,6 +138,14 @@ HTTP 反代）；`go-framework` 根模块（logx/boot/requestid 等被网关与�
   ↔ contracts 权威接口方法集对等（contracts 抬版而 kitexstubs 未跟时立刻红，否则
   新方法静默不被伺服、编译期无感）。须留在消费方进程：kitexstubs 模块自身的
   测试不随依赖方执行。
+- iam ManageService 另有 RPC 面单测（`manage_kitex_test.go`：与 HTTP 面同库对拍 +
+  八类准入码锁 + 内部错误落日志）与契约面专项（`manage_contract_face_test.go`）。
+
+**kitexstubs 生成配方**（反推验证，2026-11-24）：proto 的 go_package 临时改指
+`<kitexstubs 模块>/kitex_gen/<pkg>` → `kitex -module <kitexstubs 模块> -I <idl>
+-no-dependency-check <proto>` → 服务组三文件 import 行 `kitex_gen/<pkg>` → `<pkg>`
+→ `*.pb.go` 换成别名文件（Req/Resp 在前、嵌套项类型在后）。新增消息须同时补
+别名行。
 
 ## 三、业务代码落位（各服务模块内）
 
@@ -144,7 +168,8 @@ HTTP 反代）；`go-framework` 根模块（logx/boot/requestid 等被网关与�
   keepalive，停机反注册）
 - 标准口：9102(im)/9104(file)/9106(camera)/9107(iam)，netpoll+detection
   同口承载 gRPC 线缆（grpc-go 与 kitex 客户端皆可入）
-- 启动/切换：`ppb-base/deploy scripts start-all`（源码构建 + mtime 判旧自动换新）
+- 启动/切换：`ppb-base/deploy scripts start-all`（源码构建 + mtime 判旧自动换新；
+  四后端起服前 `-check-config` 配置门禁）
 
 ## 五、放置原则的取舍与演进触发（决策史）
 
@@ -177,31 +202,33 @@ kitex 运行时），消灭跨仓拷贝与拷贝级同步门禁。三批全部�
 `service-im/cmd/server/kitex_parity_test.go`（ppb-chat@`e3d49030`），九组全部
 对拍 kitexstubs；红绿验证：错配一对必红（逐方法报差），复原全绿。
 
-**独立复验**（2026-11-24，非执行代理自述）：
+**四条在途分支并入 main（同日，用户令「其他分支直接合并 main」）**：
 
-| 服务 | build + vet | `go test -count=1 ./...` | 预存红 |
+| 仓 | main | 与方案 B 的交接 | 合并后测试 |
 |---|---|---|---|
-| service-im | exit 0 | 24 包 ok / 0 FAIL | — |
-| service-iam | exit 0 | 19 ok / 1 FAIL | `internal/config TestDeployYamlLoadable` |
-| service-file | exit 0 | 10 ok / 1 FAIL | `cmd/file TestDeployYamlLoadable` |
-| service-camera（main） | exit 0 | 14 ok / 1 FAIL | `internal/service TestDeployYamlLoadable` |
+| ppb-file | `c623410` | presign 分支在旧位置 `service-file/kitex_gen/go/file` 重生成过 kitex 桩——git 重命名检测把服务组改动自动套到 `contracts-file/kitexstubs`（与按配方全新生成逐字节一致），旧 pb 文件删除，其新增 7 消息转别名层（47→54）；发 contracts-file v0.2.0 + kitexstubs v0.2.0 | 11 包 0 FAIL |
+| ppb-camera | `d0cc865` | 旧 `kitex_gen/iam` 拷贝随 main 保留删除态；发 contracts-camera v0.1.2（D1 上收 api 包） | 15 包 0 FAIL |
+| ppb-iam | `727e7fb` | manage-token 桥退役 B 案，与 ManageService RPC 面无冲突 | 20 包 0 FAIL |
+| ppb-gateway | `66fdd17` | 翻译模式 D3–D6（servicehttp over grpc-go，无 kitex） | 5 包 0 FAIL |
 
-三条预存红均非方案 B 引入，同因 = deploy 配置兼容门禁的**跨仓时序倒置**
-（ppb-base 先登记新键、服务侧字段在未合并分支），各自分支合并后自愈：
-iam `manage_jwt_secret`（feat/bridge-retire-manage-token）、file
-`presign_endpoint`（feat/presign-direct-upload）、camera `http_enabled`
-（ppb-base@`27023f4` 先登记，字段在 feat/contracts-api-home@`60e0d9b`）。
+**iam 管理面契约化（同日，用户令「iam 只声明 http」）**：`iam.ManageService` 由
+3 法扩至 45 法（contracts-iam v0.3.1 / kitexstubs v0.3.2；kitexstubs v0.3.1 的
+go.sum 有误，已被 v0.3.2 取代），service-iam@`86f19e8` 把 `/iam/api/v1/manage/**`
+的 HTTP 层收敛为一件装配（会话门 + 请求桥 + 引擎）——详见
+`http-face-convergence-plan.md` §九。
+
+**独立复验**（2026-11-24）：四服务 build + vet exit 0；`go test -count=1 ./...`
+service-im 24 包 ok / 0 FAIL、service-iam 20 包 / 0 FAIL、service-file 11 包 /
+0 FAIL、service-camera 15 包 / 0 FAIL、gateway 5 包 / 0 FAIL；iam 平台管理面
+另做真实进程冒烟 49 步（生产装配线：契约面经本机回环 RPC 打到自身 Kitex 口）。
 
 **残留与后续**：
 
 1. `service-camera/kitex_gen/camera`（7 文件，prutal 自有类型）——唯一存留的
-   kitex_gen；唯一消费方是 camera 自己，无跨仓拷贝价值。待
-   feat/contracts-api-home 合并后评估是否上收 `contracts-camera/kitexstubs`
-   （届时四仓同构）。该分支未触碰 `kitex_gen/` 与 `iam_outbound.go`，合并后
-   旧 `kitex_gen/iam` 引用随 main 版本替换。
-2. `service-im/go.mod` 的 `replace contracts-im => ../contracts-im`（群文件
-   开发桥，注释「发版后撤」）：`contracts-im/v0.2.0` 已发且与 main 的 gen 目录
-   零漂移，撤除条件已满足；该桥会把 kitexstubs 的传递依赖一并指到本地目录。
+   kitex_gen；唯一消费方是 camera 自己，无跨仓拷贝价值。camera 分支已并入，
+   可评估上收 `contracts-camera/kitexstubs`（届时四仓同构）。
+2. `service-im/go.mod` 的 contracts-im replace 桥已撤（ppb-chat@`f773678e`）；
+   main 上任何仓均无开发桥。
 3. 注释残留：im/iam/file 三仓 transport、boot、smoke 的注释里仍有约 14 行
    「kitex_gen」历史表述（非 import，不影响构建），随手清。
 4. 嵌套模块 tag 拉取慢：从 ppb-chat 拉 kitexstubs 新 tag 的浅 fetch 约 30MB
@@ -213,7 +240,7 @@ iam `manage_jwt_secret`（feat/bridge-retire-manage-token）、file
   顶层 Req/Resp，全量 handler 需要嵌套项类型——file 补 9 个、iam 补 11 个）。
 - 类型形态统一为 contracts 类型后，iam/file 的 handler 从 prutal 自有类型切回
   contracts 类型，方法体同形、import 级改动；prutal 在 im/iam/file 三仓随被删
-  生成件由 direct 降为 indirect。
+  生成件由 direct 降为 indirect（camera 仍 direct）。
 - import 重写范围小于预估：service-im 业务层（service/realtime/call/clients）
   本来就直接 import contracts 根模块，实际只改 transport 9 文件 + boot_wire /
   smoke / e2e 3 文件。

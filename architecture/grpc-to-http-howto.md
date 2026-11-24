@@ -86,6 +86,19 @@ func (h *CameraServiceHandler) ListAnalyses(ctx context.Context, req *pb.ListAna
   "perm": "camera.xxx.read"}`（authzguard 链消费）
 - `NewHandler(contract, invoker)` 装配即获得该路由——**无任何手写 HTTP 方法**
 
+契约 JSON 的三个可选增量（2026-11-24，iam 平台管理面「只声明 http」落地时补齐，
+engine servicehttp v0.2.2 / v0.2.3；缺省行为对既有路由零变化）：
+
+| 增量 | 写在哪 | 何时用 |
+|---|---|---|
+| `"method": "PATCH"` | 路由 | 字段级替换端点（此前只能手写）；请求体里「出现才改」的字段在 proto 里声明 `optional` |
+| `"emitUnpopulated": true` | 契约顶层 | 需要 data 的零值字段原样输出（`false` / `0` / `""` / `[]`）——把既有裸 JSON 接口迁到契约面而前端零迁移时用；注意该投影下 64 位整数输出为字符串，数值用 `int32`、雪花 id 用 `string` |
+| `"omitEmpty": ["k1","k2"]` | 路由 | emitUnpopulated 契约里个别顶层键「为空则不出现」（数组字段无法用 `optional` 表达）；Parse 校验每个名字须为响应消息的顶层字段 |
+
+数值型查询参数（page / limit / status / application_id…）若需要「非法值返回业务码
+而非引擎的 SYSTEM-400」，在 proto 里用 `string` 承载、由 RPC handler 按业务口径解析
+（iam 平台管理面即此做法，见 `service-iam/api/iam-manage-http.json`）。
+
 ### 第 5 步：网关路由一行
 
 ppb-base `deploy/config/gateway-routes.yaml`：
