@@ -131,3 +131,22 @@ gateway（ADR 定案 HTTP 反代）；`go-framework` 根模块（logx/boot/reque
 3. **演进触发**：当第三个消费方需要同一服务组、或拷贝份数使门禁噪声化时，
    重评「共享 stubs 模块」（如 ppb-base 新 kitexstubs 模块或 contracts 旁挂
    轻模块）；contracts 发版节奏显著加快时重评别名层维护成本。
+
+
+## 六、方案 B 执行实录（2026-11-24：kitexstubs 旁挂模块收口）
+
+§五.3 预留的演进路径触发并执行——契约仓旁挂 `kitexstubs` 独立 module
+（依赖方向 kitexstubs → 根 contracts 类型 + kitex 运行时），消灭跨仓拷贝与
+同步门禁：
+
+| 批次 | 模块 | 消费方切换 | 状态 |
+|---|---|---|---|
+| 1（试点） | `contracts-file/kitexstubs` v0.1.1（FileService/RefAccessService，别名层 47 类型） | service-file@02a4687（serving+消费，prutal→contracts 类型）、service-im@03f9fa1a（refaccess serving + file 消费；`sync_test` 退役、`alias_parity` 改指） | ✅ |
+| 2 | `contracts-iam/kitexstubs`（iamservice/iamaccountbridge/admincompatservice） | service-iam（serving）+ service-im + service-file | 执行中 |
+| 3 | `contracts-im/kitexstubs`（imservice/chatorg/orgcompat/groupfileauth） | service-im（serving）+ service-iam（消费） | 待批次 2 完成后串行 |
+| — | `contracts-camera/kitexstubs` | service-camera（唯一消费方，无跨仓拷贝价值；且 camera 仓被并行会话特性分支占用） | 暂缓，待该分支合并后评估 |
+
+**关键经验**：别名层必须覆盖 proto 包内**全部**导出消息类型（服务组生成件只
+引用顶层 Req/Resp，全量 handler 需要嵌套项类型——第一批补了 9 个列表项）；
+类型形态统一为 contracts 类型后，camera/iam/file 的 handler 从 prutal 自有
+类型切回 contracts 类型，方法体同形、import 级改动。
