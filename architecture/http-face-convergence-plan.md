@@ -119,3 +119,71 @@ iam 手写层成功响应 = `writeJSON(map[string]any{...})` **裸 JSON**（如
 全部阶段技术可行、无阻断项：阶段 1 依赖（MinIO SDK/存储层）已就位；阶段 4
 网关体量小；唯一升风险项 = iam 前端信封跟改（选项 1），属可控前端改造
 （共享 request 层一处 + api 函数类型调整）。
+
+## 九、实施前置核验与批次实录（2026-11-24，执行中发现）
+
+### 9.1 体量与鉴权族更正（iam）
+
+| 项 | §八原记 | 实测更正 |
+|---|---|---|
+| iam 手写面端点 | 27 | **43**：manage_http 25 + 安全面 9（manage_security_http.go）+ OAuth/应用域面 9（manage_oauth_http.go） |
+| iam 手写面测试 | 未计 | 约 4800 行（iam_http_manage*_test 等 10 文件，回环 e2e 驱动手写 handler） |
+| 鉴权族 | 未计 | **IAM Cookie 会话 + 管理会话行 + 治理 any-of 码**——与契约引擎 manage 面（manage JWT + policy self/app_perm/super_gov，拒绝恒 403 MANAGE-0004）不同族 |
+
+由鉴权族差异引出的设计岔路（HTTP 切换批开工前须定）：
+
+| 选项 | 内容 | 判定 |
+|---|---|---|
+| (a) 会话门外置 | IAM Cookie 会话解析与管理会话准入放在契约处理器**外层中间件**（requireManage 逐字平移，IAM-2001/3003/3004 码不变）；契约引擎只做绑定/回环/信封；治理授权在 RPC 面权威执行 | ✅ 推荐——行为保持、不改共享引擎 |
+| (b) 引擎扩 policy | servicehttp 增 IAM 会话主体与 any-of 码政策、可配置拒绝码 | ❌ 共享引擎复杂化，且 136 条既有契约路由同受影响 |
+
+### 9.2 wire 差异知会（切换批处置项）
+
+契约引擎 Reply = `encoding/json` 序列化 protoc-gen-go 结构体后剥 base。三条
+与手写面的固有差异：
+
+1. **零值省略**：proto3 `omitempty` 使手写面恒出现的 `false/0/""/[]` 缺席
+   （如 `admin.is_super=false`、空 `roles`、空 `children`）。处置二选一：
+   前端解包层对 iam manage 族归一化缺省（推荐，随选项 1 的前端改造同批），
+   或引擎 Reply 增 per-contract `emitDefaults`。
+2. **雪花 id**：`uint64` 经 encoding/json 输出数字（JS 2^53 舍入），契约
+   消息里 id 一律 `string` 十进制串（manage.proto 已按此）。
+3. **json 键**：protoc-gen-go 的 json tag 取 proto 字段名——字段名写
+   snake_case 即与手写面逐字一致（无需 json_name）。
+
+### 9.3 排序约束（执行中核实）
+
+- **file 群文件批须排在 presign 分支合并之后**：`feat/presign-direct-upload`
+  把契约 JSON 迁到 `contracts-file/api/`、给 `FileService` 增 3 个直传 RPC、
+  并新增成员面契约装配（`FileMemberContract` + member 门内挂载）——群文件批
+  正需要这套落位与装配，叠其上做零冲突；抢先做则生成物与装配线必撞。
+- **iam HTTP 切换须排在 IAM 业务桥退役之后**：`/manage/context` 头注释写明
+  网关业务桥每请求服务间拉取本端点做新鲜授权（Cookie 由网关转发），正是
+  `feat/bridge-retire-manage-token` 在退役的面；切换前先让桥改走 RPC 面。
+- **治理 any-of 码进 RPC**：治理写面（roles/menus/permissions/admins）入 RPC
+  时，把 `requireManage` 的码映射表同批写进各 RPC（授权在 RPC 权威执行，
+  不依赖承载面——网关上收时无需再补）。
+
+### 9.4 已落地批次
+
+| 批 | 内容 | 落点 | 验证 |
+|---|---|---|---|
+| 前端前置 | `createIamFetch` 兼容平台统一信封与裸 JSON 双形态（从严判别：success 布尔 + data/code 键在 + 顶层键 ⊆ 信封四键；2xx 失败信封防御性抛错） | ppb-base@`a821dce`（iam-web / iam-manage-web / platform-manage-web 共用此唯一实现） | iam-fetch 21/21（新增 7 条先红后绿）；下游 iam-manage-web 287 用例、iam-web 37 用例全过，typecheck 0 |
+| 1b RPC 面 | `iam.ManageService` 三读面：GetManageMe / GetManageContext / ListManageApplications（contracts-iam `proto/manage.proto`，13 消息；kitexstubs `iam/manageservice` + 别名层） | contracts-iam v0.2.0@`2e213a7`、kitexstubs v0.2.0@`315958f`、service-iam@`40988db` | 与手写 HTTP 面同库对拍（RPC 投影 = 手写 wire 同值子集）+ 八类准入码锁；突变去归属校验/投影漂移均必红；全量 19 包 ok |
+
+1b 的准入链：`operator_id`（契约 operator）+ `auth_session_id`（契约 session）
+→ `SessionService.ValidateOwnedByID`（新增，会话归属绑定）→
+`ResolveManageAccess`（establish=true 仅 me/context）。码与手写面同：
+401 IAM-2001 / 403 IAM-3003 / 400 IAM-1001。kitexstubs 生成配方已反推验证：
+`kitex -module <kitexstubs 模块>` + go_package 临时改指 `<模块>/kitex_gen/iam`，
+产物 import 行 `kitex_gen/iam` → `iam`，`*.pb.go` 换成别名文件。
+
+### 9.5 余下批次（建议序）
+
+1. **1c RPC 面按族扩**（纯增量，可随时并主线）：users/roles/menus/permissions/
+   admins/audit → 安全面 9 → OAuth 面 9；治理写面同批把码映射表写进 RPC。
+2. **桥改走 RPC**：网关 IAM 业务桥的 context 拉取由 HTTP+Cookie 改 RPC
+   （依赖在途的桥退役线合入）。
+3. **HTTP 切换**（定 9.1 的 (a)/(b) 后）：会话门中间件 + 契约 JSON（43 路由）
+   + 按族灰度切流（前端双形态已就绪，可逐族切）→ 退役手写层与 DTO。
+4. **file 群文件批**：presign 分支合并后叠其上（5 JSON 端点 + 车道保留）。
