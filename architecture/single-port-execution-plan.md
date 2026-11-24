@@ -55,6 +55,11 @@ oidc-exchange，可随阶段 4 上收）与 OIDC 协议端点（authorize/token/
 1. 网关改造：`httputil.ReverseProxy` 透传 → 契约网关——加载 7+ 份
    `api/*-http.json` + svcauth 中间件链（member/manage/subject）+
    servicehttp 引擎 + **kitex client（etcd 发现直调 910x）**
+   > **2026-11-24 定案：网关实现使用框架（APISIX），不自研。** 上文「进程内
+   > servicehttp + kitex client」为原自研方案描述，保留作对照；落地形态 =
+   > 契约 JSON 经生成器转译为 APISIX 路由/grpc-transcode 配置 + ext_authz
+   > 鉴权外挂（薄 Go 服务）+ 信封映射插件化承接。已并入 main 的网关翻译
+   > 模式（D3–D6）为过渡形态。详见 framework-replacement-assessment §二.3。
 2. 服务侧删除：HTTP 端口与 `*_wire.go` HTTP 装配、mux 挂载、config
    `http_port` 键；契约 JSON 文件搬至网关仓（或网关按服务加载）
 3. 探针：`/ping`/`/healthz` → gRPC health 协议（internalauth 豁免前缀已

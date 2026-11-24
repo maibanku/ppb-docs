@@ -49,8 +49,8 @@ Registry）与调用面（5 直接 + 7 Wrap）都小。
 
 ## 决策后置项（不在本计划执行）
 
-- **阶段 4 契约网关 APISIX vs 自研**：单端口阶段 4 开工时决策（评估见
-  framework-replacement-assessment §二.3）
+- **阶段 4 契约网关**：✅ 已定案（2026-11-24）——**使用框架（APISIX），不自研**
+  （评估与落地设计输入见 framework-replacement-assessment §二.3）
 - **契约生成器注解化**：随 HTTP 面收敛计划批次落地（external-api §7.5）
 
 ## 验收总账
