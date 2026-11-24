@@ -59,3 +59,26 @@ Registry）与调用面（5 直接 + 7 Wrap）都小。
 - [ ] 基线 diff 门禁零差异；全量测试 + 四家冒烟绿
 - [ ] （若做批次二）/metrics 对拍通过
 - [ ] 旧 dbmigrate 代码删除（保留一个版本的回退窗口后）
+
+
+## 批次一完成实录（2026-11-24）
+
+四服务全部落地并推 main：camera@`1670617`（试点）→ iam@`75af10a` /
+im@`47bc7db2` / file@`ad1d6fb`（三子代理并行复刻）。
+
+| 服务 | 基线表数 | 模型权威补齐 | 验证 |
+|---|---|---|---|
+| camera | 14（真库 dump 对拍 migrateOrder） | +2 缺索引（idx_cmp_subject/idx_fbk_subject） | v1/dirty=0、幂等、16 包 0 FAIL |
+| iam | 37（diff 零） | 0 | v1/dirty=0、幂等、21 包 0 FAIL |
+| im | 34（3 张退役表剔除；与 gorm 权威 ISOMORPHIC） | 0 | 存量库 force-1 接入仿真过、27 包 0 FAIL |
+| file | 8（归档滞后 4 处已记头注） | 0 | down 真执行过、SQLite 双跑过 |
+
+**双轨制定稿**：MySQL=版本表管理（embed 随二进制）、SQLite=AutoMigrate 原路
+（行为零变化）；双方言 Seed 步按服务差异抽出（camera 游标+风格 / im 默认
+组织行 / iam、file 无种子）。存量生产库接入 = `cmd/migrate -force 1` 基线
+标记（运维动作，file prod 模板已写指引）。
+
+**遗留知会**：file 的 TestDeployYamlLoadable 在 main 预存红——ppb-base@ccfad3d
+先行登记了 S0 直传 `presign_endpoint` 键，而 service-file 侧字段在未合并的
+`feat/presign-direct-upload` 分支（跨仓时序倒置，直传批次合并自愈，非本批
+引入）。
